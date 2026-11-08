@@ -1,0 +1,120 @@
+/* Weekendje weg · designtokens · palet Zee en duin
+   Hoort bij designbrief 0.2 en het ontwerp in Claude Design (8 november 2026).
+   Licht is standaard; donker volgt het apparaat. Status altijd met symbool: ✓ ~ ✕. */
+
+:root {
+  --bg-top: #EAF2FA;
+  --bg-bottom: #F5ECDD;
+  --glass-fill: rgba(255,255,255,.55);
+  --glass-border: rgba(255,255,255,.70);
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 24px rgba(19,32,45,.08);
+  --glass-rim: inset 0 1px 0 rgba(255,255,255,.85);
+  --glass-fallback: rgba(250,252,254,.90);
+  --surface-solid: rgba(255,255,255,.92);
+  --line: rgba(19,32,45,.10);
+  --line-strong: rgba(19,32,45,.22);
+  --text-primary: #13202D;
+  --text-secondary: #4E5C6A;
+  --accent: #1F6FB8;
+  --accent-soft: rgba(31,111,184,.12);
+  --on-accent: #FFFFFF;
+  --ja: #18766A;
+  --on-ja: #FFFFFF;
+  --mis: #D9A441;
+  --on-mis: #13202D;
+  --nee: #B94A3B;
+  --on-nee: #FFFFFF;
+  --leeg: #7A8591;
+  --ja-soft: rgba(24,118,106,.12);
+  --mis-soft: rgba(217,164,65,.18);
+  --nee-soft: rgba(185,74,59,.12);
+  --h0: #EEF3F1;
+  --h1: #D7EAE6;
+  --h2: #B5DAD3;
+  --h3: #8CC5BB;
+  --h4: #5FAEA2;
+  --h5: #18766A;
+  --h6: #0F5A51;
+  --h-ink-lo: #13202D;
+  --h-ink-hi: #FFFFFF;
+  --focus: #1F6FB8;
+  --scrim: rgba(19,32,45,.18);
+  --radius-tag: 8px;
+  --radius-field: 14px;
+  --radius-list: 18px;
+  --radius-card: 24px;
+  --tap-min: 44px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-top: #0F1620;
+    --bg-bottom: #1C1A16;
+    --glass-fill: rgba(255,255,255,.08);
+    --glass-border: rgba(255,255,255,.16);
+    --glass-blur: 20px;
+    --glass-shadow: 0 8px 24px rgba(0,0,0,.30);
+    --glass-rim: inset 0 1px 0 rgba(255,255,255,.10);
+    --glass-fallback: rgba(26,34,44,.94);
+    --surface-solid: rgba(22,30,40,.92);
+    --line: rgba(232,238,245,.10);
+    --line-strong: rgba(232,238,245,.24);
+    --text-primary: #E8EEF5;
+    --text-secondary: #A6B3C1;
+    --accent: #5AA3E6;
+    --accent-soft: rgba(90,163,230,.16);
+    --on-accent: #0F1620;
+    --ja: #3FB3A1;
+    --on-ja: #0F1620;
+    --mis: #E6B95C;
+    --on-mis: #0F1620;
+    --nee: #E57C6B;
+    --on-nee: #0F1620;
+    --leeg: #6B7682;
+    --ja-soft: rgba(63,179,161,.16);
+    --mis-soft: rgba(230,185,92,.16);
+    --nee-soft: rgba(229,124,107,.16);
+    --h0: #18212B;
+    --h1: #1B3433;
+    --h2: #1F4744;
+    --h3: #23665F;
+    --h4: #3FB3A1;
+    --h5: #6FCBBB;
+    --h6: #A3E3D7;
+    --h-ink-lo: #E8EEF5;
+    --h-ink-hi: #0F1620;
+    --focus: #5AA3E6;
+    --scrim: rgba(0,0,0,.40);
+    color-scheme: dark;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--text-primary);
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%) fixed;
+}
+
+/* Glas: alleen op lagen die boven de inhoud zweven */
+.glass {
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-rim);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: var(--glass-fallback); }
+}
+
+/* Stevig: formuliervelden en lange lijsten */
+.solid { background: var(--surface-solid); border: 1px solid var(--line); }
+
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
