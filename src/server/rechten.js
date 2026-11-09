@@ -135,6 +135,18 @@ export function reden(rol, actie, context = {}) {
   return JA;
 }
 
+// De rolcontrole zonder gegevens van het verzoek: heeft deze rol voor deze actie (of dit scherm) een regel, en is
+// een beheersessie organisator van de editie. De API doet dit vóór het valideren, zodat wie de actie nooit mag
+// `geen_toegang` krijgt en geen meldingen over velden (beveiligingsronde fase 19).
+export function rolReden(rol, actie, context = {}) {
+  const c = context;
+  if (TOEGANG.has(actie)) return JA;
+  const regels = actie === 'scherm' ? SCHERMEN[c.scherm] : REGELS[actie];
+  if (!regels || !regels[rol]) return NEE;
+  if (rol === 'organisator' && c.editieId && !c.organisatorVanEditie && !GROEPSBREED.has(actie)) return NEE;
+  return JA;
+}
+
 export function mag(rol, actie, context) {
   return reden(rol, actie, context) === null;
 }

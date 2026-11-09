@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.20, 9 november 2026: AAN-31 kreeg zijn codeplek; een check telt de tests per aanname (fase 19).
 Versie 0.19, 9 november 2026: AAN-72 en AAN-73 (fase 18).
 Versie 0.18, 9 november 2026: AAN-71 (fase 17).
 Versie 0.17, 9 november 2026: AAN-70 (fase 16).
@@ -62,7 +63,7 @@ die test aan en werk je hier de status bij.
 | AAN-28 | Setupcode | Regel | `src/server/acties/opzet.js` (`setupcodeMaken`) | acht tekens, eenmalig, 30 minuten geldig | laag | open |
 | AAN-29 | Na Afgerond | Regel | `src/server/rechten.js` (`reden`) | editie alleen-lezen | laag | open |
 | AAN-30 | Wie het archief ziet | Flow | `src/server/acties/start.js` (`archiefScherm`) | iedere deelnemer met een geldige link van een editie van de groep | laag | open |
-| AAN-31 | Links per editie | Flow | | nieuwe link en pincode per editie; oude links alleen-lezen na Afgerond | midden | open |
+| AAN-31 | Links per editie | Flow | `src/server/acties/editie.js` (`linksMaken`) | nieuwe link en pincode per editie; oude links alleen-lezen na Afgerond | midden | open |
 | AAN-32 | Hashen | Regel | `src/server/crypto.js` (`ITERATIES`) | tokens SHA-256 zonder salt; pincode en wachtwoord iteratieve SHA-256 met salt, aantal iteraties zo dat een login in Apps Script onder 1 seconde blijft (meten in fase 20) | laag | open |
 | AAN-33 | Ingevuld-status | Regel | `src/shared/antwoorden.js` (`ontbreekt`) | minstens één weekend, beide budgetten en reistijd gekozen | laag | open |
 | AAN-34 | Wat koks zien | Flow | `src/server/acties/maaltijden.js` (`eetwensen`) | aantallen per eetwens en vrije tekst zonder namen; allergieën met namen alleen voor de organisator (volgt B-28; zonder deze regel kan ieder lid zich kok maken en alle allergieën met namen zien) | midden | open |
@@ -134,3 +135,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-70 toegevoegd in fase 16 (kamers en carpool); AAN-23 en AAN-24 kregen hun codeplek.
 - 2026-11-09: AAN-71 toegevoegd in fase 17 (startschermen en archief); AAN-12, AAN-29 en AAN-30 kregen hun codeplek.
 - 2026-11-09: AAN-72 en AAN-73 toegevoegd in fase 18 (rondleiding en installatie).
+- 2026-11-09: fase 19 (eindtest): AAN-31 kreeg zijn codeplek; AAN-42, AAN-45 en AAN-68 kregen een test met hun ID; `scripts/check-aannames.mjs` telt ze in `npm run check`.

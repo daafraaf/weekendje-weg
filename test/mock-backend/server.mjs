@@ -8,7 +8,7 @@ import { maakApi } from '../../src/server/api.js';
 import { ALLE_HANDLERS } from '../../src/server/acties/index.js';
 import { maakMemoryStore, maakMemoryLock, maakMemoryEigenschappen, nodeSha256, nodeRandom } from './memorystore.mjs';
 import { setupcodeMaken, beheerlinkAanmaken } from '../../src/server/acties/opzet.js';
-import { maakDemo } from './demo.mjs';
+import { maakVolledigeDemo } from './demo.mjs';
 
 const MAX_BODY = 256 * 1024;
 
@@ -57,8 +57,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const leeg = process.argv.includes('--leeg'); // lege Sheet: probeer de opzetwizard met de setupcode uit de console
   const stapArg = process.argv.find((a) => a.startsWith('--stap='));
   const stap = stapArg ? stapArg.slice(7) : 'invullen';
-  // Met --stap=afrekenen (of afgerond) komen het huisje, een betaalde betaling en de afgehaakte Chris erbij.
-  const demo = maakDemo({ antwoorden: true, posten: true, items: true, stap, afrekening: stap === 'afrekenen' || stap === 'afgerond' });
+  // De demo uit spec §11: editie 2026 afgerond, editie 2027 in de gekozen stap.
+  const demo = maakVolledigeDemo({ stap });
   const { url, setupcode } = await startServer({ port, seed: leeg ? {} : demo.seed });
   const app = process.env.APP_URL || 'http://127.0.0.1:4173/';
   if (leeg) {
@@ -67,6 +67,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   } else {
     console.log(`Nepbackend draait op ${url}/macros/s/${demo.scriptId}/exec`);
     console.log(`Pincode van alle demodeelnemers: ${demo.pin}`);
-    demo.namen.forEach((naam, i) => console.log(`Demolink ${naam}: ${app}${demo.fragment(i)}`));
+    for (const jaar of ['2027', '2026']) {
+      console.log(`Editie ${jaar}${jaar === '2027' ? ` (stap ${stap})` : ' (afgerond)'}:`);
+      for (const { naam, fragment } of demo.links[jaar]) console.log(`  Demolink ${naam}: ${app}${fragment}`);
+    }
   }
 }

@@ -1,50 +1,136 @@
 {
+  "_uitleg": "Demodata volgens spec §11: groep Studievrienden met zes leden en twee edities. Personen staan op voornaam; test/mock-backend/demo.mjs maakt er rijen met ID's van. Blokken in edities.2027 met 'vanaf' horen bij die stap en alle latere. Bedragen in centen.",
   "scriptId": "demo-weekendje-weg-0001",
-  "groep": { "naam": "Studievrienden", "apiVersie": 1, "opgezet": true, "aangemaakt": "2026-11-09T09:00:00Z" },
+  "pin": "123456",
+  "groep": { "naam": "Studievrienden", "apiVersie": 1, "opgezet": true, "aangemaakt": "2025-11-02T10:00:00Z" },
   "leden": [
-    { "id": "lid0000000000001", "voornaam": "Eva", "woonplaats": "Utrecht", "actief": true },
-    { "id": "lid0000000000002", "voornaam": "Anna", "woonplaats": "Zwolle", "actief": true },
-    { "id": "lid0000000000003", "voornaam": "Bram", "woonplaats": "Arnhem", "actief": true },
-    { "id": "lid0000000000004", "voornaam": "Chris", "woonplaats": "Breda", "actief": true }
+    { "id": "lidDemo000000001", "voornaam": "Anne", "woonplaats": "Groningen" },
+    { "id": "lidDemo000000002", "voornaam": "Bas", "woonplaats": "Utrecht" },
+    { "id": "lidDemo000000003", "voornaam": "Daan", "woonplaats": "Eindhoven" },
+    { "id": "lidDemo000000004", "voornaam": "Eva", "woonplaats": "Amsterdam" },
+    { "id": "lidDemo000000005", "voornaam": "Joris", "woonplaats": "Zwolle" },
+    { "id": "lidDemo000000006", "voornaam": "Sanne", "woonplaats": "Maastricht" }
   ],
-  "deelnemers": [
-    { "id": "dln0000000000001", "lidId": "lid0000000000001", "rol": "organisator", "token": "DemoLinksEva0000000001", "pin": "123456" },
-    { "id": "dln0000000000002", "lidId": "lid0000000000002", "rol": "deelnemer", "token": "DemoLinksAnna000000002", "pin": "123456" },
-    { "id": "dln0000000000003", "lidId": "lid0000000000003", "rol": "deelnemer", "token": "DemoLinksBram000000003", "pin": "123456" },
-    { "id": "dln0000000000004", "lidId": "lid0000000000004", "rol": "deelnemer", "token": "DemoLinksChris00000004", "pin": "123456" }
-  ],
-  "stapData": { "invullen": "2027-03-01", "overzicht": "2027-03-03", "accommodatie": "2027-03-15" },
-  "antwoorden": [
-    { "id": "ant0000000000001", "deelnemerId": "dln0000000000001", "ingevuldOp": "2026-11-20T19:12:00Z", "data": {
-      "beschikbaarheid": { "2027-04-09": "nee", "2027-04-16": "ja", "2027-05-14": "ja", "2027-06-11": "ja", "2027-06-18": "ja", "2027-09-24": "ja", "2027-10-01": "misschien" },
-      "budgetVerblijf": 15000, "budgetWeekend": 30000, "woonplaats": "Utrecht", "maxReistijdUur": 3,
-      "verblijf": { "eigenKamer": "lieverWel", "sauna": "ja" },
-      "activiteiten": ["wandelen", "sauna"], "activiteitenEigen": "", "programma": ["uitslapen", "bordspellen"], "programmaEigen": "Graag ergens met een haard",
-      "etenDrinken": ["vegetarisch", "wijn"], "etenDrinkenEigen": "" } },
-    { "id": "ant0000000000003", "deelnemerId": "dln0000000000003", "ingevuldOp": "2026-11-21T08:40:00Z", "data": {
-      "beschikbaarheid": { "2027-04-16": "nee", "2027-05-14": "misschien", "2027-06-11": "ja", "2027-06-18": "ja", "2027-09-24": "ja", "2027-10-01": "ja" },
-      "budgetVerblijf": 10000, "budgetWeekend": 20000, "woonplaats": "Arnhem", "maxReistijdUur": 2,
-      "activiteiten": ["wandelen", "kanoen"], "activiteitenEigen": "Kanoën op de Maas", "programma": ["borrelen"],
-      "etenDrinken": ["ipa"], "etenDrinkenEigen": "Notenallergie" } },
-    { "id": "ant0000000000004", "deelnemerId": "dln0000000000004", "ingevuldOp": "2026-11-22T21:05:00Z", "data": {
-      "beschikbaarheid": { "2027-04-09": "ja", "2027-05-14": "ja", "2027-06-11": "ja", "2027-09-24": "misschien", "2027-10-01": "misschien" },
-      "budgetVerblijf": 20000, "budgetWeekend": 40000, "woonplaats": "Breda", "maxReistijdUur": 4,
-      "activiteiten": ["wandelen", "escaperoom"], "programma": ["uitslapen"], "etenDrinken": ["vegetarisch", "nulbier"] } }
-  ],
-  "posten": [
-    { "id": "pst0000000000001", "soort": "uitgave", "omschrijving": "Boodschappen vrijdag", "bedrag": 18640, "betalerId": "dln0000000000001", "datum": "2027-06-11", "categorie": "boodschappen",
-      "verdeling": { "wijze": "gelijk", "deelnemers": ["dln0000000000001", "dln0000000000002", "dln0000000000003", "dln0000000000004"] }, "aangemaaktDoor": "dln0000000000001" },
-    { "id": "pst0000000000002", "soort": "uitgave", "omschrijving": "Kanoverhuur", "bedrag": 9000, "betalerId": "dln0000000000003", "datum": "2027-06-12", "categorie": "activiteit",
-      "verdeling": { "wijze": "aandeel", "aandelen": { "dln0000000000003": 1, "dln0000000000004": 2 } }, "aangemaaktDoor": "dln0000000000003" }
-  ],
-  "afrekening": {
-    "afgehaakt": "dln0000000000004",
-    "posten": [
-      { "id": "pst0000000000003", "soort": "uitgave", "omschrijving": "Huisje Veluwe", "bedrag": 48000, "betalerId": "dln0000000000001", "datum": "2027-05-01", "categorie": "verblijf",
-        "verdeling": { "wijze": "gelijk", "deelnemers": ["dln0000000000001", "dln0000000000002", "dln0000000000003", "dln0000000000004"] }, "aangemaaktDoor": "dln0000000000001" }
-    ],
-    "betalingen": [
-      { "id": "bet0000000000001", "vanId": "dln0000000000003", "naarId": "dln0000000000001", "bedrag": 10660, "betaaldOp": "2027-06-20T10:00:00Z" }
-    ]
+  "edities": {
+    "2026": {
+      "id": "demo-editie-2026",
+      "titel": "Weekendje weg 2026",
+      "stap": "afgerond",
+      "organisatoren": ["Eva"],
+      "tokens": { "Anne": "Demo2026Anne0000000000", "Bas": "Demo2026Bas00000000000", "Daan": "Demo2026Daan0000000000", "Eva": "Demo2026Eva00000000000", "Joris": "Demo2026Joris000000000", "Sanne": "Demo2026Sanne000000000" },
+      "periodeVan": "2026-01-01", "periodeTot": "2026-12-31", "voorkeursmaanden": [4, 5, 9, 10],
+      "deadline": "2026-04-01T23:59:00+02:00",
+      "stapData": { "invullen": "2026-04-01", "overzicht": "2026-04-03", "accommodatie": "2026-04-15", "voorbereiding": "2026-09-11", "weekend": "2026-10-02", "afrekenen": "2026-10-05", "afgerond": "2026-10-19" },
+      "vastgelegdWeekend": "2026-10-02",
+      "accommodaties": [
+        { "id": "accDemo202600001", "naam": "Boshuis De Veldhoek", "plaats": "Ommen", "link": "https://voorbeeld.nl/veldhoek", "prijsTotaal": 96000, "notitie": "Houtkachel en grote tuin", "geboekt": true }
+      ],
+      "posten": [
+        { "omschrijving": "Boshuis De Veldhoek", "bedrag": 96000, "betaler": "Eva", "datum": "2026-05-01", "categorie": "verblijf", "verdeling": { "wijze": "gelijk", "deelnemers": ["Anne", "Bas", "Daan", "Eva", "Joris", "Sanne"] } },
+        { "omschrijving": "Boodschappen vrijdag", "bedrag": 21000, "betaler": "Bas", "datum": "2026-10-02", "categorie": "boodschappen", "verdeling": { "wijze": "aandeel", "aandelen": { "Anne": 1, "Bas": 1, "Daan": 1, "Eva": 1, "Joris": 2, "Sanne": 1 } } },
+        { "omschrijving": "Kanoverhuur", "bedrag": 9600, "betaler": "Daan", "datum": "2026-10-03", "categorie": "activiteit", "verdeling": { "wijze": "bedrag", "bedragen": { "Daan": 2400, "Eva": 2400, "Joris": 2400, "Sanne": 2400 } } },
+        { "soort": "ontvangst", "omschrijving": "Borg terug", "bedrag": 12000, "betaler": "Eva", "datum": "2026-10-09", "categorie": "verblijf", "verdeling": { "wijze": "gelijk", "deelnemers": ["Anne", "Bas", "Daan", "Eva", "Joris", "Sanne"] } }
+      ],
+      "betalingen": "alle"
+    },
+    "2027": {
+      "id": "demo-editie-2027",
+      "titel": "Weekendje weg 2027",
+      "organisatoren": ["Anne"],
+      "tokens": { "Anne": "Demo2027Anne0000000000", "Bas": "Demo2027Bas00000000000", "Daan": "Demo2027Daan0000000000", "Eva": "Demo2027Eva00000000000", "Joris": "Demo2027Joris000000000", "Sanne": "Demo2027Sanne000000000" },
+      "periodeVan": "2027-01-01", "periodeTot": "2027-12-31", "voorkeursmaanden": [4, 5, 9, 10],
+      "deadline": "2027-03-01T23:59:00+01:00",
+      "stapData": { "invullen": "2027-03-01", "overzicht": "2027-03-03", "accommodatie": "2027-03-15", "voorbereiding": "2027-04-30", "weekend": "2027-05-21", "afrekenen": "2027-05-24", "afgerond": "2027-06-07" },
+      "antwoorden": {
+        "_uitleg": "Clear eerste weekend 21 mei (zes keer ja), gelijke stand op de tweede plek: 16 april en 1 oktober (vijf ja, één misschien).",
+        "Anne": { "beschikbaarheid": { "2027-04-16": "ja", "2027-05-21": "ja", "2027-06-11": "nee", "2027-09-17": "ja", "2027-10-01": "ja" },
+          "budgetVerblijf": 15000, "budgetWeekend": 30000, "woonplaats": "Groningen", "maxReistijdUur": 3,
+          "verblijf": { "eigenKamer": "lieverWel", "sauna": "ja" },
+          "activiteiten": ["wandelen", "sauna"], "activiteitenEigen": "", "programma": ["uitslapen", "bordspellen"], "programmaEigen": "Graag ergens met een haard",
+          "etenDrinken": ["vegetarisch", "wijn"], "etenDrinkenEigen": "" },
+        "Bas": { "beschikbaarheid": { "2027-04-16": "ja", "2027-05-21": "ja", "2027-06-11": "ja", "2027-09-17": "ja", "2027-10-01": "misschien" },
+          "budgetVerblijf": 10000, "budgetWeekend": 20000, "woonplaats": "Utrecht", "maxReistijdUur": 2,
+          "activiteiten": ["wandelen", "kanoen"], "activiteitenEigen": "Kanoën op de Maas", "programma": ["borrelen"],
+          "etenDrinken": ["ipa"], "etenDrinkenEigen": "Notenallergie" },
+        "Daan": { "beschikbaarheid": { "2027-04-16": "misschien", "2027-05-21": "ja", "2027-06-11": "nee", "2027-09-17": "nee", "2027-10-01": "ja" },
+          "budgetVerblijf": 20000, "budgetWeekend": 40000, "woonplaats": "Eindhoven", "maxReistijdUur": 4,
+          "verblijf": { "eigenKamer": "ja" },
+          "activiteiten": ["wandelen", "escaperoom"], "programma": ["uitslapen"], "etenDrinken": ["vegetarisch", "nulbier"] },
+        "Eva": { "beschikbaarheid": { "2027-04-16": "ja", "2027-05-21": "ja", "2027-06-11": "ja", "2027-09-17": "misschien", "2027-10-01": "ja" },
+          "budgetVerblijf": 15000, "budgetWeekend": 30000, "woonplaats": "Amsterdam", "maxReistijdUur": 3,
+          "activiteiten": ["kanoen", "smeden"], "programma": ["kampvuur"], "etenDrinken": ["wijn", "barbecue"] },
+        "Joris": { "beschikbaarheid": { "2027-04-16": "ja", "2027-05-21": "ja", "2027-06-11": "misschien", "2027-09-17": "ja", "2027-10-01": "ja" },
+          "budgetVerblijf": 10000, "budgetWeekend": 30000, "woonplaats": "Zwolle", "maxReistijdUur": 2,
+          "activiteiten": ["fietsen"], "programma": ["borrelen", "film"], "etenDrinken": ["ipa", "whisky"] },
+        "Sanne": { "beschikbaarheid": { "2027-04-16": "ja", "2027-05-21": "ja", "2027-06-11": "nee", "2027-09-17": "misschien", "2027-10-01": "ja" },
+          "budgetVerblijf": 15000, "budgetWeekend": 40000, "woonplaats": "Maastricht", "maxReistijdUur": 4,
+          "verblijf": { "eigenKamer": "maaktNietUit", "sauna": "ja" },
+          "activiteiten": ["sauna", "escaperoom"], "programma": ["rustig"], "etenDrinken": ["veganistisch"], "etenDrinkenEigen": "Geen paddenstoelen" }
+      },
+      "ingevuldPerStap": { "invullen": ["Anne", "Bas", "Daan", "Eva"], "overzicht": ["Anne", "Bas", "Daan", "Eva", "Joris", "Sanne"] },
+      "vastgelegdWeekend": { "vanaf": "accommodatie", "vrijdag": "2027-05-21" },
+      "accommodaties": {
+        "vanaf": "accommodatie",
+        "deelvorm": "stemmen",
+        "lijst": [
+          { "id": "accDemo202700001", "naam": "Hoeve de Kraanvogel", "plaats": "Dwingeloo", "link": "https://voorbeeld.nl/kraanvogel", "prijsTotaal": 138000, "notitie": "Sauna en zes slaapkamers", "stemmen": ["Anne", "Eva", "Sanne"] },
+          { "id": "accDemo202700002", "naam": "Boerderij ’t Hooiveld", "plaats": "Winterswijk", "link": "", "prijsTotaal": 114000, "notitie": "", "stemmen": ["Bas", "Joris"] },
+          { "id": "accDemo202700003", "naam": "Strandhuis Duinzicht", "plaats": "Renesse", "link": "https://voorbeeld.nl/duinzicht", "prijsTotaal": 96000, "notitie": "Vijf minuten van het strand", "stemmen": ["Daan"] }
+        ],
+        "geboektVanaf": "voorbereiding",
+        "geboekt": "accDemo202700001"
+      },
+      "voorbereiding": {
+        "vanaf": "voorbereiding",
+        "boodschappenDefinitief": true,
+        "claims": [
+          { "item": "Pindakaas", "door": ["Bas", "Daan"] },
+          { "item": "Speaker", "door": ["Joris"] },
+          { "item": "Bordspellen", "door": ["Eva"] },
+          { "item": "Koffie", "door": ["Anne"] }
+        ],
+        "boodschappen": [
+          { "naam": "Stokbrood", "categorie": "Brood", "toegevoegdDoor": "Anne" },
+          { "naam": "Bier", "categorie": "Frisdrank, bier en wijn", "toegevoegdDoor": "Joris", "door": ["Joris"] },
+          { "naam": "Tomaten", "categorie": "Groente en fruit", "toegevoegdDoor": "Bas" },
+          { "naam": "Eieren", "categorie": "Zuivel en eieren", "toegevoegdDoor": "Sanne" }
+        ],
+        "kookbeurten": [
+          { "dag": "vr", "soort": "diner", "omschrijving": "Pasta pesto", "koks": ["Bas", "Sanne"], "ingredienten": [{ "naam": "Pesto", "categorie": "Conserven en sauzen" }, { "naam": "Penne", "categorie": "Pasta, rijst en wereldkeuken" }] },
+          { "dag": "za", "soort": "diner", "omschrijving": "Barbecue", "koks": ["Eva"], "ingredienten": [{ "naam": "Vegaburgers", "categorie": "Vlees, vis en vega" }] }
+        ],
+        "kamers": [
+          { "naam": "Hooizolder", "slaapplaatsen": 2, "indeling": ["Anne", "Eva"] },
+          { "naam": "Tuinkamer", "slaapplaatsen": 2, "indeling": ["Bas", "Joris"] },
+          { "naam": "Kleine kamer", "slaapplaatsen": 1, "indeling": ["Daan"] },
+          { "naam": "Zolder", "slaapplaatsen": 1, "indeling": ["Sanne"] }
+        ],
+        "ritten": [
+          { "bestuurder": "Bas", "vertrekplaats": "Utrecht", "vrijePlaatsen": 3, "meerijders": ["Eva", "Joris"] },
+          { "bestuurder": "Daan", "vertrekplaats": "Eindhoven", "vrijePlaatsen": 2, "meerijders": ["Sanne"] }
+        ]
+      },
+      "programma": {
+        "vanaf": "weekend",
+        "punten": [
+          { "dag": "vr", "begin": "17:00", "eind": "", "titel": "Aankomst en borrel", "adres": "Hoeve de Kraanvogel, Dwingeloo", "link": "", "notitie": "Sleutel ligt bij de buren" },
+          { "dag": "za", "begin": "10:30", "eind": "13:00", "titel": "Kanoën op de Reest", "adres": "Kanoverhuur De Reest, Meppel", "link": "https://voorbeeld.nl/kano", "notitie": "" },
+          { "dag": "za", "begin": "15:00", "eind": "17:00", "titel": "Sauna", "adres": "", "link": "", "notitie": "" },
+          { "dag": "zo", "begin": "11:00", "eind": "", "titel": "Opruimen en vertrek", "adres": "", "link": "", "notitie": "Eindschoonmaak zit in de prijs" }
+        ],
+        "posten": [
+          { "omschrijving": "Hoeve de Kraanvogel", "bedrag": 138000, "betaler": "Anne", "datum": "2027-03-20", "categorie": "verblijf", "verdeling": { "wijze": "gelijk", "deelnemers": ["Anne", "Bas", "Daan", "Eva", "Joris", "Sanne"] } },
+          { "omschrijving": "Boodschappen vrijdag", "bedrag": 18640, "betaler": "Bas", "datum": "2027-05-21", "categorie": "boodschappen", "verdeling": { "wijze": "gelijk", "deelnemers": ["Anne", "Bas", "Daan", "Eva", "Joris", "Sanne"] } }
+        ]
+      },
+      "afrekenen": {
+        "vanaf": "afrekenen",
+        "posten": [
+          { "omschrijving": "Kanoverhuur", "bedrag": 9000, "betaler": "Daan", "datum": "2027-05-22", "categorie": "activiteit", "verdeling": { "wijze": "aandeel", "aandelen": { "Daan": 1, "Eva": 1, "Sanne": 1 } } }
+        ],
+        "afgehaakt": "Joris",
+        "betaaldAantal": 2
+      }
+    }
   }
 }

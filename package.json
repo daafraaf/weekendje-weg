@@ -8,6 +8,7 @@
     "check": "node scripts/check.mjs",
     "build": "node scripts/build.mjs",
     "bronregels": "node scripts/check-bronregels.mjs",
+    "aannames": "node scripts/check-aannames.mjs",
     "test": "node --test \"test/unit/*.test.mjs\"",
     "e2e": "playwright test",
     "mock": "node test/mock-backend/server.mjs",

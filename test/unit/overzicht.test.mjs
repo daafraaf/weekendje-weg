@@ -9,7 +9,7 @@ import { maakNepApi } from '../mock-backend/server.mjs';
 import { maakDemo, DEMO_EDITIE_ID } from '../mock-backend/demo.mjs';
 import { nodeSha256 } from '../mock-backend/memorystore.mjs';
 
-const fixture = JSON.parse(readFileSync(new URL('../fixtures/demo.json', import.meta.url), 'utf8'));
+const fixture = JSON.parse(readFileSync(new URL('../fixtures/basis.json', import.meta.url), 'utf8'));
 const WACHTWOORD = 'duinpan-kraanvogel';
 const ANNA = 'dln0000000000002';
 const BRAM = 'dln0000000000003';

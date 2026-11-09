@@ -1,12 +1,165 @@
-// Demodata voor de nepbackend en de tests: groep, leden en deelnemers uit test/fixtures/demo.json.
-// De fixture bewaart de klare tokens en pincodes; hier worden ze gehasht zoals het script dat doet.
+// Demodata voor de nepbackend en de tests.
+// - maakVolledigeDemo: de demo uit spec §11 (test/fixtures/demo.json), voor `npm run mock` en de eindtest.
+// - maakDemo: de kleine testset van vier personen (test/fixtures/basis.json) waar de fasetests op bouwen.
+// De fixtures bewaren de klare tokens en pincodes; hier worden ze gehasht zoals het script dat doet.
 import { readFileSync } from 'node:fs';
 import { hashToken, hashGeheim, maakSalt } from '../../src/server/crypto.js';
 import { nodeSha256, nodeRandom } from './memorystore.mjs';
 import { startItems } from '../../src/server/acties/items.js';
+import { STAPPEN, stapIndex } from '../../src/shared/stappen.js';
+import { STANDAARD_MAALTIJDEN } from '../../src/shared/maaltijden.js';
+import { startlijsten } from '../../src/shared/lijsten.js';
+import { saldi } from '../../src/shared/saldo.js';
+import { afrekening } from '../../src/shared/afrekening.js';
 
-const fixture = JSON.parse(readFileSync(new URL('../fixtures/demo.json', import.meta.url), 'utf8'));
+const fixture = JSON.parse(readFileSync(new URL('../fixtures/basis.json', import.meta.url), 'utf8'));
+const volledig = JSON.parse(readFileSync(new URL('../fixtures/demo.json', import.meta.url), 'utf8'));
 export const DEMO_EDITIE_ID = 'demo-editie-2027';
+export const DEMO_2026_ID = volledig.edities['2026'].id;
+export const DEMO_NAMEN = volledig.leden.map((l) => l.voornaam);
+
+// Een ID van zestien tekens met een vast voorvoegsel, zodat de demo bij elke start dezelfde ID's heeft.
+const idMaker = () => {
+  let n = 0;
+  return (voor) => { n += 1; return `${voor}${String(n).padStart(16 - voor.length, '0')}`; };
+};
+
+// Spec §11: groep Studievrienden, zes leden, editie 2026 (afgerond) en editie 2027 in de gekozen `stap`.
+// Wat bij een stap hoort ("vanaf") geldt ook voor alle latere stappen.
+export function maakVolledigeDemo({ stap = 'invullen' } = {}) {
+  if (!STAPPEN.includes(stap)) throw new Error(`onbekende stap ${stap}`);
+  const f = volledig;
+  const id = idMaker();
+  const aangemaakt = f.groep.aangemaakt;
+  const lidVan = new Map(f.leden.map((l) => [l.voornaam, l.id]));
+  const seed = {
+    Groep: [f.groep],
+    Leden: f.leden.map((l) => ({ ...l, actief: true })),
+    Edities: [], Deelnemers: [], Antwoorden: [], Accommodaties: [], Stemmen: [], Items: [], Claims: [],
+    Maaltijden: [], Koks: [], Programma: [], Kamers: [], Kamerindeling: [], Ritten: [], Meerijders: [], Posten: [], Betalingen: [],
+  };
+  const links = {};
+
+  function deelnemers(e, jaar, ingevuld = []) {
+    const ids = {};
+    f.leden.forEach((l, i) => {
+      const dId = `dln${jaar}${String(i + 1).padStart(9, '0')}`;
+      ids[l.voornaam] = dId;
+      const pinSalt = maakSalt(nodeRandom);
+      seed.Deelnemers.push({
+        id: dId, editieId: e.id, lidId: l.id, rol: e.organisatoren.includes(l.voornaam) ? 'organisator' : 'deelnemer',
+        tokenHash: hashToken(nodeSha256, e.tokens[l.voornaam]), pinSalt, pinHash: hashGeheim(nodeSha256, f.pin, pinSalt),
+        afgehaakt: false, ingevuld: ingevuld.includes(l.voornaam), ingevuldOp: ingevuld.includes(l.voornaam) ? `${jaar - 1}-12-0${(i % 6) + 1}T20:00:00Z` : '',
+      });
+    });
+    links[jaar] = f.leden.map((l) => ({ naam: l.voornaam, fragment: `#b=${f.scriptId}&t=${e.tokens[l.voornaam]}` }));
+    return ids;
+  }
+  const editieRij = (e, jaar, velden) => ({
+    id: e.id, jaar, titel: e.titel, stapData: e.stapData, periodeVan: e.periodeVan, periodeTot: e.periodeTot,
+    voorkeursmaanden: e.voorkeursmaanden, deadline: e.deadline, blokken: { etenDrinken: true, activiteiten: true, programma: true, samenwerken: false },
+    lijsten: startlijsten(), vastgelegdWeekend: '', deelvorm: 'info', geboektAccommodatieId: '', boodschappenDefinitief: false,
+    versie: 1, bijgewerkt: aangemaakt, ...velden,
+  });
+  const naarIds = (ids, verdeling) => {
+    if (verdeling.wijze === 'gelijk') return { wijze: 'gelijk', deelnemers: verdeling.deelnemers.map((n) => ids[n]) };
+    const veld = verdeling.wijze === 'aandeel' ? 'aandelen' : 'bedragen';
+    return { wijze: verdeling.wijze, [veld]: Object.fromEntries(Object.entries(verdeling[veld]).map(([n, w]) => [ids[n], w])) };
+  };
+  const post = (e, ids, p) => ({
+    id: id('pst'), editieId: e.id, soort: p.soort || 'uitgave', omschrijving: p.omschrijving, bedrag: p.bedrag, betalerId: ids[p.betaler],
+    datum: p.datum, categorie: p.categorie, verdeling: naarIds(ids, p.verdeling), aangemaaktDoor: ids[p.betaler],
+    aangepastDoorOrganisator: false, versie: 1, bijgewerkt: aangemaakt,
+  });
+  // De betalingen die de afrekening nu voorstelt (AAN-35), met de namen voor de volgorde.
+  const voorstel = (e, ids) => {
+    const naamVan = (dId) => Object.keys(ids).find((n) => ids[n] === dId) || '';
+    const posten = seed.Posten.filter((p) => p.editieId === e.id);
+    const betaald = seed.Betalingen.filter((b) => b.editieId === e.id);
+    return afrekening(saldi(posten, betaald, { deelnemers: Object.values(ids), naamVan }), naamVan);
+  };
+  const betaal = (e, b, op) => seed.Betalingen.push({ id: id('bet'), editieId: e.id, ...b, betaaldOp: op });
+
+  // Editie 2026: afgerond, weekend 2 tot en met 4 oktober, geboekte accommodatie, posten met alle drie de
+  // verdeelwijzen en een ontvangst, alle betalingen betaald.
+  const e26 = f.edities['2026'];
+  const ids26 = deelnemers(e26, 2026, f.leden.map((l) => l.voornaam));
+  seed.Edities.push(editieRij(e26, 2026, { stap: e26.stap, vastgelegdWeekend: e26.vastgelegdWeekend, deelvorm: 'geboekt', geboektAccommodatieId: e26.accommodaties.find((a) => a.geboekt).id, boodschappenDefinitief: true }));
+  for (const a of e26.accommodaties) seed.Accommodaties.push({ id: a.id, editieId: e26.id, naam: a.naam, plaats: a.plaats, link: a.link, prijsTotaal: a.prijsTotaal, notitie: a.notitie, versie: 1 });
+  for (const p of e26.posten) seed.Posten.push(post(e26, ids26, p));
+  for (const b of voorstel(e26, ids26)) betaal(e26, b, '2026-10-12T18:00:00Z');
+
+  // Editie 2027 in de gekozen stap.
+  const e27 = f.edities['2027'];
+  const vanaf = (s) => stapIndex(stap) >= stapIndex(s);
+  const ingevuld = vanaf('overzicht') ? e27.ingevuldPerStap.overzicht : e27.ingevuldPerStap.invullen;
+  const ids = deelnemers(e27, 2027, ingevuld);
+  const acc = e27.accommodaties;
+  const vb = e27.voorbereiding;
+  seed.Edities.push(editieRij(e27, 2027, {
+    stap,
+    vastgelegdWeekend: vanaf(e27.vastgelegdWeekend.vanaf) ? e27.vastgelegdWeekend.vrijdag : '',
+    deelvorm: vanaf(acc.geboektVanaf) ? 'geboekt' : vanaf(acc.vanaf) ? acc.deelvorm : 'info',
+    geboektAccommodatieId: vanaf(acc.geboektVanaf) ? acc.geboekt : '',
+    boodschappenDefinitief: vanaf(vb.vanaf) && vb.boodschappenDefinitief,
+  }));
+  for (const naam of ingevuld) {
+    seed.Antwoorden.push({ id: id('ant'), editieId: e27.id, deelnemerId: ids[naam], data: e27.antwoorden[naam], versie: 1, bijgewerkt: aangemaakt });
+  }
+  if (vanaf(acc.vanaf)) {
+    for (const a of acc.lijst) {
+      seed.Accommodaties.push({ id: a.id, editieId: e27.id, naam: a.naam, plaats: a.plaats, link: a.link, prijsTotaal: a.prijsTotaal, notitie: a.notitie, versie: 1 });
+      for (const naam of a.stemmen) seed.Stemmen.push({ id: id('stm'), editieId: e27.id, deelnemerId: ids[naam], accommodatieId: a.id });
+    }
+    // KOK-1: het vastleggen van het weekend maakt de standaardmaaltijden.
+    for (const [dag, soort] of STANDAARD_MAALTIJDEN) seed.Maaltijden.push({ id: id('mlt'), editieId: e27.id, dag, soort, omschrijving: '' });
+  }
+  if (vanaf(vb.vanaf)) {
+    const item = (velden) => { const rij = { id: id('itm'), editieId: e27.id, maaltijdId: '', toegevoegdDoor: '', afgevinkt: false, versie: 1, ...velden }; seed.Items.push(rij); return rij; };
+    const claim = (itemId, namen) => namen.forEach((n, i) => seed.Claims.push({ id: id('clm'), itemId, deelnemerId: ids[n], gemaakt: `2027-04-2${i}T12:00:00Z` }));
+    const start = startItems(seed.Edities[1].lijsten).map((i) => item(i));
+    for (const c of vb.claims) claim(start.find((i) => i.naam === c.item).id, c.door);
+    for (const b of vb.boodschappen) claim(item({ soort: 'boodschap', naam: b.naam, categorie: b.categorie, toegevoegdDoor: ids[b.toegevoegdDoor] }).id, b.door || []);
+    for (const k of vb.kookbeurten) {
+      const m = seed.Maaltijden.find((x) => x.editieId === e27.id && x.dag === k.dag && x.soort === k.soort);
+      m.omschrijving = k.omschrijving;
+      for (const n of k.koks) seed.Koks.push({ id: id('kok'), maaltijdId: m.id, deelnemerId: ids[n] });
+      for (const ing of k.ingredienten) item({ soort: 'boodschap', naam: ing.naam, categorie: ing.categorie, maaltijdId: m.id, toegevoegdDoor: ids[k.koks[0]] });
+    }
+    for (const k of vb.kamers) {
+      const kamerId = id('kmr');
+      seed.Kamers.push({ id: kamerId, editieId: e27.id, naam: k.naam, slaapplaatsen: k.slaapplaatsen });
+      for (const n of k.indeling) seed.Kamerindeling.push({ id: id('kin'), kamerId, deelnemerId: ids[n] });
+    }
+    for (const r of vb.ritten) {
+      const ritId = id('rit');
+      seed.Ritten.push({ id: ritId, editieId: e27.id, bestuurderId: ids[r.bestuurder], vertrekplaats: r.vertrekplaats, vrijePlaatsen: r.vrijePlaatsen });
+      for (const n of r.meerijders) seed.Meerijders.push({ id: id('mrd'), ritId, deelnemerId: ids[n] });
+    }
+  }
+  if (vanaf(e27.programma.vanaf)) {
+    for (const p of e27.programma.punten) seed.Programma.push({ id: id('prg'), editieId: e27.id, ...p });
+    for (const p of e27.programma.posten) seed.Posten.push(post(e27, ids, p));
+  }
+  const af = e27.afrekenen;
+  if (vanaf(af.vanaf)) {
+    for (const p of af.posten) seed.Posten.push(post(e27, ids, p));
+    // EDI-9, §11: één afgehaakte deelnemer die zijn aandeel in de eerdere posten houdt. Zoals afhakenMarkeren:
+    // zijn claims vervallen (AAN-11) en hij gaat uit kamer en rit (§7.11.4).
+    const weg = ids[af.afgehaakt];
+    seed.Deelnemers.find((d) => d.id === weg).afgehaakt = true;
+    seed.Claims = seed.Claims.filter((c) => c.deelnemerId !== weg);
+    seed.Kamerindeling = seed.Kamerindeling.filter((k) => k.deelnemerId !== weg);
+    seed.Meerijders = seed.Meerijders.filter((m) => m.deelnemerId !== weg);
+    // Open en betaalde betalingen: de eerste voorgestelde betalingen zijn al gedaan.
+    for (let i = 0; i < af.betaaldAantal; i += 1) betaal(e27, voorstel(e27, ids)[0], `2027-05-2${5 + i}T09:00:00Z`);
+  }
+  for (const tab of Object.keys(seed)) if (!seed[tab].length) delete seed[tab];
+  return {
+    seed, scriptId: f.scriptId, pin: f.pin, namen: DEMO_NAMEN, links, deelnemerIds: { 2026: ids26, 2027: ids },
+    tokens: { 2026: e26.tokens, 2027: e27.tokens }, ledenIds: Object.fromEntries(lidVan),
+  };
+}
 
 // opties.blokkades: aantal blokkades dat de organisator (eerste deelnemer) al heeft gehad.
 // opties.antwoorden: de demoantwoorden uit de fixture (Anna vult niets in); `npm run mock` zet ze aan.

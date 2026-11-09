@@ -9,6 +9,7 @@ const pw = path.join(root, 'node_modules', '@playwright', 'test', 'cli.js');
 
 const stappen = [
   ['bronregels', [node, 'scripts/check-bronregels.mjs']],
+  ['aannames', [node, 'scripts/check-aannames.mjs']],
   ['unittests', [node, '--test', 'test/unit/*.test.mjs']],
   ['build', [node, 'scripts/build.mjs']],
   ['playwright', [node, pw, 'test']],

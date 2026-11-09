@@ -95,6 +95,8 @@ const voornaamVan = (store, lidId) => { const l = store.vind('Leden', lidId); re
 
 // TOE-8: link en pincode komen alleen in dit antwoord, in klare tekst; in de Sheet staan hashes.
 // AAN-47: alleen deelnemers zonder link krijgen er een; wie er al een heeft, houdt die (vernieuwen is een eigen actie).
+// AAN-31: een link en pincode horen bij de deelnemersrij van één editie; een nieuwe editie krijgt nieuwe rijen
+// en dus nieuwe links. De oude link blijft werken en is na Afgerond alleen-lezen (rechten.js, AAN-29).
 export const linksMaken = {
   schema: v.object({}),
   uitvoeren({ store, editieId, deps }) {

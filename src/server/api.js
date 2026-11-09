@@ -1,7 +1,7 @@
 // API-contract van het doorgeefluik (spec §3, §5.3, §7.16). Eén logica voor Apps Script en de
 // nepbackend; de adapters leveren store, slot, willekeur, sha256 en klok.
 import { ApiFout, foutAntwoord } from './fouten.js';
-import { reden, ALLE_SCHERMEN } from './rechten.js';
+import { reden, rolReden, ALLE_SCHERMEN } from './rechten.js';
 import { valideer, v } from './validatie.js';
 import { hashToken } from './crypto.js';
 
@@ -123,6 +123,8 @@ export function maakApi(deps) {
       if (!ALLE_SCHERMEN.includes(ruweData.naam)) throw new ApiFout('ongeldig', 'Veld data.naam: onbekend scherm.');
       ctx.scherm = ruweData.naam;
     }
+    const rol = rolReden(sessie.rol, verzoek.actie, ctx);
+    if (rol) throw new ApiFout(rol);
     const data = impl && impl.schema ? valideer(impl.schema, ruweData) : ruweData;
     const h = { store, sessie, editie, editieId, data, ctx, deps };
     if (impl && impl.context) Object.assign(ctx, impl.context(h));

@@ -20,7 +20,9 @@ const test = basis.extend({
       if (oud && JSON.parse(body).actie === 'status') {
         return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { apiVersie: 2, opgezet: false } }) });
       }
-      const antwoord = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body });
+      // Een gesloten verbinding (ECONNRESET) krijgt één nieuwe poging; is de nepserver al dicht, dan stopt het verzoek.
+      const antwoord = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body }).catch(() => fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body })).catch(() => null);
+      if (!antwoord) return route.abort().catch(() => {});
       return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: await antwoord.text() });
     });
     await use({ ...nep, demo });

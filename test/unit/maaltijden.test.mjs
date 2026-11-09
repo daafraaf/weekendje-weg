@@ -62,7 +62,7 @@ test('KOK-1 AAN-18: bij het vastleggen van het weekend staan zes maaltijden klaa
   nep.store.nieuwVerzoek();
 });
 
-test('KOK-2: kok worden en stoppen, meerdere koks per maaltijd, twee keer aanmelden geeft één rij', () => {
+test('KOK-2 AAN-68: kok worden en stoppen, meerdere koks per maaltijd, twee keer aanmelden geeft één rij, afgehaakt kookt niet', () => {
   const { anna, bram, chris, org, maaltijd, scherm, nep } = metWeekend();
   const m = maaltijd('za', 'diner').id;
   assert.equal(anna('kokWorden', { maaltijdId: m }).ok, true);

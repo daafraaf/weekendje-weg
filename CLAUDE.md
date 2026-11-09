@@ -25,11 +25,12 @@ stijlmiddel, geen "niet X, maar Y", geen AI-clichés.
 Fase 0 legt de scripts vast in `package.json`; vul deze lijst aan als er een bijkomt.
 
 - `npm ci` en `npx playwright install`: eenmalig, door David vóór de run
-- `npm run check`: bronregels, unittests, build en Playwright tegen de nepbackend; eindigt met
+- `npm run check`: bronregels, aannames (`npm run aannames`: elke AAN-xx in de code en in een testnaam),
+  unittests, build en Playwright tegen de nepbackend; eindigt met
   één groene of rode regel. Groen vóór elke commit (NFR-13)
-- `npm run mock`: nepbackend met de demodata op localhost; toont de demolinks in de console,
-  pincode `123456`; met demoantwoorden van drie van de vier deelnemers, `-- --stap=overzicht` zet
-  de demo-editie in een andere stap
+- `npm run mock`: nepbackend met de demo uit spec §11 (`test/fixtures/demo.json`) op localhost;
+  toont de demolinks van 2027 en 2026 in de console, pincode `123456`; `-- --stap=overzicht` zet
+  editie 2027 in een andere stap
 - `npm run mock -- --leeg`: nepbackend met lege Sheet en een setupcode in de console, voor de opzetwizard
 - `npm run vakanties`: haalt de schoolvakanties op en schrijft `data/vakanties.json` (AAN-13)
 - `clasp deploy -i <id>`: alleen in fase 20, samen met David. Altijd een nieuwe versie op de
@@ -89,6 +90,9 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
   maak tokens met `maakToken(nodeRandom)`.
 - Demo met antwoorden: `maakDemo({ antwoorden: true, stap })` en `startNep(context, { antwoorden: true })`;
   standaard staan er geen antwoorden in, omdat oudere tests `lees('Antwoorden')[0]` gebruiken.
+- Twee demosets: `maakDemo` (`test/fixtures/basis.json`, vier personen) voor de fasetests en
+  `maakVolledigeDemo({ stap })` (§11, zes personen) voor mock en eindtest; e2e daarop met `startDemo(context, { stap, als, beheer })`.
+- Een rol zonder regel voor een actie krijgt `geen_toegang` vóór het valideren (`rolReden` in `rechten.js`).
 - Breedtes van balken via `el.style.width` (CSSOM); een `style`-attribuut blokkeert de CSP.
 - Leesschermen die voor deelnemer en beheer werken (`voortgang`, `overzicht`) kiezen zonder
   `editieId` de nieuwste eigen editie van de organisator en geven `edities` mee voor de kiezer.
@@ -96,3 +100,6 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 ## Valkuilen
 
 Leeg bij de start. Elke fout die twee keer gebeurt, komt hier.
+
+- ECONNRESET in een e2e-test: een `context.route`-doorsturer zonder `.catch` faalt als de nepserver
+  sluit terwijl de pagina nog vraagt. Gebruik altijd de vorm uit `koppelNep` (nieuwe poging, dan `route.abort()`).

@@ -147,7 +147,7 @@ test('GRP-1 AAN-28: Setupcode tonen toont acht tekens en bewaart alleen de hash;
   assert.match(meldingen.at(-1), /al opgezet/);
 });
 
-test('GRP-1: Beheerlink maken toont het fragment, Beheerwachtwoord resetten maakt het wachtwoord leeg, Uitleg noemt de nieuwe versie', async () => {
+test('GRP-1 AAN-45: Beheerlink maken toont het fragment, Beheerwachtwoord resetten maakt het wachtwoord leeg, Uitleg noemt de nieuwe versie', async () => {
   const { ctx, meldingen } = await laad();
   vm.runInContext('menuSetupcode()', ctx);
   const code = codeUit(meldingen[0]);
