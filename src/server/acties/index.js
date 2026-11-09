@@ -5,9 +5,10 @@ import { beheertoegangHandlers } from './beheertoegang.js';
 import { opzetHandlers } from './opzet.js';
 import { ledenHandlers, beheerScherm } from './leden.js';
 import { editieHandlers } from './editie.js';
+import { antwoordenHandlers, formulierScherm } from './antwoorden.js';
 
 // Leesactie `scherm`: per naam één functie; schermen zonder functie bestaan nog niet.
-const SCHERM_UITVOEREN = { beheer: beheerScherm };
+const SCHERM_UITVOEREN = { beheer: beheerScherm, formulier: formulierScherm };
 const scherm = {
   uitvoeren(h) {
     const f = SCHERM_UITVOEREN[h.ctx.scherm];
@@ -16,4 +17,4 @@ const scherm = {
   },
 };
 
-export const ALLE_HANDLERS = { ...toegangHandlers, ...beheertoegangHandlers, ...opzetHandlers, ...ledenHandlers, ...editieHandlers, scherm };
+export const ALLE_HANDLERS = { ...toegangHandlers, ...beheertoegangHandlers, ...opzetHandlers, ...ledenHandlers, ...editieHandlers, ...antwoordenHandlers, scherm };

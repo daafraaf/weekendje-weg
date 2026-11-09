@@ -20,7 +20,11 @@ export function maakDemo({ blokkades = 0 } = {}) {
     Groep: [fixture.groep],
     Leden: fixture.leden,
     // Een minimale editie, zodat sessies van deze deelnemers door de API worden herkend.
-    Edities: [{ id: DEMO_EDITIE_ID, jaar: 2027, titel: 'Weekendje weg 2027', stap: 'invullen', versie: 1, bijgewerkt: fixture.groep.aangemaakt }],
+    Edities: [{
+      id: DEMO_EDITIE_ID, jaar: 2027, titel: 'Weekendje weg 2027', stap: 'invullen', versie: 1, bijgewerkt: fixture.groep.aangemaakt,
+      periodeVan: '2027-01-01', periodeTot: '2027-12-31', voorkeursmaanden: [4, 5, 9, 10], deadline: '2099-01-01T23:59:00+01:00',
+      blokken: { etenDrinken: true, activiteiten: true, programma: true, samenwerken: false }, lijsten: {},
+    }],
     Deelnemers: deelnemers,
   };
   if (blokkades) seed.Pogingen = [{ sleutel: deelnemers[0].tokenHash, fout: 0, geblokkeerdTot: '', blokkades }];

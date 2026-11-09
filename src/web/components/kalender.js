@@ -14,7 +14,7 @@ const STER = 'm12 4 2.4 4.9 5.3.8-3.9 3.8.9 5.3L12 16.3l-4.7 2.5.9-5.3-3.9-3.8 5
 
 const status = (waarde, klasse = '') => h('span', { class: `st ${KLASSE[waarde]} st-sm ${klasse}`.trim(), role: 'img', 'aria-label': LABEL[waarde] }, SYMBOOL[waarde]);
 
-export function maakKalender({ periodeVan, periodeTot, voorkeursmaanden = [], waarden = {}, bijWijziging = () => {}, vakanties = vakantieBestand }) {
+export function maakKalender({ periodeVan, periodeTot, voorkeursmaanden = [], waarden = {}, bijWijziging = () => {}, vakanties = vakantieBestand, alleenLezen = false }) {
   let huidig = { ...waarden };
   const weekenden = vrijdagen(periodeVan, periodeTot);
   const weekendSet = new Set(weekenden);
@@ -66,7 +66,7 @@ export function maakKalender({ periodeVan, periodeTot, voorkeursmaanden = [], wa
     const dagen = [v, datumPlus(v, 1), datumPlus(v, 2)];
     const nummers = h('span', { class: 'nums', 'aria-hidden': 'true' }, dagen.map((d) => h('span', { class: maandVan(d) === maandVan(v) ? 'bd' : 'bd o' }, String(dagVan(d)))));
     const symbool = h('span', { class: 'bs', 'aria-hidden': 'true' });
-    const knop = h('button', { type: 'button', onclick: () => wijzig(zetWaarde(huidig, v, volgendeWaarde(huidig[v]))) },
+    const knop = h('button', { type: 'button', disabled: alleenLezen, onclick: () => wijzig(zetWaarde(huidig, v, volgendeWaarde(huidig[v]))) },
       nummers, symbool,
       k.regios.length ? h('span', { class: 'br', 'aria-hidden': 'true' }, k.regios.map((r) => REGIO_LETTER[r]).join(' ')) : null,
       k.feestdagen.length || k.langWeekend ? h('span', { class: 'bm', 'aria-hidden': 'true' }) : null,
@@ -107,7 +107,7 @@ export function maakKalender({ periodeVan, periodeTot, voorkeursmaanden = [], wa
       h('div', { class: 'mh' },
         h('h3', { class: 't-h3' }, titel),
         pref ? h('span', { class: 'prefmerk' }, icoon(STER, 16), 'voorkeursmaand') : null,
-        hele),
+        alleenLezen ? null : hele),
       keuze,
       h('div', { class: 'wd', 'aria-hidden': 'true' }, WEEKDAGEN.map((d, i) => h('span', { class: i >= 4 ? 'we' : '' }, d))),
       rijen,
@@ -131,7 +131,7 @@ export function maakKalender({ periodeVan, periodeTot, voorkeursmaanden = [], wa
     h('div', { class: 'solid panel kal-samen' }, kop, teller, strip),
     legenda,
     blad,
-    h('p', { class: 'hint' }, 'Tik op een weekend om te wisselen: leeg, ja, misschien, nee. Met het toetsenbord werkt spatie of enter.'));
+    alleenLezen ? null : h('p', { class: 'hint' }, 'Tik op een weekend om te wisselen: leeg, ja, misschien, nee. Met het toetsenbord werkt spatie of enter.'));
   ververs();
   strip.setAttribute('aria-label', 'Jaaroverzicht van je weekenden');
   return el;

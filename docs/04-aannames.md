@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.9, 9 november 2026: AAN-51 en AAN-52 (fase 7); AAN-50 vervallen.
 Versie 0.8, 9 november 2026: AAN-49 en AAN-50 (fase 6).
 Versie 0.7, 9 november 2026: AAN-46 t/m AAN-48 (fase 5).
 Versie 0.6, 9 november 2026: AAN-43 t/m AAN-45 (fase 4).
@@ -53,7 +54,7 @@ die test aan en werk je hier de status bij.
 | AAN-30 | Wie het archief ziet | Flow | | iedere deelnemer met een geldige link van een editie van de groep | laag | open |
 | AAN-31 | Links per editie | Flow | | nieuwe link en pincode per editie; oude links alleen-lezen na Afgerond | midden | open |
 | AAN-32 | Hashen | Regel | `src/server/crypto.js` (`ITERATIES`) | tokens SHA-256 zonder salt; pincode en wachtwoord iteratieve SHA-256 met salt, aantal iteraties zo dat een login in Apps Script onder 1 seconde blijft (meten in fase 20) | laag | open |
-| AAN-33 | Ingevuld-status | Regel | | minstens één weekend, beide budgetten en reistijd gekozen | laag | open |
+| AAN-33 | Ingevuld-status | Regel | `src/shared/antwoorden.js` (`ontbreekt`) | minstens één weekend, beide budgetten en reistijd gekozen | laag | open |
 | AAN-34 | Wat koks zien | Flow | | aantallen per eetwens en vrije tekst zonder namen; allergieën met namen alleen voor de organisator (volgt B-28; zonder deze regel kan ieder lid zich kok maken en alle allergieën met namen zien) | midden | open |
 | AAN-35 | Afrekening goed genoeg in plaats van minimaal | Regel | | eerst gelijke bedragen koppelen, daarna grootste schuldenaar naar grootste schuldeiser | laag | open |
 | AAN-36 | Wie de pincode kiest | Regel | `src/server/crypto.js` (`maakPincode`) | het script kiest willekeurig zes cijfers; de organisator verstuurt hem alleen (F-38 zei "de organisator voegt een wachtwoordje toe") | laag | open |
@@ -70,7 +71,9 @@ die test aan en werk je hier de status bij.
 | AAN-47 | Links maken voor wie nog geen link heeft | Regel | `src/server/acties/editie.js` (`linksMaken`) | `linksMaken` maakt alleen voor deelnemers zonder link; wie er al een heeft houdt die, vernieuwen gaat via `linkVernieuwen` en `pincodeVernieuwen` | laag | open |
 | AAN-48 | Tijdstip van de deadline | Regel | `src/shared/editie.js` (`deadlineIso`) | de organisator kiest een dag; de deadline eindigt om 23:59 Amsterdamse tijd (zomer- of wintertijd) | laag | open |
 | AAN-49 | Grenzen van een schooljaar | Regel | `src/shared/vakanties.js` (`schooljaarBekend`) | een schooljaar "2026-2027" geldt van 1 september 2026 tot en met 31 augustus 2027; daarbuiten toont de kalender "Schoolvakanties nog niet bekend" | laag | open |
-| AAN-50 | Kalender als eigen scherm tot fase 7 | Flow | `src/web/app.js` (route `kalender`) | de kalender staat voorlopig op `#/kalender` met voorbeeldperiode 2027 en bewaart niets; fase 7 hangt hem in het formulier | laag | open |
+| AAN-50 | Kalender als eigen scherm tot fase 7 | Flow | `src/web/app.js` (route `kalender`) | de kalender staat voorlopig op `#/kalender` met voorbeeldperiode 2027 en bewaart niets; fase 7 hangt hem in het formulier | laag | vervallen |
+| AAN-51 | Keuze weghalen in de drieknop | Flow | `src/web/components/drieknop.js` | nogmaals tikken op de gekozen knop haalt de keuze weg; een ontbrekende sleutel betekent niet ingevuld (§5.2) en zo is een verblijfswens ook weer leeg te maken | laag | open |
+| AAN-52 | Namen van de verblijfswensen | Regel | `src/shared/antwoorden.js` (`VERBLIJF_WENSEN`) | de spec geeft de acht sleutels maar geen teksten; de labels zijn Eigen kamer, Eigen badkamer, Sauna, Bubbelbad, Barbecue, Buitenruimte, Schoonmaak inbegrepen, Linnengoed inbegrepen, met de opties Ja, Nee, Maakt niet uit (eigen kamer: Ja, Liever wel, Maakt niet uit) | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -87,3 +90,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-43 t/m AAN-45 toegevoegd in fase 4 (groep opzetten); AAN-41 vervallen.
 - 2026-11-09: AAN-46 t/m AAN-48 toegevoegd in fase 5 (editie aanmaken en uitnodigen).
 - 2026-11-09: AAN-49 en AAN-50 toegevoegd in fase 6 (kalender); AAN-13, AAN-15 en AAN-17 kregen hun codeplek.
+- 2026-11-09: AAN-51 en AAN-52 toegevoegd in fase 7 (invulformulier); AAN-50 vervallen; AAN-33 kreeg zijn codeplek.

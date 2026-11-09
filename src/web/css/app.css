@@ -217,3 +217,24 @@ a:hover { text-decoration: underline; }
 .strip .col { display: flex; flex-direction: column; gap: 3px; align-items: stretch; }
 .strip .ml { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-align: center; margin-top: 2px; }
 .sq { height: 9px; border-radius: 3px; }
+
+/* Invulformulier (FRM-1 t/m FRM-4, FRM-8, FRM-9) */
+.formulier { display: flex; flex-direction: column; gap: 16px; }
+.form-blok { display: flex; flex-direction: column; gap: 14px; }
+.schuif-kop { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.range { width: 100%; accent-color: var(--accent); height: 32px; margin: 0; }
+.drie { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.drie button { min-height: 50px; padding: 0 6px; border-radius: 14px; border: 1.5px solid var(--line-strong); background: var(--surface-solid); display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; font-size: 14px; }
+.drie button[aria-pressed="true"].ja { background: var(--ja); border-color: var(--ja); color: var(--on-ja); }
+.drie button[aria-pressed="true"].mis { background: var(--mis); border-color: var(--mis); color: var(--on-mis); }
+.drie button[aria-pressed="true"].nee { background: var(--nee); border-color: var(--nee); color: var(--on-nee); }
+.drie button[aria-pressed="true"].neutraal { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.drie button[disabled] { opacity: .6; cursor: default; }
+.wens { display: flex; flex-direction: column; gap: 8px; }
+.wens-naam { font-weight: 600; }
+.form-onder { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-radius: 22px; padding: 12px 14px 12px 16px; }
+.form-onder .btn { width: auto; flex: 0 0 auto; margin-left: auto; }
+.form-tekst { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.form-status { font-weight: 650; margin: 0; }
+.form-status.klaar { color: var(--ja); }
+.form-toast { margin: 0; color: var(--text-secondary); min-height: 19px; }

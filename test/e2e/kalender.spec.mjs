@@ -1,15 +1,18 @@
 import { test as basis, expect } from '@playwright/test';
-import { logIn } from './hulp.mjs';
+import { startNep } from './hulp.mjs';
 
+// De kalender is sinds fase 7 het eerste blok van het formulier (AAN-50 vervalt); de test praat met de nepbackend.
 const test = basis.extend({
-  context: async ({ context }, use) => { await logIn(context); await use(context); },
+  nep: async ({ context }, use) => { const nep = await startNep(context); await use(nep); nep.server.close(); },
+  page: async ({ page, nep }, use) => { void nep; await use(page); },
 });
+test.use({ serviceWorkers: 'block' });
 
 const april = (page) => page.getByRole('region', { name: 'April 2027' });
 const weekend = (page, naam) => april(page).getByRole('button', { name: new RegExp(`^${naam}`) });
 
 test('KAL-1 KAL-3 AAN-50: april 2027 met voorkeursmarkering en blanco weekenden', async ({ page }) => {
-  await page.goto('/#/kalender');
+  await page.goto('/#/formulier');
   await expect(april(page)).toBeVisible();
   await expect(april(page).locator('.prefmerk')).toHaveText('voorkeursmaand');
   await expect(page.getByRole('region', { name: 'Maart 2027' }).locator('.prefmerk')).toHaveCount(0);
@@ -19,7 +22,7 @@ test('KAL-1 KAL-3 AAN-50: april 2027 met voorkeursmarkering en blanco weekenden'
 });
 
 test('KAL-4: meivakantie per regio en Koningsdag onder april', async ({ page }) => {
-  await page.goto('/#/kalender');
+  await page.goto('/#/formulier');
   await expect(april(page).getByText('Meivakantie, regio noord, midden, zuid: 24 apr tot en met 2 mei')).toBeVisible();
   await expect(april(page).getByText('Koningsdag: 27 apr')).toBeVisible();
   await expect(weekend(page, '23 apr')).toHaveAttribute('aria-label', /schoolvakantie regio noord, midden, zuid/);
@@ -27,7 +30,7 @@ test('KAL-4: meivakantie per regio en Koningsdag onder april', async ({ page }) 
 });
 
 test('KAL-2 AAN-17: tikken doorloopt de vier waarden met kleur en symbool', async ({ page }) => {
-  await page.goto('/#/kalender');
+  await page.goto('/#/formulier');
   const knop = weekend(page, '9 apr');
   const verwacht = [['ja', '✓'], ['misschien', '~'], ['nee', '✕'], ['niet ingevuld', '']];
   for (const [label, symbool] of verwacht) {
@@ -39,7 +42,7 @@ test('KAL-2 AAN-17: tikken doorloopt de vier waarden met kleur en symbool', asyn
 });
 
 test('KAL-2: het toetsenbord wisselt met spatie en enter', async ({ page }) => {
-  await page.goto('/#/kalender');
+  await page.goto('/#/formulier');
   const knop = weekend(page, '16 apr');
   await knop.focus();
   await page.keyboard.press('Space');
@@ -50,7 +53,7 @@ test('KAL-2: het toetsenbord wisselt met spatie en enter', async ({ page }) => {
 });
 
 test('KAL-7: Hele maand vult alleen de lege weekenden', async ({ page }) => {
-  await page.goto('/#/kalender');
+  await page.goto('/#/formulier');
   const weekenden = april(page).locator('.band');
   await weekend(page, '9 apr').click(); // ja
   await weekend(page, '9 apr').click(); // misschien
@@ -62,13 +65,13 @@ test('KAL-7: Hele maand vult alleen de lege weekenden', async ({ page }) => {
 });
 
 test('KAL-6: een maand buiten de bekende schooljaren meldt dat vakanties nog niet bekend zijn', async ({ page }) => {
-  await page.goto('/#/kalender');
+  await page.goto('/#/formulier');
   await expect(page.getByRole('region', { name: 'September 2027' }).getByText('Schoolvakanties nog niet bekend.')).toBeVisible();
 });
 
 test('NFR-9: de kalender past op 360 pixels zonder horizontaal scrollen', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
-  await page.goto('/#/kalender');
+  await page.goto('/#/formulier');
   await expect(april(page)).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
