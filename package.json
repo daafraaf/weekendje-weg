@@ -11,7 +11,7 @@
     "test": "node --test \"test/unit/*.test.mjs\"",
     "e2e": "playwright test",
     "mock": "node test/mock-backend/server.mjs",
-    "vakanties": "node -e \"console.error('Vakantiescript komt in een latere fase.');process.exit(1)\""
+    "vakanties": "node scripts/vakanties.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",

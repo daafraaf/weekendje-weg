@@ -1,0 +1,12 @@
+{
+  "bron": "voorlopig met de hand: alleen kerstvakantie 2026 en meivakantie 2027; vervangen door npm run vakanties",
+  "schooljaren": [],
+  "vakanties": [
+    { "naam": "Kerstvakantie", "regio": "noord", "van": "2026-12-19", "tot": "2027-01-03" },
+    { "naam": "Kerstvakantie", "regio": "midden", "van": "2026-12-19", "tot": "2027-01-03" },
+    { "naam": "Kerstvakantie", "regio": "zuid", "van": "2026-12-19", "tot": "2027-01-03" },
+    { "naam": "Meivakantie", "regio": "noord", "van": "2027-04-24", "tot": "2027-05-02" },
+    { "naam": "Meivakantie", "regio": "midden", "van": "2027-04-24", "tot": "2027-05-02" },
+    { "naam": "Meivakantie", "regio": "zuid", "van": "2027-04-24", "tot": "2027-05-02" }
+  ]
+}

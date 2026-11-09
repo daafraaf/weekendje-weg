@@ -10,6 +10,8 @@ import { maakEditieNieuw } from './screens/editie-nieuw.js';
 import { maakUitnodigen } from './screens/uitnodigen.js';
 import { leesLink, leesSessie, bewaarSessie, wisSessie, scriptUrl } from './sessie.js';
 import { maakStappenbalk } from './components/stappenbalk.js';
+import { maakKalender } from './components/kalender.js';
+import { standaardPeriode } from '../shared/datums.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 
 // AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
@@ -26,6 +28,20 @@ registreer('start', {
       h('h1', { class: 't-title' }, 'Weekendje weg'),
       h('p', { class: 't-body t-sec' }, 'Je bent ingelogd. Hier komt je startscherm.'),
       h('div', { class: 'start-acties' }, h('button', { class: 'btn btn-ghost', type: 'button', onclick: uitloggen }, 'Uitloggen')));
+  },
+});
+
+// AAN-50, KAL-1: voorlopig toont de kalender een voorbeeldperiode; fase 7 hangt hem in het formulier.
+let kalenderWaarden = {};
+registreer('kalender', {
+  titel: 'Kalender',
+  soort: 'deelnemer',
+  icoon: ['M5 6h14v14H5z', 'M5 10h14', 'M9 3v4M15 3v4'],
+  render() {
+    return h('section', { class: 'glass kaart' },
+      h('h1', { class: 't-title' }, 'Wanneer kun je?'),
+      h('p', { class: 't-small t-sec' }, 'Het hele jaar in één oogopslag. Weekenden lopen van vrijdag tot en met zondag.'),
+      maakKalender({ ...standaardPeriode(2027), voorkeursmaanden: [4, 5, 9, 10], waarden: kalenderWaarden, bijWijziging: (w) => { kalenderWaarden = w; } }));
   },
 });
 

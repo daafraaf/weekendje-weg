@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.8, 9 november 2026: AAN-49 en AAN-50 (fase 6).
 Versie 0.7, 9 november 2026: AAN-46 t/m AAN-48 (fase 5).
 Versie 0.6, 9 november 2026: AAN-43 t/m AAN-45 (fase 4).
 Versie 0.5, 9 november 2026: AAN-41 en AAN-42 (fase 3).
@@ -32,11 +33,11 @@ die test aan en werk je hier de status bij.
 | AAN-10 | Restcent als de betaler niet meedeelt | Regel | | eerste deelnemer in de verdeling op voornaam | laag | open |
 | AAN-11 | Claims van wie afhaakt | Regel | | vervallen, item staat weer open | laag | open |
 | AAN-12 | Bereikbaarheid onderdelen | Flow | | voor Accommodatie alleen formulier, voortgang, archief; daarna alles via het menu | laag | open |
-| AAN-13 | Bron van schoolvakanties | Regel | | `data/vakanties.json` uit de open data van de Rijksoverheid, bijgewerkt met `npm run vakanties` | laag | open |
+| AAN-13 | Bron van schoolvakanties | Regel | `scripts/vakanties.mjs` | `data/vakanties.json` uit de open data van de Rijksoverheid, bijgewerkt met `npm run vakanties` | laag | open |
 | AAN-14 | Verouderd script per groep | Flow | `src/web/api.js` (`VEROUDERD_TEKST`) | API-versiecontrole met instructie voor de eigenaar | midden | open |
-| AAN-15 | Kalendervenster | Instelling | | kalenderjaar van de editie: 1 januari tot en met 31 december van `jaar` (was: twaalf maanden vanaf aanmaken) | laag | bevestigd 9 nov 2026 |
+| AAN-15 | Kalendervenster | Instelling | `src/shared/datums.js` (`standaardPeriode`) | kalenderjaar van de editie: 1 januari tot en met 31 december van `jaar` (was: twaalf maanden vanaf aanmaken) | laag | bevestigd 9 nov 2026 |
 | AAN-16 | Categorieën van posten | Regel | | Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig | laag | open |
-| AAN-17 | Volgorde bij tikken in de kalender | Regel | | leeg, ja, misschien, nee, leeg | laag | open |
+| AAN-17 | Volgorde bij tikken in de kalender | Regel | `src/shared/beschikbaarheid.js` (`volgendeWaarde`) | leeg, ja, misschien, nee, leeg | laag | open |
 | AAN-18 | Standaardmaaltijden | Instelling | | vr diner; za ontbijt, lunch, diner; zo ontbijt, lunch | laag | open |
 | AAN-19 | Categorie "Overig" en categorievoorstel | Regel | | 13e categorie Overig; voorstel uit een vaste woordenlijst | laag | open |
 | AAN-20 | Groepsgrootte | Regel | `src/server/acties/opzet.js` (`MIN_LEDEN`, `MAX_LEDEN`) | 2 tot en met 20 | laag | open |
@@ -68,6 +69,8 @@ die test aan en werk je hier de status bij.
 | AAN-46 | Maker van een editie | Regel | `src/server/acties/editie.js` (`editieAanmaken`) | wie een editie maakt is er altijd deelnemer en organisator van (anders kan hij haar niet beheren); een editie heeft minstens twee deelnemers, net als een groep | laag | open |
 | AAN-47 | Links maken voor wie nog geen link heeft | Regel | `src/server/acties/editie.js` (`linksMaken`) | `linksMaken` maakt alleen voor deelnemers zonder link; wie er al een heeft houdt die, vernieuwen gaat via `linkVernieuwen` en `pincodeVernieuwen` | laag | open |
 | AAN-48 | Tijdstip van de deadline | Regel | `src/shared/editie.js` (`deadlineIso`) | de organisator kiest een dag; de deadline eindigt om 23:59 Amsterdamse tijd (zomer- of wintertijd) | laag | open |
+| AAN-49 | Grenzen van een schooljaar | Regel | `src/shared/vakanties.js` (`schooljaarBekend`) | een schooljaar "2026-2027" geldt van 1 september 2026 tot en met 31 augustus 2027; daarbuiten toont de kalender "Schoolvakanties nog niet bekend" | laag | open |
+| AAN-50 | Kalender als eigen scherm tot fase 7 | Flow | `src/web/app.js` (route `kalender`) | de kalender staat voorlopig op `#/kalender` met voorbeeldperiode 2027 en bewaart niets; fase 7 hangt hem in het formulier | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -83,3 +86,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-41 en AAN-42 toegevoegd in fase 3 (inloggen).
 - 2026-11-09: AAN-43 t/m AAN-45 toegevoegd in fase 4 (groep opzetten); AAN-41 vervallen.
 - 2026-11-09: AAN-46 t/m AAN-48 toegevoegd in fase 5 (editie aanmaken en uitnodigen).
+- 2026-11-09: AAN-49 en AAN-50 toegevoegd in fase 6 (kalender); AAN-13, AAN-15 en AAN-17 kregen hun codeplek.
