@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.14, 9 november 2026: AAN-66 (fase 13).
 Versie 0.13, 9 november 2026: AAN-63 t/m AAN-65 (fase 12).
 Versie 0.12, 9 november 2026: AAN-62 (fase 11).
 Versie 0.11, 9 november 2026: AAN-59 t/m AAN-61 (fase 10).
@@ -36,7 +37,7 @@ die test aan en werk je hier de status bij.
 | AAN-08 | Stemmen op accommodaties | Regel | `src/server/acties/accommodatie.js` (`stemmen`) | één favoriet per persoon, aantallen zichtbaar, wijzigen mag | laag | open |
 | AAN-09 | Verdeling per bedrag moet sluiten | Regel | `src/shared/verdeling.js` (`verdelingFout`) | opslaan pas bij verschil nul | laag | open |
 | AAN-10 | Restcent als de betaler niet meedeelt | Regel | `src/shared/verdeling.js` (`restNaar`) | eerste deelnemer in de verdeling op voornaam | laag | open |
-| AAN-11 | Claims van wie afhaakt | Regel | | vervallen, item staat weer open | laag | open |
+| AAN-11 | Claims van wie afhaakt | Regel | `src/server/acties/items.js` (`claimsVervallen`) | vervallen, item staat weer open | laag | open |
 | AAN-12 | Bereikbaarheid onderdelen | Flow | | voor Accommodatie alleen formulier, voortgang, archief; daarna alles via het menu | laag | open |
 | AAN-13 | Bron van schoolvakanties | Regel | `scripts/vakanties.mjs` | `data/vakanties.json` uit de open data van de Rijksoverheid, bijgewerkt met `npm run vakanties` | laag | open |
 | AAN-14 | Verouderd script per groep | Flow | `src/web/api.js` (`VEROUDERD_TEKST`) | API-versiecontrole met instructie voor de eigenaar | midden | open |
@@ -44,14 +45,14 @@ die test aan en werk je hier de status bij.
 | AAN-16 | Categorieën van posten | Regel | `src/shared/geld.js` (`CATEGORIEEN`) | Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig | laag | open |
 | AAN-17 | Volgorde bij tikken in de kalender | Regel | `src/shared/beschikbaarheid.js` (`volgendeWaarde`) | leeg, ja, misschien, nee, leeg | laag | open |
 | AAN-18 | Standaardmaaltijden | Instelling | | vr diner; za ontbijt, lunch, diner; zo ontbijt, lunch | laag | open |
-| AAN-19 | Categorie "Overig" en categorievoorstel | Regel | | 13e categorie Overig; voorstel uit een vaste woordenlijst | laag | open |
+| AAN-19 | Categorie "Overig" en categorievoorstel | Regel | `src/shared/categorieen.js` (`stelCategorieVoor`) | 13e categorie Overig; voorstel uit een vaste woordenlijst | laag | open |
 | AAN-20 | Groepsgrootte | Regel | `src/server/acties/opzet.js` (`MIN_LEDEN`, `MAX_LEDEN`) | 2 tot en met 20 | laag | open |
 | AAN-21 | Eten en drinken, activiteiten en programma standaard aan | Instelling | | aan, uit te zetten door de organisator | laag | open |
 | AAN-22 | Geen rekeningnummer in betaalverzoek | Regel | `src/shared/whatsapp.js` (`betaalverzoekTekst`) | tekst zonder IBAN of betaallink | laag | open |
 | AAN-23 | Kamers | Flow | | organisator maakt kamers met slaapplaatsen en deelt in; niet voller dan slaapplaatsen | laag | open |
 | AAN-24 | Carpool | Flow | | bestuurder biedt rit aan, meerijder kiest zelf, organisator kan indelen | laag | open |
 | AAN-25 | Programma vullen | Regel | | alleen de organisator | laag | open |
-| AAN-26 | Items verwijderen | Regel | | eigen item tot definitief; organisator elk item | laag | open |
+| AAN-26 | Items verwijderen | Regel | `src/server/acties/items.js` (`itemVerwijderen`) | eigen item tot definitief; organisator elk item | laag | open |
 | AAN-27 | Afvinken bij boodschappen | Regel | | iedereen, gedeeld | laag | open |
 | AAN-28 | Setupcode | Regel | `src/server/acties/opzet.js` (`setupcodeMaken`) | acht tekens, eenmalig, 30 minuten geldig | laag | open |
 | AAN-29 | Na Afgerond | Regel | `src/server/rechten.js` (`reden`) | editie alleen-lezen | laag | open |
@@ -92,6 +93,7 @@ die test aan en werk je hier de status bij.
 | AAN-64 | Grenzen van een accommodatie | Regel | `src/shared/accommodatie.js` (`ACC_GRENZEN`) | naam 1 tot 80 tekens, plaats tot 80, link leeg of https:// tot 300, notitie tot 300, totaalprijs 0 tot € 100.000 (0 betekent prijs nog niet bekend, dan staat er geen prijsregel) en hooguit 12 accommodaties per editie; de prijs per persoon deelt over de niet-afgehaakte deelnemers | laag | open |
 | AAN-65 | Geboekt hoort bij één accommodatie | Regel | `src/server/acties/accommodatie.js` (`deelvormZetten`) | `geboekt` kiezen vraagt de accommodatie (of de al geboekte); een andere deelvorm wist de geboekte; verwijderen van de geboekte zet de deelvorm terug op `info`; een verwijderde accommodatie neemt zijn stemmen mee; de groep ziet bij `geboekt` alleen die ene accommodatie | laag | open |
 
+| AAN-66 | Grenzen en gedrag van items | Regel | `src/server/acties/items.js` (`ITEM_GRENZEN`) | naam 1 tot 60 tekens en hooguit 200 items per editie; het voorstel voor de categorie geldt alleen als de aanvrager geen categorie meestuurt; een afgehaakte deelnemer kan niet claimen en terugdraaien van afhaken brengt de claims niet terug; de startlijst keuken en spullen komt als items uit de lijsten van de editie en is van niemand (alleen de organisator past ze aan); een bestaand item wijzigen volgt de regel voor verwijderen (AAN-26) | laag | open |
 ## Volgorde voor het gesprek
 
 Eerst de flow-aannames: AAN-34, AAN-03, AAN-04, AAN-07, AAN-14, AAN-31, daarna AAN-12, AAN-23,
@@ -113,3 +115,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-59 t/m AAN-61 toegevoegd in fase 10 (posten en verdeling); AAN-09, AAN-10 en AAN-16 kregen hun codeplek.
 - 2026-11-09: AAN-62 toegevoegd in fase 11 (afrekenen en afhaken); AAN-22 en AAN-35 kregen hun codeplek.
 - 2026-11-09: AAN-63 t/m AAN-65 toegevoegd in fase 12 (datum en accommodaties); AAN-08 kreeg zijn codeplek.
+- 2026-11-09: AAN-66 toegevoegd in fase 13 (wie neemt wat mee); AAN-11, AAN-19 en AAN-26 kregen hun codeplek.

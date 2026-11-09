@@ -365,3 +365,16 @@ textarea.field { min-height: 88px; padding: 12px 14px; resize: vertical; }
 .acc-acties { display: flex; gap: 10px; align-items: center; }
 .acc-acties .btn-primary, .acc-acties .btn-ghost { flex: 1 1 auto; }
 .acc-lijstkop { margin-top: 4px; padding: 0 4px; }
+
+.mee-sectie { display: flex; flex-direction: column; gap: 8px; }
+.mee-sectie > h2 { padding: 0 4px; }
+.mee-rij { flex-wrap: wrap; }
+.mee-tekst { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.mee-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.mee-claim { display: inline-flex; align-items: center; }
+.mee-weg { min-height: 28px; padding: 0 6px; }
+.mee-knoppen { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.mee-leeg { padding: 14px; }
+.mee-nieuw { gap: 8px; }
+.mee-velden { flex: 1 1 auto; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.mee-plus { background: var(--accent-soft); color: var(--accent); }

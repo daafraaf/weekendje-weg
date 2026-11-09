@@ -58,7 +58,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const stapArg = process.argv.find((a) => a.startsWith('--stap='));
   const stap = stapArg ? stapArg.slice(7) : 'invullen';
   // Met --stap=afrekenen (of afgerond) komen het huisje, een betaalde betaling en de afgehaakte Chris erbij.
-  const demo = maakDemo({ antwoorden: true, posten: true, stap, afrekening: stap === 'afrekenen' || stap === 'afgerond' });
+  const demo = maakDemo({ antwoorden: true, posten: true, items: true, stap, afrekening: stap === 'afrekenen' || stap === 'afgerond' });
   const { url, setupcode } = await startServer({ port, seed: leeg ? {} : demo.seed });
   const app = process.env.APP_URL || 'http://127.0.0.1:4173/';
   if (leeg) {

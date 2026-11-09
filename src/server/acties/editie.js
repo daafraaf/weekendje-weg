@@ -6,6 +6,7 @@ import { hashToken, hashGeheim, maakToken, maakSalt, maakPincode } from '../cryp
 import { resetPogingen } from './toegang.js';
 import { beheerlinkVoorLid } from './opzet.js';
 import { startlijsten } from '../../shared/lijsten.js';
+import { maakStartItems } from './items.js';
 import { BLOKKEN_STANDAARD, MAANDEN_STANDAARD, stapDatums } from '../../shared/editie.js';
 
 const MAX_DEELNEMERS = 20; // AAN-20: een groep heeft hooguit 20 leden
@@ -40,12 +41,14 @@ export const editieAanmaken = {
       if (!lid || !lid.actief) throw new ApiFout('ongeldig', 'Een gekozen lid bestaat niet of is inactief.');
     }
     const maanden = unieke(data.voorkeursmaanden || MAANDEN_STANDAARD).sort((a, b) => a - b);
+    const lijsten = startlijsten();
     const editie = store.voegToe('Edities', {
       jaar: data.jaar, titel, stap: 'invullen', stapData: stapDatums(data.deadline),
       periodeVan: data.periodeVan, periodeTot: data.periodeTot, voorkeursmaanden: maanden, deadline: data.deadline,
-      blokken: { ...BLOKKEN_STANDAARD, ...(data.blokken || {}) }, lijsten: startlijsten(),
+      blokken: { ...BLOKKEN_STANDAARD, ...(data.blokken || {}) }, lijsten,
       vastgelegdWeekend: '', deelvorm: 'info', geboektAccommodatieId: '', boodschappenDefinitief: false,
     });
+    maakStartItems(store, editie.id, lijsten); // §7.7.2: startlijst keuken en spullen
     // Zonder link en pincode: die komen pas bij `linksMaken` (EDI-4).
     const deelnemers = lidIds.map((lidId) => store.voegToe('Deelnemers', {
       editieId: editie.id, lidId, tokenHash: '', pinHash: '', pinSalt: '',

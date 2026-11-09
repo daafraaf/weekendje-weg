@@ -21,6 +21,7 @@ import { maakPosten } from './screens/posten.js';
 import { maakAfrekening } from './screens/afrekening.js';
 import { maakAccommodaties } from './screens/accommodaties.js';
 import { maakAccommodatieBeheer } from './screens/accommodatie-beheer.js';
+import { maakMeenemen } from './screens/meenemen.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 
 // AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
@@ -172,6 +173,15 @@ registreer('accommodatie-beheer', {
   icoon: ['M3.5 20V9l8.5-5.5L20.5 9v11', 'M9 20v-6h6v6M3 20h18'],
   render(params) {
     return maakAccommodatieBeheer({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
+  },
+});
+
+// MEE-1 t/m MEE-4: spullen, uit eigen keuken en boodschappen, met claims.
+registreer('meenemen', {
+  titel: 'Meenemen',
+  icoon: ['M5 8h14l-1.2 11a1 1 0 0 1-1 .9H7.2a1 1 0 0 1-1-.9z', 'M9 8V6.5a3 3 0 0 1 6 0V8'],
+  render(params) {
+    return maakMeenemen({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
   },
 });
 
