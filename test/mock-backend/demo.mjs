@@ -31,6 +31,7 @@ export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen',
       id: DEMO_EDITIE_ID, jaar: 2027, titel: 'Weekendje weg 2027', stap, stapData: fixture.stapData, versie: 1, bijgewerkt: fixture.groep.aangemaakt,
       periodeVan: '2027-01-01', periodeTot: '2027-12-31', voorkeursmaanden: [4, 5, 9, 10], deadline: '2099-01-01T23:59:00+01:00',
       blokken: { etenDrinken: true, activiteiten: true, programma: true, samenwerken: false }, lijsten: {},
+      vastgelegdWeekend: '', deelvorm: 'info', geboektAccommodatieId: '',
     }],
     Deelnemers: deelnemers,
   };

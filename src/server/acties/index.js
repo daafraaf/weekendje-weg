@@ -12,9 +12,10 @@ import { stappenHandlers } from './stappen.js';
 import { postenHandlers, postenScherm } from './posten.js';
 import { afrekeningHandlers, afrekeningScherm } from './afrekening.js';
 import { afhakenHandlers } from './afhaken.js';
+import { accommodatieHandlers, accommodatiesScherm } from './accommodatie.js';
 
 // Leesactie `scherm`: per naam één functie; schermen zonder functie bestaan nog niet.
-const SCHERM_UITVOEREN = { beheer: beheerScherm, formulier: formulierScherm, voortgang: voortgangScherm, overzicht: overzichtScherm, posten: postenScherm, afrekening: afrekeningScherm };
+const SCHERM_UITVOEREN = { beheer: beheerScherm, formulier: formulierScherm, voortgang: voortgangScherm, overzicht: overzichtScherm, posten: postenScherm, afrekening: afrekeningScherm, accommodaties: accommodatiesScherm };
 const scherm = {
   uitvoeren(h) {
     const f = SCHERM_UITVOEREN[h.ctx.scherm];
@@ -23,4 +24,4 @@ const scherm = {
   },
 };
 
-export const ALLE_HANDLERS = { ...toegangHandlers, ...beheertoegangHandlers, ...opzetHandlers, ...ledenHandlers, ...editieHandlers, ...antwoordenHandlers, ...vragenHandlers, ...stappenHandlers, ...postenHandlers, ...afrekeningHandlers, ...afhakenHandlers, scherm };
+export const ALLE_HANDLERS = { ...toegangHandlers, ...beheertoegangHandlers, ...opzetHandlers, ...ledenHandlers, ...editieHandlers, ...antwoordenHandlers, ...vragenHandlers, ...stappenHandlers, ...postenHandlers, ...afrekeningHandlers, ...afhakenHandlers, ...accommodatieHandlers, scherm };

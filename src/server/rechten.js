@@ -41,7 +41,11 @@ const SCHERMEN = {
     deelnemer: (c) => als(stapIndex(c.stap) >= stapIndex('overzicht')),
     organisator: () => JA,
   },
-  accommodaties: iedereen,
+  // §7.6.2: deelnemers zien de accommodaties vanaf de stap Accommodatie.
+  accommodaties: {
+    deelnemer: (c) => als(stapIndex(c.stap) >= stapIndex('accommodatie')),
+    organisator: () => JA,
+  },
   meenemen: iedereen,
   kookbeurten: iedereen,
   programma: iedereen,

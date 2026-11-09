@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.13, 9 november 2026: AAN-63 t/m AAN-65 (fase 12).
 Versie 0.12, 9 november 2026: AAN-62 (fase 11).
 Versie 0.11, 9 november 2026: AAN-59 t/m AAN-61 (fase 10).
 Versie 0.10, 9 november 2026: AAN-56 t/m AAN-58 (fase 9).
@@ -32,7 +33,7 @@ die test aan en werk je hier de status bij.
 | AAN-05 | Stap terug | Regel | `src/shared/stappen.js` (`stapMogelijk`) | één stap terug, niet meer terug naar Invullen vanaf Accommodatie | laag | open |
 | AAN-06 | Rangorde voorkeursdatum | Regel | `src/shared/rangorde.js` (`vergelijk`) | minste nee, meeste ja, meeste misschien, voorkeursmaand, vroegste | midden | open |
 | AAN-07 | Wat de groep ziet na vrijgave | Flow | `src/server/acties/overzicht.js` (`overzichtScherm`) | aantallen zonder namen, bandbreedte van budget en reistijd; vrije tekst en allergieën met namen alleen voor de organisator | midden | open |
-| AAN-08 | Stemmen op accommodaties | Regel | | één favoriet per persoon, aantallen zichtbaar, wijzigen mag | laag | open |
+| AAN-08 | Stemmen op accommodaties | Regel | `src/server/acties/accommodatie.js` (`stemmen`) | één favoriet per persoon, aantallen zichtbaar, wijzigen mag | laag | open |
 | AAN-09 | Verdeling per bedrag moet sluiten | Regel | `src/shared/verdeling.js` (`verdelingFout`) | opslaan pas bij verschil nul | laag | open |
 | AAN-10 | Restcent als de betaler niet meedeelt | Regel | `src/shared/verdeling.js` (`restNaar`) | eerste deelnemer in de verdeling op voornaam | laag | open |
 | AAN-11 | Claims van wie afhaakt | Regel | | vervallen, item staat weer open | laag | open |
@@ -87,6 +88,9 @@ die test aan en werk je hier de status bij.
 | AAN-60 | Totalen en jouw deel netto | Regel | `src/shared/saldo.js` (`totalen`) | GELD-6 noemt totalen per categorie; een ontvangst gaat van de uitgaven in zijn categorie af, het totaal bovenaan is netto en "jouw deel" is je aandeel in uitgaven min je aandeel in ontvangsten | laag | open |
 | AAN-61 | Knop "Iedereen" | Regel | `src/shared/verdeling.js` (`iedereen`) | "Iedereen" vinkt net als de standaardverdeling (§7.13.5) alle niet-afgehaakte deelnemers aan; een afgehaakte komt er alleen bij met een eigen vinkje (§7.13.9) | laag | open |
 | AAN-62 | Welke betaling je als betaald markeert | Regel | `src/server/acties/afrekening.js` (`betalingMarkeren`) | alleen een betaling die op dat moment open staat in de afrekening (zelfde van, naar en bedrag); is de afrekening intussen veranderd, dan krijg je "gewijzigd" en laad je opnieuw. Een los bedrag buiten de afrekening om kan niet | laag | open |
+| AAN-63 | Weekend kiezen uit de kalender | Regel | `src/server/acties/accommodatie.js` (`weekendVastleggen`) | "uit de kalender" (ACC-1) is een keuzelijst van alle weekenden (vrijdagen) in de periode van de editie, naast de top 5; het weekend kan opnieuw worden vastgelegd en vervangt het eerdere, het kan niet worden leeggemaakt | laag | open |
+| AAN-64 | Grenzen van een accommodatie | Regel | `src/shared/accommodatie.js` (`ACC_GRENZEN`) | naam 1 tot 80 tekens, plaats tot 80, link leeg of https:// tot 300, notitie tot 300, totaalprijs 0 tot € 100.000 (0 betekent prijs nog niet bekend, dan staat er geen prijsregel) en hooguit 12 accommodaties per editie; de prijs per persoon deelt over de niet-afgehaakte deelnemers | laag | open |
+| AAN-65 | Geboekt hoort bij één accommodatie | Regel | `src/server/acties/accommodatie.js` (`deelvormZetten`) | `geboekt` kiezen vraagt de accommodatie (of de al geboekte); een andere deelvorm wist de geboekte; verwijderen van de geboekte zet de deelvorm terug op `info`; een verwijderde accommodatie neemt zijn stemmen mee; de groep ziet bij `geboekt` alleen die ene accommodatie | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -108,3 +112,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-56 t/m AAN-58 toegevoegd in fase 9 (voortgang, overzicht en stappen); AAN-04 t/m AAN-07 kregen hun codeplek.
 - 2026-11-09: AAN-59 t/m AAN-61 toegevoegd in fase 10 (posten en verdeling); AAN-09, AAN-10 en AAN-16 kregen hun codeplek.
 - 2026-11-09: AAN-62 toegevoegd in fase 11 (afrekenen en afhaken); AAN-22 en AAN-35 kregen hun codeplek.
+- 2026-11-09: AAN-63 t/m AAN-65 toegevoegd in fase 12 (datum en accommodaties); AAN-08 kreeg zijn codeplek.

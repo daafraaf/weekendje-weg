@@ -19,6 +19,8 @@ import { maakDetail } from './screens/detail.js';
 import { maakStappenBeheer } from './screens/stappen-beheer.js';
 import { maakPosten } from './screens/posten.js';
 import { maakAfrekening } from './screens/afrekening.js';
+import { maakAccommodaties } from './screens/accommodaties.js';
+import { maakAccommodatieBeheer } from './screens/accommodatie-beheer.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 
 // AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
@@ -151,6 +153,25 @@ registreer('afrekening', {
   icoon: ['M4 7h13l-3-3M20 17H7l3 3'],
   render(params) {
     return maakAfrekening({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+  },
+});
+
+// ACC-3 t/m ACC-5: de accommodaties van de groep (info, stemmen of geboekt).
+registreer('accommodaties', {
+  titel: 'Accommodatie',
+  icoon: ['M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z'],
+  render(params) {
+    return maakAccommodaties({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+  },
+});
+
+// ACC-1, ACC-2, ACC-3, ACC-5: weekend vastleggen en accommodaties beheren, alleen voor de organisator.
+registreer('accommodatie-beheer', {
+  titel: 'Accommodaties beheren',
+  soort: 'beheer',
+  icoon: ['M3.5 20V9l8.5-5.5L20.5 9v11', 'M9 20v-6h6v6M3 20h18'],
+  render(params) {
+    return maakAccommodatieBeheer({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
   },
 });
 
