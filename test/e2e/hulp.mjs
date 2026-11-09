@@ -16,7 +16,10 @@ export async function logIn(context, { rondleidingGezien = true } = {}) {
 // Stuurt de aanroepen van een context naar script.google.com door naar de nepbackend en logt in als Anna.
 export async function koppelNep(context, nep, opties) {
   await context.route('https://script.google.com/**', async (route) => {
-    const antwoord = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: route.request().postData() || '' });
+    const verzoek = { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: route.request().postData() || '' };
+    // Een hergebruikte verbinding kan door de nepserver gesloten zijn (ECONNRESET); één nieuwe poging volstaat.
+    const antwoord = await fetch(`${nep.url}/macros/s/x/exec`, verzoek).catch(() => fetch(`${nep.url}/macros/s/x/exec`, verzoek)).catch(() => null);
+    if (!antwoord) { await route.abort().catch(() => {}); return; } // de nepserver is al gesloten aan het eind van de test
     await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: await antwoord.text() });
   });
   await logIn(context, opties);
