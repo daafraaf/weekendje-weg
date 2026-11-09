@@ -8,6 +8,8 @@ import { maakOpzetten } from './screens/opzetten.js';
 import { maakLeden } from './screens/leden.js';
 import { maakEditieNieuw } from './screens/editie-nieuw.js';
 import { maakUitnodigen } from './screens/uitnodigen.js';
+import { maakLijstenBeheer } from './screens/lijsten-beheer.js';
+import { maakVragenBeheer } from './screens/vragen-beheer.js';
 import { leesLink, leesSessie, bewaarSessie, wisSessie, scriptUrl } from './sessie.js';
 import { maakStappenbalk } from './components/stappenbalk.js';
 import { maakFormulier } from './screens/formulier.js';
@@ -67,6 +69,25 @@ registreer('uitnodigen', {
   icoon: ['M4 6.5h16v11H4z', 'm4.5 7 7.5 6 7.5-6'],
   render(params) {
     return maakUitnodigen({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
+  },
+});
+
+// EDI-2: blokken en lijsten van de editie; EDI-3: eigen vragen.
+registreer('lijsten-beheer', {
+  titel: 'Lijsten',
+  soort: 'beheer',
+  icoon: ['M9 6h11M9 12h11M9 18h11', 'M4 6h.01M4 12h.01M4 18h.01'],
+  render(params) {
+    return maakLijstenBeheer({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
+  },
+});
+
+registreer('vragen-beheer', {
+  titel: 'Vragen',
+  soort: 'beheer',
+  icoon: ['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18', 'M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.5', 'M12 17h.01'],
+  render(params) {
+    return maakVragenBeheer({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
   },
 });
 

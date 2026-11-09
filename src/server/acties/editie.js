@@ -5,6 +5,7 @@ import { v } from '../validatie.js';
 import { hashToken, hashGeheim, maakToken, maakSalt, maakPincode } from '../crypto.js';
 import { resetPogingen } from './toegang.js';
 import { beheerlinkVoorLid } from './opzet.js';
+import { startlijsten } from '../../shared/lijsten.js';
 import { BLOKKEN_STANDAARD, MAANDEN_STANDAARD, stapDatums } from '../../shared/editie.js';
 
 const MAX_DEELNEMERS = 20; // AAN-20: een groep heeft hooguit 20 leden
@@ -42,7 +43,7 @@ export const editieAanmaken = {
     const editie = store.voegToe('Edities', {
       jaar: data.jaar, titel, stap: 'invullen', stapData: stapDatums(data.deadline),
       periodeVan: data.periodeVan, periodeTot: data.periodeTot, voorkeursmaanden: maanden, deadline: data.deadline,
-      blokken: { ...BLOKKEN_STANDAARD, ...(data.blokken || {}) }, lijsten: {},
+      blokken: { ...BLOKKEN_STANDAARD, ...(data.blokken || {}) }, lijsten: startlijsten(),
       vastgelegdWeekend: '', deelvorm: 'info', geboektAccommodatieId: '', boodschappenDefinitief: false,
     });
     // Zonder link en pincode: die komen pas bij `linksMaken` (EDI-4).

@@ -2,6 +2,8 @@
 import { ApiFout } from '../fouten.js';
 import { v } from '../validatie.js';
 import { vrijdagen } from '../../shared/datums.js';
+import { vragenVan, schoonEigenVragen } from './vragen.js';
+import { lijstenVan, blokkenVan } from '../../shared/lijsten.js';
 import { BUDGET_VERBLIJF, BUDGET_WEEKEND, REISTIJD, WOONPLAATS, VRIJ_VELD_MAX, VERBLIJF_WENSEN, indexVanBovengrens, ontbreekt } from '../../shared/antwoorden.js';
 
 const vrij = () => v.tekst({ min: 0, max: VRIJ_VELD_MAX });
@@ -46,6 +48,7 @@ export const antwoordenOpslaan = {
     if (!sessie.deelnemerId) throw new ApiFout('geen_toegang');
     controleer(data.data, editie);
     const nieuw = { ...data.data };
+    if (nieuw.eigenVragen) nieuw.eigenVragen = schoonEigenVragen(store, editieId, nieuw.eigenVragen); // FRM-7
     if (nieuw.woonplaats !== undefined) nieuw.woonplaats = nieuw.woonplaats.trim();
     const bestaand = eigenRij(store, editieId, sessie.deelnemerId);
     let rij;
@@ -75,9 +78,9 @@ export function formulierScherm({ store, sessie, editie, editieId, ctx }) {
     editie: {
       id: editie.id, titel: editie.titel, stap: editie.stap, deadline: editie.deadline,
       periodeVan: editie.periodeVan, periodeTot: editie.periodeTot, voorkeursmaanden: editie.voorkeursmaanden || [],
-      blokken: editie.blokken || {}, lijsten: editie.lijsten || {},
+      blokken: blokkenVan(editie), lijsten: lijstenVan(editie),
     },
-    vragen: store.lees('Vragen').filter((q) => q.editieId === editieId).sort((a, b) => a.volgorde - b.volgorde),
+    vragen: vragenVan(store, editieId),
     standaardWoonplaats: lid ? lid.woonplaats : '',
     alleenLezen: editie.stap !== 'invullen' ? 'stap' : ctx.naDeadline ? 'deadline' : null,
     antwoorden: { data, versie: rij ? rij.versie : 0 },

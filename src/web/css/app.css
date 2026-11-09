@@ -238,3 +238,23 @@ a:hover { text-decoration: underline; }
 .form-status { font-weight: 650; margin: 0; }
 .form-status.klaar { color: var(--ja); }
 .form-toast { margin: 0; color: var(--text-secondary); min-height: 19px; }
+
+/* Wensblokken en eigen vragen (FRM-5 t/m FRM-7, EDI-2, EDI-3) */
+.vink { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 14px; border-top: 1px solid var(--line); cursor: pointer; }
+.vink:first-child { border-top: 0; }
+.vink input { appearance: none; -webkit-appearance: none; margin: 0; width: 26px; height: 26px; border-radius: 8px; border: 1.5px solid var(--leeg); background: var(--surface-solid); flex: 0 0 auto; display: grid; place-content: center; }
+.vink input[type="radio"] { border-radius: 50%; }
+.vink input:checked { background: var(--accent); border-color: var(--accent); }
+.vink input:checked::after { content: ""; width: 12px; height: 7px; border-left: 2.5px solid var(--on-accent); border-bottom: 2.5px solid var(--on-accent); transform: translateY(-2px) rotate(-45deg); }
+.vink input[type="radio"]:checked::after { width: 10px; height: 10px; border: 0; border-radius: 50%; background: var(--on-accent); transform: none; }
+.vink input:disabled { opacity: .6; }
+.vink input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+textarea.field { min-height: 88px; padding: 12px 14px; resize: vertical; }
+.drie.vijf { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.vraag { display: flex; flex-direction: column; gap: 8px; }
+.lijst-rij { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-top: 1px solid var(--line); }
+.lijst-rij:first-child { border-top: 0; }
+.lijst-rij .field { min-height: 44px; }
+.beheer-blok { display: flex; flex-direction: column; gap: 10px; }
+.vraag-rij { align-items: flex-start; }
+.vraag-rij .dl-inhoud { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }

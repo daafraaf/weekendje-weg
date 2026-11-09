@@ -7,6 +7,9 @@ import { scriptUrl } from '../sessie.js';
 import { maakKalender } from '../components/kalender.js';
 import { maakSchuif } from '../components/schuif.js';
 import { maakDrieknop } from '../components/drieknop.js';
+import { maakVinkjeslijst } from '../components/vinkjeslijst.js';
+import { maakVraag } from '../components/vraag.js';
+import { WENSBLOKKEN } from '../../shared/lijsten.js';
 import { datumLang } from '../../shared/datums.js';
 import { BUDGET_VERBLIJF, BUDGET_WEEKEND, REISTIJD, WOONPLAATS, VERBLIJF_WENSEN, bovengrens, indexVanBovengrens, ontbreekt, schijfTekst } from '../../shared/antwoorden.js';
 
@@ -142,18 +145,43 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
             wijzig({ verblijf: nieuw });
           },
         }))));
-    return [kalender, budget, reistijd, verblijf];
+    // FRM-5: vinkjeslijsten uit de editielijsten, elk met een vrij veld; een blok dat de organisator uitzette, ontbreekt.
+    const wensen = WENSBLOKKEN.filter((b) => e.blokken[b.blok]).map((b) => kaart(b.kop,
+      h('p', { class: 't-small t-sec' }, b.uitleg),
+      maakVinkjeslijst({
+        id: b.blok, label: b.kop, items: e.lijsten[b.blok], gekozen: huidig[b.blok] || [], eigen: huidig[`${b.blok}Eigen`] || '', eigenLabel: b.eigenLabel, alleenLezen: lezen(),
+        bijWijziging: ({ gekozen, eigen }) => wijzig({ [b.blok]: gekozen, [`${b.blok}Eigen`]: eigen }),
+      })));
+    // FRM-6: alleen als de organisator het aanzet.
+    const samenwerken = e.blokken.samenwerken ? [kaart('Samenwerken op vrijdag',
+      h('p', { class: 't-body' }, "Wil je vrijdag overdag op de locatie werken? Dan kom je 's ochtends al aan."),
+      maakDrieknop({
+        label: 'Samenwerken op vrijdag', waarde: huidig.samenwerken ?? null, alleenLezen: lezen(),
+        opties: [['ja', 'Ja', 'ja', '✓'], ['misschien', 'Misschien', 'mis', '~'], ['nee', 'Nee', 'nee', '✕']].map(([waarde, tekst, kleur, symbool]) => ({ waarde, tekst, kleur, symbool })),
+        bijWijziging: (waarde) => wijzig({ samenwerken: waarde }),
+      }))] : [];
+    // FRM-7: eigen vragen met het invoerelement van hun type; het blok verschijnt alleen als er vragen zijn.
+    const eigen = g.vragen.length ? [kaart('Eigen vragen', g.vragen.map((vraag) => maakVraag({
+      vraag, waarde: (huidig.eigenVragen || {})[vraag.id] ?? null, alleenLezen: lezen(),
+      bijWijziging: (waarde) => {
+        const nieuw = { ...(huidig.eigenVragen || {}) };
+        if (waarde === null) delete nieuw[vraag.id]; else nieuw[vraag.id] = waarde;
+        wijzig({ eigenVragen: nieuw });
+      },
+    })))] : [];
+    return [kalender, budget, reistijd, verblijf, ...wensen, ...samenwerken, ...eigen];
   }
 
   function teken() {
     const kop = h('div', { class: 'wz-kop' }, h('p', { class: 't-cap' }, g.editie.titel), h('h1', { class: 't-title' }, 'Wanneer kun je?'));
     const fout = melding ? h('div', { class: 'melding-fout', role: 'alert' }, h('span', { class: 'ico' }, icoon(WAARSCHUWING, 22)), h('p', { class: 't-small' }, melding)) : null;
     const slot = g.alleenLezen ? h('div', { class: 'glass panel dl-info', role: 'status' }, h('span', { class: 'ico', style: 'color:var(--accent)' }, icoon(SLOT, 22)), h('p', { class: 't-small' }, redenTekst())) : null;
-    wortel.replaceChildren(kop, slot, fout, ...blokken(),
+    zet(kop, slot, fout, ...blokken(),
       g.alleenLezen ? null : h('div', { class: 'glass panel form-onder' }, h('div', { class: 'form-tekst' }, statusTekst, toast), opslaanKnop));
     toonStatus();
   }
 
+  const zet = (...k) => wortel.replaceChildren(...k.flat().filter((x) => x != null && x !== false));
   wortel.append(h('p', { class: 't-body t-sec' }, 'Laden…'));
   laad();
   return wortel;

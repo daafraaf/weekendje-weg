@@ -5,6 +5,7 @@ import { beheertoegangHandlers } from './beheertoegang.js';
 import { opzetHandlers } from './opzet.js';
 import { ledenHandlers, beheerScherm } from './leden.js';
 import { editieHandlers } from './editie.js';
+import { vragenHandlers } from './vragen.js';
 import { antwoordenHandlers, formulierScherm } from './antwoorden.js';
 
 // Leesactie `scherm`: per naam één functie; schermen zonder functie bestaan nog niet.
@@ -17,4 +18,4 @@ const scherm = {
   },
 };
 
-export const ALLE_HANDLERS = { ...toegangHandlers, ...beheertoegangHandlers, ...opzetHandlers, ...ledenHandlers, ...editieHandlers, ...antwoordenHandlers, scherm };
+export const ALLE_HANDLERS = { ...toegangHandlers, ...beheertoegangHandlers, ...opzetHandlers, ...ledenHandlers, ...editieHandlers, ...antwoordenHandlers, ...vragenHandlers, scherm };

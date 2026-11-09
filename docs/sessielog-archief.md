@@ -7,3 +7,4 @@ Oudere regels uit het sessielog van MEMORY.md.
 - 2026-11-09 fase 0: opzet af (NFR-3, NFR-4, NFR-13, NFR-18), check groen, AAN-37 toegevoegd; zie `docs/overdracht/fase-00.md`.
 - 2026-11-09 fase 3: inloggen met link en pincode af (TOE-1 t/m 4, 9, 10, 11, NFR-2, 5), check groen, AAN-41 en AAN-42 toegevoegd; zie `docs/overdracht/fase-03.md`.
 - 2026-11-09 fase 4: groep opzetten en beheer af (GRP-1 t/m 5, TOE-5, RON-5), check groen, AAN-43 t/m 45 toegevoegd; zie `docs/overdracht/fase-04.md`.
+- 2026-11-09 fase 5: editie aanmaken en uitnodigen af (EDI-1, 4, 5, 6, TOE-8, 12), check groen, AAN-46 t/m 48 toegevoegd; zie `docs/overdracht/fase-05.md`.

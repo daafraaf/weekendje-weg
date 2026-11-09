@@ -74,6 +74,9 @@ die test aan en werk je hier de status bij.
 | AAN-50 | Kalender als eigen scherm tot fase 7 | Flow | `src/web/app.js` (route `kalender`) | de kalender staat voorlopig op `#/kalender` met voorbeeldperiode 2027 en bewaart niets; fase 7 hangt hem in het formulier | laag | vervallen |
 | AAN-51 | Keuze weghalen in de drieknop | Flow | `src/web/components/drieknop.js` | nogmaals tikken op de gekozen knop haalt de keuze weg; een ontbrekende sleutel betekent niet ingevuld (§5.2) en zo is een verblijfswens ook weer leeg te maken | laag | open |
 | AAN-52 | Namen van de verblijfswensen | Regel | `src/shared/antwoorden.js` (`VERBLIJF_WENSEN`) | de spec geeft de acht sleutels maar geen teksten; de labels zijn Eigen kamer, Eigen badkamer, Sauna, Bubbelbad, Barbecue, Buitenruimte, Schoonmaak inbegrepen, Linnengoed inbegrepen, met de opties Ja, Nee, Maakt niet uit (eigen kamer: Ja, Liever wel, Maakt niet uit) | laag | open |
+| AAN-53 | Inhoud van de startlijsten | Regel | `src/shared/lijsten.js` (`LIJSTEN_STANDAARD`) | een nieuwe editie krijgt in `Edities.lijsten` startlijsten voor activiteiten, programma en eten en drinken (acht, zeven en acht onderdelen) en de startlijsten keuken en spullen uit §7.7.2; een oudere editie zonder lijst valt terug op dezelfde startlijst | laag | open |
+| AAN-54 | Vorm van een antwoord op een eigen vraag | Regel | `src/shared/lijsten.js` (`antwoordGeldig`) | het antwoord is een tekst: ja of nee, de sleutel van de gekozen optie, bij meerkeuze de sleutels met komma's, een cijfer 1 tot 5, of de vrije tekst; een vraag heeft hooguit 20 stuks, een keuzevraag 2 tot 10 opties; opslaan laat antwoorden op verwijderde vragen weg | laag | open |
+| AAN-55 | Blokken en lijsten ook vast na Invullen | Regel | `src/server/acties/vragen.js` (`alleenInvullen`) | zoals EDI-3 voor vragen zegt, kan de organisator ook de blokken en lijsten (EDI-2) alleen aanpassen zolang de editie in de stap Invullen staat | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -91,3 +94,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-46 t/m AAN-48 toegevoegd in fase 5 (editie aanmaken en uitnodigen).
 - 2026-11-09: AAN-49 en AAN-50 toegevoegd in fase 6 (kalender); AAN-13, AAN-15 en AAN-17 kregen hun codeplek.
 - 2026-11-09: AAN-51 en AAN-52 toegevoegd in fase 7 (invulformulier); AAN-50 vervallen; AAN-33 kreeg zijn codeplek.
+- 2026-11-09: AAN-53 t/m AAN-55 toegevoegd in fase 8 (wensblokken en eigen vragen); AAN-21 kreeg zijn codeplek.

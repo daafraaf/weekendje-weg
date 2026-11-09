@@ -2,6 +2,8 @@
 import { ApiFout } from '../fouten.js';
 import { v } from '../validatie.js';
 import { MIN_LEDEN, MAX_LEDEN } from './opzet.js';
+import { vragenVan, heeftAntwoord } from './vragen.js';
+import { lijstenVan, blokkenVan } from '../../shared/lijsten.js';
 
 const actieven = (store) => store.lees('Leden').filter((l) => l.actief);
 
@@ -42,6 +44,8 @@ export function beheerScherm({ store, sessie }) {
   const eigenEdities = new Set(deelnemers.filter((d) => d.lidId === sessie.lidId && d.rol === 'organisator').map((d) => d.editieId));
   const edities = store.lees('Edities').filter((e) => eigenEdities.has(e.id)).map((e) => ({
     id: e.id, titel: e.titel, jaar: e.jaar, stap: e.stap,
+    blokken: blokkenVan(e), lijsten: lijstenVan(e),
+    vragen: vragenVan(store, e.id).map((q) => ({ ...q, heeftAntwoord: heeftAntwoord(store, e.id, q.id) })),
     deelnemers: deelnemers.filter((d) => d.editieId === e.id).map((d) => ({ id: d.id, lidId: d.lidId, rol: d.rol, heeftLink: Boolean(d.tokenHash) })),
   }));
   return {
