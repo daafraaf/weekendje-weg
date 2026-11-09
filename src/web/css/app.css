@@ -186,8 +186,8 @@ a:hover { text-decoration: underline; }
 .tel > span { display: flex; align-items: center; gap: 6px; font-size: 14px; }
 .legenda { display: flex; flex-wrap: wrap; gap: 8px 16px; }
 .legenda > span { display: flex; align-items: center; gap: 6px; }
-.leg-vak { width: 24px; height: 24px; border-radius: 8px; background: var(--mis-soft); display: inline-block; }
-.leg-punt { width: 8px; height: 8px; border-radius: 50%; background: var(--text-primary); display: inline-block; margin: 0 8px; }
+.leg-vak { width: 24px; height: 24px; border-radius: 8px; background: var(--zand); box-shadow: inset 0 0 0 1px var(--line-strong); display: inline-block; }
+.leg-feest { width: 10px; height: 10px; border-radius: 50%; background: var(--feest); display: inline-block; margin: 0 7px; }
 .jaar-m { display: flex; flex-direction: column; gap: 12px; }
 @media (min-width: 900px) { .jaar-m { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
 .mcal { border-radius: 18px; padding: 14px 12px 12px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
@@ -200,19 +200,21 @@ a:hover { text-decoration: underline; }
 .wd span { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-secondary); padding-bottom: 2px; }
 .wd span.we { color: var(--text-primary); }
 .dc { display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 9px; font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
-.dc.vak { background: var(--mis-soft); color: var(--text-primary); }
+.dc.vak { background: var(--zand); color: var(--text-primary); }
+.dc.fd { box-shadow: inset 0 0 0 1.5px var(--feest); color: var(--text-primary); font-weight: 700; }
+.dc.fd:not(.vak) { background: var(--feest-soft); }
 .band { grid-column: span 3; position: relative; display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 1px; min-height: 44px; padding: 3px 0 2px; border-radius: 11px; border: 0; font: inherit; cursor: pointer; font-variant-numeric: tabular-nums; transition: background .15s ease; }
 .band .nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); font-size: 13px; font-weight: 700; line-height: 14px; }
 .band .bd { text-align: center; }
 .band .bd.o { opacity: .6; font-weight: 500; }
 .band .bs { text-align: center; font-size: 14px; font-weight: 800; line-height: 16px; min-height: 16px; }
-.band .bm { position: absolute; top: 4px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.band .br { position: absolute; top: 3px; left: 5px; font-size: 9px; font-weight: 700; line-height: 10px; letter-spacing: .04em; opacity: .75; }
+.band .bm { position: absolute; top: 4px; right: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--feest); box-shadow: 0 0 0 1.5px var(--feest-rand); }
 .band .bv { position: absolute; left: 8px; right: 8px; bottom: 2px; height: 3px; border-radius: 2px; background: currentColor; opacity: .35; }
 .b-ja { background: var(--ja); color: var(--on-ja); }
 .b-mis { background: var(--mis); color: var(--on-mis); }
 .b-nee { background: var(--nee); color: var(--on-nee); }
 .b-leeg { background: transparent; color: var(--text-primary); box-shadow: inset 0 0 0 1.5px var(--leeg); }
+.b-leeg.vak { background: var(--zand); box-shadow: none; }
 .band:hover { filter: brightness(1.06); }
 .mn { margin: 6px 4px 0; font-size: 12px; line-height: 16px; color: var(--text-secondary); }
 .strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 4px; align-items: end; }

@@ -7,7 +7,7 @@ import path from 'node:path';
 import { vanOpenData } from '../src/shared/vakanties.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const BASIS = 'https://opendata.rijksoverheid.nl/v1/sources/rijksoverheid/infotypes/schoolholidays/schoolyear/';
+const BASIS = 'https://opendata.rijksoverheid.nl/v1/infotypes/schoolholidays/schoolyear/';
 
 function haal(url) {
   return new Promise((klaar, mis) => {

@@ -26,7 +26,19 @@ test('KAL-4: meivakantie per regio en Koningsdag onder april', async ({ page }) 
   await expect(april(page).getByText('Meivakantie, regio noord, midden, zuid: 24 apr tot en met 2 mei')).toBeVisible();
   await expect(april(page).getByText('Koningsdag: 27 apr')).toBeVisible();
   await expect(weekend(page, '23 apr')).toHaveAttribute('aria-label', /schoolvakantie regio noord, midden, zuid/);
-  await expect(weekend(page, '23 apr').locator('.br')).toHaveText('N M Z');
+  await expect(weekend(page, '23 apr').locator('.br')).toHaveCount(0); // bevinding 3: geen regioletters in de cel
+  await expect(weekend(page, '23 apr')).toHaveClass(/\bvak\b/); // bevinding 4: zandkleur voor een leeg vakantieweekend
+  await expect(april(page).locator('.dc.fd')).toHaveCount(1); // Koningsdag (maandag 26 apr, verzet) of 27 apr in de dagcellen
+});
+
+test('bevinding 4: een leeg weekend met schoolvakantie is zand, een gekozen weekend krijgt zijn eigen kleur', async ({ page }) => {
+  await page.goto('/#/formulier');
+  const knop = weekend(page, '23 apr');
+  const achtergrond = () => knop.evaluate((e) => getComputedStyle(e).backgroundColor);
+  const zand = await achtergrond();
+  expect(zand).toBe('rgb(235, 221, 191)');
+  await knop.click(); // ja
+  await expect.poll(achtergrond).not.toBe(zand); // de achtergrond heeft een korte overgang
 });
 
 test('KAL-2 AAN-17: tikken doorloopt de vier waarden met kleur en symbool', async ({ page }) => {
@@ -62,11 +74,6 @@ test('KAL-7: Hele maand vult alleen de lege weekenden', async ({ page }) => {
   await expect(weekenden.nth(1)).toHaveAttribute('aria-label', /: misschien/);
   for (const i of [0, 2, 3, 4]) await expect(weekenden.nth(i)).toHaveAttribute('aria-label', /: nee/);
   await expect(page.getByText('5 van 53 weekenden ingevuld')).toBeVisible();
-});
-
-test('KAL-6: een maand buiten de bekende schooljaren meldt dat vakanties nog niet bekend zijn', async ({ page }) => {
-  await page.goto('/#/formulier');
-  await expect(page.getByRole('region', { name: 'September 2027' }).getByText('Schoolvakanties nog niet bekend.')).toBeVisible();
 });
 
 test('NFR-9: de kalender past op 360 pixels zonder horizontaal scrollen', async ({ page }) => {

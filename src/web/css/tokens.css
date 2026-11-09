@@ -29,6 +29,10 @@
   --ja-soft: rgba(24,118,106,.12);
   --mis-soft: rgba(217,164,65,.18);
   --nee-soft: rgba(185,74,59,.12);
+  --zand: #EBDDBF;
+  --feest: #6F5496;
+  --feest-soft: rgba(111,84,150,.14);
+  --feest-rand: #FFFFFF;
   --h0: #EEF3F1;
   --h1: #D7EAE6;
   --h2: #B5DAD3;
@@ -76,6 +80,10 @@
     --ja-soft: rgba(63,179,161,.16);
     --mis-soft: rgba(230,185,92,.16);
     --nee-soft: rgba(229,124,107,.16);
+    --zand: #3A3326;
+    --feest: #B79CE0;
+    --feest-soft: rgba(183,156,224,.20);
+    --feest-rand: #1C1A16;
     --h0: #18212B;
     --h1: #1B3433;
     --h2: #1F4744;

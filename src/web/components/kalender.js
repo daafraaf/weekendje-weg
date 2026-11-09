@@ -3,7 +3,7 @@ import vakantieBestand from '../../../data/vakanties.json' with { type: 'json' }
 import { h, icoon } from '../dom.js';
 import { MAANDNAMEN, WEEKDAGEN, datumKort, datumPlus, dagVan, jaarVan, maandVan, maakIso, vrijdagen, weekdag } from '../../shared/datums.js';
 import { feestdagTabel } from '../../shared/feestdagen.js';
-import { REGIO_LETTER, dagHeeftVakantie, maandNotities, weekendKenmerken } from '../../shared/vakanties.js';
+import { dagHeeftVakantie, maandNotities, weekendKenmerken } from '../../shared/vakanties.js';
 import { WAARDEN, maandVullen, tel, volgendeWaarde, zetWaarde } from '../../shared/beschikbaarheid.js';
 
 const SYMBOOL = { ja: '✓', misschien: '~', nee: '✕', leeg: '' };
@@ -48,7 +48,7 @@ export function maakKalender({ periodeVan, periodeTot, voorkeursmaanden = [], wa
       h('span', {}, status('leeg'), h('b', { class: 't-num' }, String(t.leeg)), ' leeg'));
     for (const [v, b] of balken) {
       const w = huidig[v] || 'leeg';
-      b.knop.className = `band ${BALK[w]}`;
+      b.knop.className = `band ${BALK[w]}${b.vakantie ? ' vak' : ''}`;
       b.knop.setAttribute('aria-label', ariaVan(v, w));
       b.symbool.textContent = SYMBOOL[w];
       b.vierkant.className = `sq ${BALK[w]}`;
@@ -68,16 +68,15 @@ export function maakKalender({ periodeVan, periodeTot, voorkeursmaanden = [], wa
     const symbool = h('span', { class: 'bs', 'aria-hidden': 'true' });
     const knop = h('button', { type: 'button', disabled: alleenLezen, onclick: () => wijzig(zetWaarde(huidig, v, volgendeWaarde(huidig[v]))) },
       nummers, symbool,
-      k.regios.length ? h('span', { class: 'br', 'aria-hidden': 'true' }, k.regios.map((r) => REGIO_LETTER[r]).join(' ')) : null,
       k.feestdagen.length || k.langWeekend ? h('span', { class: 'bm', 'aria-hidden': 'true' }) : null,
       k.regios.length ? h('span', { class: 'bv', 'aria-hidden': 'true' }) : null);
-    balken.set(v, { knop, symbool, vierkant: h('span', { class: 'sq' }) });
+    balken.set(v, { knop, symbool, vakantie: k.regios.length > 0, vierkant: h('span', { class: 'sq' }) });
     return knop;
   }
 
   function dagCel(d, maand) {
     if (maandVan(d) !== maand) return h('span', { class: 'dc', 'aria-hidden': 'true' });
-    return h('span', { class: `dc${dagHeeftVakantie(d, vakanties) ? ' vak' : ''}`, 'aria-hidden': 'true' }, String(dagVan(d)));
+    return h('span', { class: `dc${dagHeeftVakantie(d, vakanties) ? ' vak' : ''}${feest.has(d) ? ' fd' : ''}`, 'aria-hidden': 'true' }, String(dagVan(d)));
   }
 
   function maakMaand(m) {
@@ -123,8 +122,8 @@ export function maakKalender({ periodeVan, periodeTot, voorkeursmaanden = [], wa
 
   const legenda = h('div', { class: 'legenda', 'aria-hidden': 'true' },
     ['ja', 'misschien', 'nee', 'leeg'].map((w) => h('span', { class: 't-small' }, status(w), w === 'leeg' ? 'nog leeg' : LABEL[w])),
-    h('span', { class: 't-small' }, h('span', { class: 'leg-vak' }), 'schoolvakantie (N, M, Z)'),
-    h('span', { class: 't-small' }, h('span', { class: 'leg-punt' }), 'feestdag of lang weekend'),
+    h('span', { class: 't-small' }, h('span', { class: 'leg-vak' }), 'schoolvakantie'),
+    h('span', { class: 't-small' }, h('span', { class: 'leg-feest' }), 'feestdag of lang weekend'),
     h('span', { class: 't-small' }, icoon(STER, 16), 'voorkeursmaand'));
 
   const el = h('div', { class: 'kal' },
