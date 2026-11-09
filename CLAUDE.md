@@ -28,7 +28,8 @@ Fase 0 legt de scripts vast in `package.json`; vul deze lijst aan als er een bij
 - `npm run check`: bronregels, unittests, build en Playwright tegen de nepbackend; eindigt met
   één groene of rode regel. Groen vóór elke commit (NFR-13)
 - `npm run mock`: nepbackend met de demodata op localhost; toont de demolinks in de console,
-  pincode `123456`
+  pincode `123456`; met demoantwoorden van drie van de vier deelnemers, `-- --stap=overzicht` zet
+  de demo-editie in een andere stap
 - `npm run mock -- --leeg`: nepbackend met lege Sheet en een setupcode in de console, voor de opzetwizard
 - `npm run vakanties`: haalt de schoolvakanties op en schrijft `data/vakanties.json` (AAN-13)
 - `clasp deploy -i <id>`: alleen in fase 20, samen met David. Altijd een nieuwe versie op de
@@ -86,6 +87,11 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
   nagebootste GAS-diensten in `test/unit/nep-gas.mjs`.
 - Geen `token = '...'`-letterlijken in tests: de geheimencheck van de bronregels slaat aan;
   maak tokens met `maakToken(nodeRandom)`.
+- Demo met antwoorden: `maakDemo({ antwoorden: true, stap })` en `startNep(context, { antwoorden: true })`;
+  standaard staan er geen antwoorden in, omdat oudere tests `lees('Antwoorden')[0]` gebruiken.
+- Breedtes van balken via `el.style.width` (CSSOM); een `style`-attribuut blokkeert de CSP.
+- Leesschermen die voor deelnemer en beheer werken (`voortgang`, `overzicht`) kiezen zonder
+  `editieId` de nieuwste eigen editie van de organisator en geven `edities` mee voor de kiezer.
 
 ## Valkuilen
 

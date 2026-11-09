@@ -258,3 +258,56 @@ textarea.field { min-height: 88px; padding: 12px 14px; resize: vertical; }
 .beheer-blok { display: flex; flex-direction: column; gap: 10px; }
 .vraag-rij { align-items: flex-start; }
 .vraag-rij .dl-inhoud { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+
+/* Voortgang, overzicht, detail en stappen (OVZ-1 t/m OVZ-6, EDI-7, EDI-8, EDI-10) */
+.wa-tekst { white-space: pre-line; }
+.ico-acc { color: var(--accent); display: inline-flex; flex: 0 0 auto; }
+.ovz-blok { display: flex; flex-direction: column; gap: 12px; }
+.ovz-voorkeur { padding: 20px; }
+.ovz-kop-rij { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.lijst-kop { padding: 12px 14px 2px; }
+.tellers { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.teller { display: inline-flex; gap: 4px; align-items: center; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { display: inline-flex; align-items: center; min-height: 22px; padding: 0 8px; border-radius: 7px; font-size: 12px; font-weight: 600; background: var(--line); color: var(--text-primary); }
+.tag-acc { background: var(--accent-soft); color: var(--accent); }
+.top-lijst { list-style: none; margin: 0; padding: 0; }
+.top-rij { align-items: flex-start; padding-top: 12px; padding-bottom: 12px; }
+.top-rij .rij-tekst { gap: 6px; }
+.top-plek { width: 22px; color: var(--accent); flex: 0 0 auto; }
+.heat-schaal { display: flex; gap: 4px; align-items: center; }
+.heat-schaal > span[class^="h"] { flex: 1 1 0; height: 10px; border-radius: 3px; }
+.heat-rij { display: grid; grid-template-columns: 56px repeat(5, minmax(0, 1fr)); gap: 5px; align-items: center; }
+.heat-maand { font-weight: 600; display: flex; align-items: center; gap: 3px; }
+.heat { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; min-height: 52px; font-weight: 700; font-size: 15px; line-height: 16px; font-variant-numeric: tabular-nums; }
+.heat .heat-dag, .heat .heat-rest { font-size: 10px; font-weight: 600; opacity: .85; line-height: 12px; }
+.heat.vak { box-shadow: inset 0 0 0 2px var(--mis); }
+.heat .bm { position: absolute; top: 4px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.h0 { background: var(--h0); color: var(--text-secondary); }
+.h1 { background: var(--h1); color: var(--h-ink-lo); }
+.h2 { background: var(--h2); color: var(--h-ink-lo); }
+.h3 { background: var(--h3); color: var(--h-ink-lo); }
+.h4 { background: var(--h4); color: var(--h-ink-hi); }
+.h5 { background: var(--h5); color: var(--h-ink-hi); }
+.h6 { background: var(--h6); color: var(--h-ink-hi); }
+@media (prefers-color-scheme: light) { .h4 { color: var(--h-ink-lo); } }
+.bb { display: flex; flex-direction: column; gap: 8px; }
+.bb-kop { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.bb-naam { font-weight: 600; }
+.bb-waarde { font-weight: 700; }
+.bb-balk { position: relative; height: 10px; border-radius: 5px; background: var(--line); }
+.bb-vul { position: absolute; top: 0; bottom: 0; border-radius: 5px; background: var(--accent); min-width: 6px; }
+.bb-schaal { display: flex; justify-content: space-between; }
+.aantal-getal { font-weight: 700; }
+.aantal-balk { width: 90px; height: 8px; border-radius: 4px; background: var(--line); position: relative; flex: 0 0 auto; }
+.aantal-vul { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ja); border-radius: 4px; }
+.detail-knop { width: 100%; border-left: 0; border-right: 0; border-bottom: 0; background: transparent; text-align: left; }
+.detail-persoon:first-child .detail-knop { border-top: 0; }
+.detail-pijl { display: inline-flex; flex: 0 0 auto; }
+.detail-dl { margin: 0; padding: 0 16px 16px; display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 10px 12px; font-size: 15px; }
+.detail-dl dd { margin: 0; overflow-wrap: anywhere; }
+.detail-naam { flex: 0 0 90px; }
+@media (min-width: 900px) {
+  .heat-rij { grid-template-columns: 56px repeat(5, minmax(0, 72px)); }
+  .detail-dl { grid-template-columns: 180px minmax(0, 1fr); }
+}

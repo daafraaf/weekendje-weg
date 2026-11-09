@@ -8,12 +8,16 @@ const fixture = JSON.parse(readFileSync(new URL('../fixtures/demo.json', import.
 export const DEMO_EDITIE_ID = 'demo-editie-2027';
 
 // opties.blokkades: aantal blokkades dat de organisator (eerste deelnemer) al heeft gehad.
-export function maakDemo({ blokkades = 0 } = {}) {
+// opties.antwoorden: de demoantwoorden uit de fixture (Anna vult niets in); `npm run mock` zet ze aan.
+// opties.stap: de stap van de demo-editie.
+export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen' } = {}) {
+  const ingevuld = new Map(antwoorden ? fixture.antwoorden.map((a) => [a.deelnemerId, a.ingevuldOp]) : []);
   const deelnemers = fixture.deelnemers.map((d) => {
     const pinSalt = maakSalt(nodeRandom);
     return {
       id: d.id, editieId: DEMO_EDITIE_ID, lidId: d.lidId, rol: d.rol,
       tokenHash: hashToken(nodeSha256, d.token), pinSalt, pinHash: hashGeheim(nodeSha256, d.pin, pinSalt),
+      afgehaakt: false, ingevuld: ingevuld.has(d.id), ingevuldOp: ingevuld.get(d.id) || '',
     };
   });
   const seed = {
@@ -21,12 +25,15 @@ export function maakDemo({ blokkades = 0 } = {}) {
     Leden: fixture.leden,
     // Een minimale editie, zodat sessies van deze deelnemers door de API worden herkend.
     Edities: [{
-      id: DEMO_EDITIE_ID, jaar: 2027, titel: 'Weekendje weg 2027', stap: 'invullen', versie: 1, bijgewerkt: fixture.groep.aangemaakt,
+      id: DEMO_EDITIE_ID, jaar: 2027, titel: 'Weekendje weg 2027', stap, stapData: fixture.stapData, versie: 1, bijgewerkt: fixture.groep.aangemaakt,
       periodeVan: '2027-01-01', periodeTot: '2027-12-31', voorkeursmaanden: [4, 5, 9, 10], deadline: '2099-01-01T23:59:00+01:00',
       blokken: { etenDrinken: true, activiteiten: true, programma: true, samenwerken: false }, lijsten: {},
     }],
     Deelnemers: deelnemers,
   };
+  if (antwoorden) {
+    seed.Antwoorden = fixture.antwoorden.map((a) => ({ id: a.id, editieId: DEMO_EDITIE_ID, deelnemerId: a.deelnemerId, data: a.data, versie: 1, bijgewerkt: a.ingevuldOp }));
+  }
   if (blokkades) seed.Pogingen = [{ sleutel: deelnemers[0].tokenHash, fout: 0, geblokkeerdTot: '', blokkades }];
   const fragment = (i) => `#b=${fixture.scriptId}&t=${fixture.deelnemers[i].token}`;
   return {

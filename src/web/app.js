@@ -13,6 +13,10 @@ import { maakVragenBeheer } from './screens/vragen-beheer.js';
 import { leesLink, leesSessie, bewaarSessie, wisSessie, scriptUrl } from './sessie.js';
 import { maakStappenbalk } from './components/stappenbalk.js';
 import { maakFormulier } from './screens/formulier.js';
+import { maakVoortgang } from './screens/voortgang.js';
+import { maakOverzicht } from './screens/overzicht.js';
+import { maakDetail } from './screens/detail.js';
+import { maakStappenBeheer } from './screens/stappen-beheer.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 
 // AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
@@ -88,6 +92,45 @@ registreer('vragen-beheer', {
   icoon: ['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18', 'M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.5', 'M12 17h.01'],
   render(params) {
     return maakVragenBeheer({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
+  },
+});
+
+// OVZ-1, OVZ-2: wie heeft ingevuld; de organisator ziet ook de herinnering.
+const bijVerlopenSessie = () => { wisSessie(localStorage); kies(); };
+registreer('voortgang', {
+  titel: 'Voortgang',
+  icoon: ['M5 12.5 9.5 17 19 7.5'],
+  render(params) {
+    return maakVoortgang({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+  },
+});
+
+// OVZ-3 t/m OVZ-5: het overlapoverzicht zonder namen.
+registreer('overzicht', {
+  titel: 'Overzicht',
+  icoon: ['M4 20V10M10 20V4M16 20v-7M22 20H2'],
+  render(params) {
+    return maakOverzicht({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+  },
+});
+
+// OVZ-6: per persoon, alleen voor de organisator.
+registreer('detail', {
+  titel: 'Per persoon',
+  soort: 'beheer',
+  icoon: ['M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7', 'M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5', 'M17 8h5M17 12h5M19 16h3'],
+  render(params) {
+    return maakDetail({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
+  },
+});
+
+// EDI-7, EDI-8, EDI-10: stap zetten, verwachte data en deadline.
+registreer('stappen', {
+  titel: 'Stappen',
+  soort: 'beheer',
+  icoon: ['M4 12h12', 'm12 6 6 6-6 6', 'M20 5v14'],
+  render(params) {
+    return maakStappenBeheer({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
   },
 });
 

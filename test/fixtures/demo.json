@@ -12,5 +12,23 @@
     { "id": "dln0000000000002", "lidId": "lid0000000000002", "rol": "deelnemer", "token": "DemoLinksAnna000000002", "pin": "123456" },
     { "id": "dln0000000000003", "lidId": "lid0000000000003", "rol": "deelnemer", "token": "DemoLinksBram000000003", "pin": "123456" },
     { "id": "dln0000000000004", "lidId": "lid0000000000004", "rol": "deelnemer", "token": "DemoLinksChris00000004", "pin": "123456" }
+  ],
+  "stapData": { "invullen": "2027-03-01", "overzicht": "2027-03-03", "accommodatie": "2027-03-15" },
+  "antwoorden": [
+    { "id": "ant0000000000001", "deelnemerId": "dln0000000000001", "ingevuldOp": "2026-11-20T19:12:00Z", "data": {
+      "beschikbaarheid": { "2027-04-09": "nee", "2027-04-16": "ja", "2027-05-14": "ja", "2027-06-11": "ja", "2027-06-18": "ja", "2027-09-24": "ja", "2027-10-01": "misschien" },
+      "budgetVerblijf": 15000, "budgetWeekend": 30000, "woonplaats": "Utrecht", "maxReistijdUur": 3,
+      "verblijf": { "eigenKamer": "lieverWel", "sauna": "ja" },
+      "activiteiten": ["wandelen", "sauna"], "activiteitenEigen": "", "programma": ["uitslapen", "bordspellen"], "programmaEigen": "Graag ergens met een haard",
+      "etenDrinken": ["vegetarisch", "wijn"], "etenDrinkenEigen": "" } },
+    { "id": "ant0000000000003", "deelnemerId": "dln0000000000003", "ingevuldOp": "2026-11-21T08:40:00Z", "data": {
+      "beschikbaarheid": { "2027-04-16": "nee", "2027-05-14": "misschien", "2027-06-11": "ja", "2027-06-18": "ja", "2027-09-24": "ja", "2027-10-01": "ja" },
+      "budgetVerblijf": 10000, "budgetWeekend": 20000, "woonplaats": "Arnhem", "maxReistijdUur": 2,
+      "activiteiten": ["wandelen", "kanoen"], "activiteitenEigen": "Kanoën op de Maas", "programma": ["borrelen"],
+      "etenDrinken": ["ipa"], "etenDrinkenEigen": "Notenallergie" } },
+    { "id": "ant0000000000004", "deelnemerId": "dln0000000000004", "ingevuldOp": "2026-11-22T21:05:00Z", "data": {
+      "beschikbaarheid": { "2027-04-09": "ja", "2027-05-14": "ja", "2027-06-11": "ja", "2027-09-24": "misschien", "2027-10-01": "misschien" },
+      "budgetVerblijf": 20000, "budgetWeekend": 40000, "woonplaats": "Breda", "maxReistijdUur": 4,
+      "activiteiten": ["wandelen", "escaperoom"], "programma": ["uitslapen"], "etenDrinken": ["vegetarisch", "nulbier"] } }
   ]
 }

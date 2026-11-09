@@ -1,0 +1,10 @@
+# Overdracht fase 9
+
+Af: `#/voortgang` (OVZ-1, herinnering OVZ-2 alleen in een beheersessie en stap Invullen), `#/overzicht` (OVZ-3 t/m 5: voorkeursdatum, top 5, heatmap met ✓ ~ ✕ en vakantie/feestdag, bandbreedtes, wensen en eigen vragen als aantallen), `#/detail` (OVZ-6, per persoon uitklapbaar en per blok de vrije teksten met naam) en `#/stappen` (EDI-7 stap vooruit/terug met stapbericht, EDI-8 verwachte data, EDI-10 deadline verlengen).
+Server: `acties/overzicht.js` (schermen `voortgang` en `overzicht`; `detail` zit alleen in het antwoord voor een beheersessie), `acties/stappen.js` (`stapZetten`; `stapWijzigingen` voor `deadline` en `stapData` via `editieBijwerken`). `shared/rangorde.js` telt en rangschikt, `shared/stappen.js` kreeg `stapMogelijk`, `shared/whatsapp.js` kreeg `herinneringTekst` en `stapTekst`. Het beheerscherm levert nu ook `deadline` en `stapData`.
+Keuzes buiten de spec: AAN-56 (ja/nee en schaal tellen als keuzevraag), AAN-57 (verlengen alleen naar later, Invullen-datum schuift mee), AAN-58 (woorden van de stapberichten). `overzichtDetail` uit `rechten.js` is niet gebruikt: §5.3 zegt dat `scherm overzicht` beide levert.
+Blokken en lijsten blijven vast na Invullen (AAN-55), maar `stapData` mag in elke stap behalve Afgerond.
+Demo: `test/fixtures/demo.json` heeft `stapData` en antwoorden van Eva, Bram en Chris (voorkeursdatum 11 juni 2027, gelijke stand op 2 en 3). Alleen met `maakDemo({ antwoorden: true })`; `npm run mock` zet ze aan, `--stap=` kiest de stap. De volledige demo uit §11 (zes leden, twee edities) is er nog niet.
+Voor volgende fases: de stappenbalk van de deelnemer toont nog de voorbeeldeditie (AAN-40); het startscherm (STA) moet hem op echte data zetten. Weekend vastleggen en de late stapData-voorstellen (§7.2.4) horen bij fase 10. Het beheermenu heeft nu negen links; op mobiel is dat krap.
+Niet getest: echte telefoon, schermlezer op heatmap en uitklapknoppen, donkere modus van de heatmap, delen via `navigator.share`.
+Laatste regel `npm run check`: `CHECK GROEN: bronregels, unittests, build, playwright`

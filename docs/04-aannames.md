@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.10, 9 november 2026: AAN-56 t/m AAN-58 (fase 9).
 Versie 0.9, 9 november 2026: AAN-51 en AAN-52 (fase 7); AAN-50 vervallen.
 Versie 0.8, 9 november 2026: AAN-49 en AAN-50 (fase 6).
 Versie 0.7, 9 november 2026: AAN-46 t/m AAN-48 (fase 5).
@@ -25,10 +26,10 @@ die test aan en werk je hier de status bij.
 | AAN-01 | Blokkering na foute pincodes | Regel | `src/server/acties/toegang.js` (`MAX_FOUT`) | 5 pogingen, 15 minuten; na 3 blokkades nieuwe pincode nodig | laag | open |
 | AAN-02 | Duur van een sessie | Regel | `src/server/acties/toegang.js` (`SESSIE_DEELNEMER_MS`) | deelnemer 60 dagen, beheer 12 uur | laag | open |
 | AAN-03 | Roulerende organisator | Flow | `src/server/rechten.js` (`REGELS.editieAanmaken`) | Beheerlinks horen bij een lid; elke houder van een beheerlink kan een nieuwe editie aanmaken en beheerlinks voor andere leden maken; het nieuwe lid kiest zijn eigen wachtwoord; de eigenaar kan via het Sheet-menu altijd een beheerlink maken | midden | open |
-| AAN-04 | Naar Overzicht gaan sluit het invullen | Flow | | ja, ook voor de deadline | midden | open |
-| AAN-05 | Stap terug | Regel | | één stap terug, niet meer terug naar Invullen vanaf Accommodatie | laag | open |
-| AAN-06 | Rangorde voorkeursdatum | Regel | | minste nee, meeste ja, meeste misschien, voorkeursmaand, vroegste | midden | open |
-| AAN-07 | Wat de groep ziet na vrijgave | Flow | | aantallen zonder namen, bandbreedte van budget en reistijd; vrije tekst en allergieën met namen alleen voor de organisator | midden | open |
+| AAN-04 | Naar Overzicht gaan sluit het invullen | Flow | `src/server/rechten.js` (`eigenAntwoorden`) | ja, ook voor de deadline | midden | open |
+| AAN-05 | Stap terug | Regel | `src/shared/stappen.js` (`stapMogelijk`) | één stap terug, niet meer terug naar Invullen vanaf Accommodatie | laag | open |
+| AAN-06 | Rangorde voorkeursdatum | Regel | `src/shared/rangorde.js` (`vergelijk`) | minste nee, meeste ja, meeste misschien, voorkeursmaand, vroegste | midden | open |
+| AAN-07 | Wat de groep ziet na vrijgave | Flow | `src/server/acties/overzicht.js` (`overzichtScherm`) | aantallen zonder namen, bandbreedte van budget en reistijd; vrije tekst en allergieën met namen alleen voor de organisator | midden | open |
 | AAN-08 | Stemmen op accommodaties | Regel | | één favoriet per persoon, aantallen zichtbaar, wijzigen mag | laag | open |
 | AAN-09 | Verdeling per bedrag moet sluiten | Regel | | opslaan pas bij verschil nul | laag | open |
 | AAN-10 | Restcent als de betaler niet meedeelt | Regel | | eerste deelnemer in de verdeling op voornaam | laag | open |
@@ -77,6 +78,9 @@ die test aan en werk je hier de status bij.
 | AAN-53 | Inhoud van de startlijsten | Regel | `src/shared/lijsten.js` (`LIJSTEN_STANDAARD`) | een nieuwe editie krijgt in `Edities.lijsten` startlijsten voor activiteiten, programma en eten en drinken (acht, zeven en acht onderdelen) en de startlijsten keuken en spullen uit §7.7.2; een oudere editie zonder lijst valt terug op dezelfde startlijst | laag | open |
 | AAN-54 | Vorm van een antwoord op een eigen vraag | Regel | `src/shared/lijsten.js` (`antwoordGeldig`) | het antwoord is een tekst: ja of nee, de sleutel van de gekozen optie, bij meerkeuze de sleutels met komma's, een cijfer 1 tot 5, of de vrije tekst; een vraag heeft hooguit 20 stuks, een keuzevraag 2 tot 10 opties; opslaan laat antwoorden op verwijderde vragen weg | laag | open |
 | AAN-55 | Blokken en lijsten ook vast na Invullen | Regel | `src/server/acties/vragen.js` (`alleenInvullen`) | zoals EDI-3 voor vragen zegt, kan de organisator ook de blokken en lijsten (EDI-2) alleen aanpassen zolang de editie in de stap Invullen staat | laag | open |
+| AAN-56 | Eigen vragen in het overzicht | Regel | `src/server/acties/overzicht.js` (`TELBARE_VRAGEN`) | §7.5.3 noemt "per eigen keuzevraag het aantal per optie"; deelnemers zien dat voor ja/nee, keuze, meerkeuze en schaal (aantal per cijfer); tekstvragen zien alleen de organisator, met naam | laag | open |
+| AAN-57 | Deadline verlengen | Regel | `src/server/acties/stappen.js` (`stapWijzigingen`) | verlengen kan alleen naar een latere deadline dan de huidige, zolang de stap Invullen is; de verwachte datum van Invullen schuift mee, Overzicht en Accommodatie blijven staan | laag | open |
+| AAN-58 | Teksten per stap | Regel | `src/shared/whatsapp.js` (`STAP_VERWACHT`) | de spec zegt wat een stapbericht bevat, niet de woorden; per stap één zin over wat er nu verwacht wordt, plus "<volgende stap> volgt rond <datum>" of "volgt later" als die datum leeg is | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -95,3 +99,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-49 en AAN-50 toegevoegd in fase 6 (kalender); AAN-13, AAN-15 en AAN-17 kregen hun codeplek.
 - 2026-11-09: AAN-51 en AAN-52 toegevoegd in fase 7 (invulformulier); AAN-50 vervallen; AAN-33 kreeg zijn codeplek.
 - 2026-11-09: AAN-53 t/m AAN-55 toegevoegd in fase 8 (wensblokken en eigen vragen); AAN-21 kreeg zijn codeplek.
+- 2026-11-09: AAN-56 t/m AAN-58 toegevoegd in fase 9 (voortgang, overzicht en stappen); AAN-04 t/m AAN-07 kregen hun codeplek.

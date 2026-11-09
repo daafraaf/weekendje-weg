@@ -3,6 +3,7 @@
 import { ApiFout } from '../fouten.js';
 import { v } from '../validatie.js';
 import { BLOKKEN_NAMEN } from '../../shared/editie.js';
+import { stapVelden, stapWijzigingen, editieStappen } from './stappen.js';
 import { LIJSTEN_STANDAARD, LIJST_MAX, LABEL_MAX, VRAAGTYPEN, VRAAG_OPTIES, VRAAG_TEKST_MAX, VRAGEN_MAX, lijstenVan, blokkenVan, maakSleutel, antwoordGeldig } from '../../shared/lijsten.js';
 
 const SLEUTEL = /^[a-z0-9]{1,30}$/;
@@ -35,14 +36,18 @@ export const editieBijwerken = {
   schema: v.object({
     blokken: v.optioneel(v.object(Object.fromEntries(Object.keys(BLOKKEN_NAMEN).map((k) => [k, v.optioneel(v.bool())])))),
     lijsten: v.optioneel(v.object(Object.fromEntries(Object.keys(LIJSTEN_STANDAARD).map((k) => [k, lijst(LIJST_MAX)])))),
+    ...stapVelden, // EDI-8, EDI-10: verwachte data en deadline, zie stappen.js
   }),
   uitvoeren({ store, editie, data }) {
-    alleenInvullen(editie);
-    const blokken = { ...blokkenVan(editie), ...(data.blokken || {}) };
-    const lijsten = lijstenVan(editie);
-    for (const [sleutel, nieuw] of Object.entries(data.lijsten || {})) lijsten[sleutel] = maakLijst(nieuw, lijsten[sleutel]);
-    store.werkBij('Edities', editie.id, { blokken, lijsten }, editie.versie);
-    return { blokken, lijsten };
+    const velden = stapWijzigingen(editie, data);
+    if (data.blokken || data.lijsten) {
+      alleenInvullen(editie);
+      velden.blokken = { ...blokkenVan(editie), ...(data.blokken || {}) };
+      velden.lijsten = lijstenVan(editie);
+      for (const [sleutel, nieuw] of Object.entries(data.lijsten || {})) velden.lijsten[sleutel] = maakLijst(nieuw, velden.lijsten[sleutel]);
+    }
+    const rij = Object.keys(velden).length ? store.werkBij('Edities', editie.id, velden, editie.versie) : editie;
+    return { blokken: blokkenVan(rij), lijsten: lijstenVan(rij), editie: editieStappen(rij) };
   },
 };
 
