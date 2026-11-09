@@ -1,5 +1,6 @@
 # Bouwspecificatie Weekendje weg
 
+Versie 0.3, 9 november 2026: kalendervenster en kalenderweergave bijgewerkt na het ontwerp (AAN-15, §7.3, §9).
 Versie 0.2, 8 november 2026, na review door Opus. Bron: `00-bron.md` en `00-bron-2.md`, interview: `01-interview.md`.
 
 Deze spec is de bron van waarheid voor Claude Code. Alles wat hier niet staat, wordt niet
@@ -95,7 +96,7 @@ test/
   mock-backend/  Node-server met MemoryStore op hetzelfde contract
   e2e/           Playwright-scenario's
   fixtures/      demodata (§11)
-docs/            bron, interview, spec, fasen, aannames, glossary, designbrief, overdracht/
+docs/            bron, interview, spec, fasen, aannames, glossary, designbrief, design/, overdracht/
 .claude/         settings.json met allow-lijst
 .github/workflows/pages.yml
 appsscript.json, .clasp.json.voorbeeld
@@ -320,14 +321,21 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
 
 ### 7.3 Kalender
 1. De kalender toont alle weekenden waarvan de vrijdag tussen `periodeVan` en `periodeTot`
-   valt. Standaard: de eerste vrijdag na aanmaken tot twaalf maanden later (AAN-15).
+   valt. Standaard: het kalenderjaar van de editie, dus de vrijdagen van 1 januari tot en met
+   31 december van `jaar` (AAN-15). De organisator kan het venster aanpassen.
+   Weergave: per maand een maandblad (ma tot en met zo) met elk weekend als één tikbare balk
+   over vrijdag, zaterdag en zondag. Een weekend hoort bij de maand van de vrijdag. Desktop
+   toont de maanden in een raster, mobiel onder elkaar met bovenaan een jaarstrook die per
+   maand de status van elk weekend laat zien. Bovenaan staat hoeveel weekenden zijn ingevuld.
 2. Tikken op een weekend wisselt: leeg → ja → misschien → nee → leeg (AAN-17). Ook met het
    toetsenbord (spatie of enter).
 3. Een weekend in een voorkeursmaand (maand van de vrijdag) krijgt een eigen markering.
 4. Per weekend toont de kalender kenmerken: schoolvakantie per regio (N, M, Z) als een dag
    van vrijdag tot en met zondag in een vakantie valt; feestdag als vrijdag, zaterdag,
    zondag of de maandag erna een feestdag is; "lang weekend" als de vrijdag of de maandag een
-   feestdag is.
+   feestdag is. Alle drie de regio's staan tegelijk in beeld; er is geen regiokeuze. Een dag
+   met vakantie in minstens één regio krijgt een eigen tint, en onder elke maand staat per
+   vakantie welke regio's en welke data.
 5. Feestdagen (berekend, `src/shared/feestdagen.js`): Nieuwjaarsdag, Goede Vrijdag, eerste en
    tweede Paasdag, Koningsdag (27 april, of 26 april als 27 april op zondag valt),
    Bevrijdingsdag (5 mei), Hemelvaartsdag, eerste en tweede Pinksterdag, eerste en tweede
@@ -648,8 +656,10 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 
 ## 9. Design
 
-Zie `05-designbrief.md` (concept). Het ontwerp volgt in Claude Design vóór de bouw. Tot dan
-gebruikt fase 2 neutrale tokens. Eerst komen: tokens als CSS-variabelen (licht en donker),
+Zie `05-designbrief.md`. Het ontwerp staat in Claude Design en als bestanden in
+`docs/design/`: `tokens.css` (licht en donker), de iconen en per scherm een artboard
+(`*.dc.html`, lees de markup en de klassen; de README daar koppelt artboards aan eisen).
+Fase 2 neemt `tokens.css` over als basis. Eerst komen: tokens als CSS-variabelen (licht en donker),
 glaspaneel, stappenbalk, kaart, knop, invoerveld, schuif, vinkje, drieknop
 (ja/misschien/nee), toast, lege toestand.
 

@@ -4,9 +4,9 @@ Laatst bijgewerkt: 2026-11-08 (overdracht)
 
 ## Status
 
-Fase 0 nog te bouwen. De repo bevat alleen de docs uit de Werkplaats: spec v0.2 (120 eisen),
-36 aannames, 21 fasen (0 tot en met 20), de designbrief met tokens en iconen, en 37 artboards
-uit het canvas "Weekendje weg · ontwerp" in `docs/design/` (stand 9 november 2026).
+Fase 0 nog te bouwen. De repo bevat alleen de docs uit de Werkplaats: spec v0.3, aannames
+v0.2 (36), 21 fasen (0 tot en met 20), designbrief v0.3 en het ontwerp in `docs/design/`
+(README, tokens.css, iconen en 37 artboards, stand 9 november 2026).
 
 Vóór de run doet David eenmalig `npm ci` en `npx playwright install` (Node 22 of nieuwer),
 zodra fase 0 `package.json` heeft neergezet.

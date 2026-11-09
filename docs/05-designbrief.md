@@ -1,8 +1,12 @@
 # Designbrief Weekendje weg
 
-Versie 0.2, 8 november 2026, bij bouwspec versie 0.2. Palet gekozen: Zee en duin, met een
-effen verloop als achtergrond. Het ontwerp volgt in Claude Design, net als bij PLM-Lite en
-Life, in een aparte chat.
+Versie 0.3, 9 november 2026, bij bouwspec versie 0.3. Palet gekozen: Zee en duin, met een
+effen verloop als achtergrond. Het ontwerp staat in Claude Design:
+https://claude.ai/artifact/VUKgkd2jpwbnuTNf8LY7hr, en als bestanden in `design/`.
+
+Na het ontwerp besloten: de kalender is een jaarkalender (maandbladen, weekend als balk over
+vr, za en zo) over het kalenderjaar van de editie, en de schoolvakanties van alle regio's
+staan zonder regiokeuze in beeld (spec §7.3, AAN-15).
 
 ## 1. Context
 

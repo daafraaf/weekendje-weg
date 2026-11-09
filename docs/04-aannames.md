@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.2, 9 november 2026: AAN-15 bevestigd met het kalenderjaar.
 Versie 0.1, 8 november 2026
 
 We bouwen op deze aannames en toetsen ze daarna bij David. Elke aanname heeft een ID
@@ -28,7 +29,7 @@ die test aan en werk je hier de status bij.
 | AAN-12 | Bereikbaarheid onderdelen | Flow | | voor Accommodatie alleen formulier, voortgang, archief; daarna alles via het menu | laag | open |
 | AAN-13 | Bron van schoolvakanties | Regel | | `data/vakanties.json` uit de open data van de Rijksoverheid, bijgewerkt met `npm run vakanties` | laag | open |
 | AAN-14 | Verouderd script per groep | Flow | | API-versiecontrole met instructie voor de eigenaar | midden | open |
-| AAN-15 | Kalendervenster | Instelling | | eerste vrijdag na aanmaken tot twaalf maanden later | laag | open |
+| AAN-15 | Kalendervenster | Instelling | | kalenderjaar van de editie: 1 januari tot en met 31 december van `jaar` (was: twaalf maanden vanaf aanmaken) | laag | bevestigd 9 nov 2026 |
 | AAN-16 | Categorieën van posten | Regel | | Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig | laag | open |
 | AAN-17 | Volgorde bij tikken in de kalender | Regel | | leeg, ja, misschien, nee, leeg | laag | open |
 | AAN-18 | Standaardmaaltijden | Instelling | | vr diner; za ontbijt, lunch, diner; zo ontbijt, lunch | laag | open |

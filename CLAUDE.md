@@ -7,9 +7,9 @@ een Google Sheet van de groep achter een Apps Script. Bedoeld voor Davids studie
 bruikbaar voor andere groepen.
 Specificatie: docs/02-bouwspec.md. Fasen: docs/03-fasen.md, per fase een bestand in
 docs/fasen/. Aannames: docs/04-aannames.md. Vaktermen: docs/GLOSSARY.md.
-Design: docs/05-designbrief.md, tokens in docs/design/tokens.css, iconen docs/design/icon.svg
-en icon-maskable.svg, de schermen als artboards in docs/design/ (zie Afspraken). Bron is het
-canvas "Weekendje weg · ontwerp" in Claude Design (https://claude.ai/artifact/VUKgkd2jpwbnuTNf8LY7hr).
+Design: docs/05-designbrief.md en docs/design/ met tokens.css, de iconen en per scherm een
+artboard; docs/design/README.md koppelt elk artboard aan zijn eisen. Bron is het canvas
+"Weekendje weg · ontwerp" in Claude Design (https://claude.ai/artifact/VUKgkd2jpwbnuTNf8LY7hr).
 
 ## Workstation
 
@@ -59,16 +59,13 @@ Fase 0 legt de scripts vast in `package.json`; vul deze lijst aan als er een bij
 - Alleen esbuild en Playwright als devDependencies. Een ander pakket vraagt een aanname.
 - Claude Code draait met de allow-lijst in `.claude/settings.json` (NFR-18), nooit met het
   overslaan van alle toestemmingen.
-- Artboards in `docs/design/`: mobiel `<Scherm>.dc.html` (390 breed), desktop
-  `D-<Scherm>.dc.html` (1280), toestanden `T-*.dc.html` (laden, druk, offline, leeg,
-  alleen-lezen, blokkade, gewijzigd), onderdelen in `Componenten.dc.html`, kleuren in
-  `Tokens.dc.html`, icoon in `Icoon.dc.html`. Titel en plek per bord in `canvas.json`. Donker is
-  hetzelfde bord met de schakelaar `dark`, daarom staan er alleen lichte borden.
-- Een fase met een scherm leest alleen het bord van dat scherm (en zijn `D-`-versie als die
-  er is), niet de hele map; de borden zijn groot. Ze zijn referentie voor opbouw, maten en
-  teksten. Markup wordt niet overgenomen: `support.js`, `<x-dc>`, `{{...}}` en inline stijlen
-  horen bij Claude Design, niet bij de app (strikte CSP, NFR-4). Kleuren en glas komen uit
-  `docs/design/tokens.css`. Wijkt een bord af van de spec, dan wint de spec.
+- Ontwerp: zoek in `docs/design/README.md` het artboard bij de eisen van de fase en lees
+  alleen dat bord (plus de `D-`-versie en de toestand `T-*` als die erbij horen); de borden
+  zijn groot. Lees de markup, de klassen en de `<style>` in `<helmet>`; de componentklassen
+  staan in de README. `support.js`, `<x-dc>`, `{{...}}` en inline stijlen horen bij Claude
+  Design en gaan niet mee (strikte CSP, NFR-4). Tokens op `.ww` en `.ww.dark` worden in de app
+  `:root` en de media query; fase 2 neemt `docs/design/tokens.css` over. Er staan alleen
+  lichte borden; donker volgt uit de tokens. Wijkt een bord af van de spec, dan wint de spec.
 - Testoutput en breed zoekwerk via een subagent; alleen de samenvatting komt terug.
 
 ## Patronen
