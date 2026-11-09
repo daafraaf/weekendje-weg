@@ -411,3 +411,11 @@ textarea.field { min-height: 88px; padding: 12px 14px; resize: vertical; }
 .prg-form { display: flex; flex-direction: column; gap: 10px; }
 .prg-acties { display: flex; gap: 10px; align-items: center; }
 .prg-vandaag { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+
+/* Startscherm per stap en archief (STA-3 t/m STA-6, ARC-1) */
+a.btn, a.start-rij { text-decoration: none; }
+.start-rij { color: inherit; }
+.start-aftel { display: flex; flex-direction: column; gap: 4px; }
+.start-aftel-getal { font-size: 28px; line-height: 34px; font-weight: 750; margin: 0; color: var(--accent); }
+.start-actie .btn { width: 100%; }
+.start .start-acties { margin-top: 0; }

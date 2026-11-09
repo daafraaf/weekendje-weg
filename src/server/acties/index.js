@@ -18,9 +18,10 @@ import { maaltijdenHandlers, kookbeurtenScherm } from './maaltijden.js';
 import { programmaHandlers, programmaScherm } from './programma.js';
 import { kamersHandlers, kamersScherm } from './kamers.js';
 import { rittenHandlers, carpoolScherm } from './ritten.js';
+import { startScherm, archiefScherm } from './start.js';
 
 // Leesactie `scherm`: per naam één functie; schermen zonder functie bestaan nog niet.
-const SCHERM_UITVOEREN = { beheer: beheerScherm, formulier: formulierScherm, voortgang: voortgangScherm, overzicht: overzichtScherm, posten: postenScherm, afrekening: afrekeningScherm, accommodaties: accommodatiesScherm, meenemen: meenemenScherm, kookbeurten: kookbeurtenScherm, programma: programmaScherm, kamers: kamersScherm, carpool: carpoolScherm };
+const SCHERM_UITVOEREN = { beheer: beheerScherm, formulier: formulierScherm, voortgang: voortgangScherm, overzicht: overzichtScherm, posten: postenScherm, afrekening: afrekeningScherm, accommodaties: accommodatiesScherm, meenemen: meenemenScherm, kookbeurten: kookbeurtenScherm, programma: programmaScherm, kamers: kamersScherm, carpool: carpoolScherm, start: startScherm, archief: archiefScherm };
 const scherm = {
   uitvoeren(h) {
     const f = SCHERM_UITVOEREN[h.ctx.scherm];

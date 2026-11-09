@@ -12,7 +12,7 @@ import { deelnemersVan, mijnRij, naamFunctie } from './posten.js';
 const opNaam = (a, b) => a.voornaam.localeCompare(b.voornaam, 'nl') || (a.id < b.id ? -1 : 1);
 
 // Saldi na alle posten en gedane betalingen, en de openstaande betalingen die daaruit volgen.
-function stand(store, editieId) {
+export function stand(store, editieId) {
   const deelnemers = deelnemersVan(store, editieId);
   const naamVan = naamFunctie(store, deelnemers);
   const posten = store.lees('Posten').filter((p) => p.editieId === editieId);

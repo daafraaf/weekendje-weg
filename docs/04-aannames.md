@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.18, 9 november 2026: AAN-71 (fase 17).
 Versie 0.17, 9 november 2026: AAN-70 (fase 16).
 Versie 0.16, 9 november 2026: AAN-68 en AAN-69 (fase 15).
 Versie 0.15, 9 november 2026: AAN-67 (fase 14).
@@ -41,7 +42,7 @@ die test aan en werk je hier de status bij.
 | AAN-09 | Verdeling per bedrag moet sluiten | Regel | `src/shared/verdeling.js` (`verdelingFout`) | opslaan pas bij verschil nul | laag | open |
 | AAN-10 | Restcent als de betaler niet meedeelt | Regel | `src/shared/verdeling.js` (`restNaar`) | eerste deelnemer in de verdeling op voornaam | laag | open |
 | AAN-11 | Claims van wie afhaakt | Regel | `src/server/acties/items.js` (`claimsVervallen`) | vervallen, item staat weer open | laag | open |
-| AAN-12 | Bereikbaarheid onderdelen | Flow | | voor Accommodatie alleen formulier, voortgang, archief; daarna alles via het menu | laag | open |
+| AAN-12 | Bereikbaarheid onderdelen | Flow | `src/shared/start.js` (`MENU_VANAF`) | voor Accommodatie alleen formulier, voortgang, archief; daarna alles via het menu | laag | open |
 | AAN-13 | Bron van schoolvakanties | Regel | `scripts/vakanties.mjs` | `data/vakanties.json` uit de open data van de Rijksoverheid, bijgewerkt met `npm run vakanties` | laag | open |
 | AAN-14 | Verouderd script per groep | Flow | `src/web/api.js` (`VEROUDERD_TEKST`) | API-versiecontrole met instructie voor de eigenaar | midden | open |
 | AAN-15 | Kalendervenster | Instelling | `src/shared/datums.js` (`standaardPeriode`) | kalenderjaar van de editie: 1 januari tot en met 31 december van `jaar` (was: twaalf maanden vanaf aanmaken) | laag | bevestigd 9 nov 2026 |
@@ -59,7 +60,7 @@ die test aan en werk je hier de status bij.
 | AAN-27 | Afvinken bij boodschappen | Regel | `src/server/acties/items.js` (`afvinken`) | iedereen, gedeeld | laag | open |
 | AAN-28 | Setupcode | Regel | `src/server/acties/opzet.js` (`setupcodeMaken`) | acht tekens, eenmalig, 30 minuten geldig | laag | open |
 | AAN-29 | Na Afgerond | Regel | `src/server/rechten.js` (`reden`) | editie alleen-lezen | laag | open |
-| AAN-30 | Wie het archief ziet | Flow | | iedere deelnemer met een geldige link van een editie van de groep | laag | open |
+| AAN-30 | Wie het archief ziet | Flow | `src/server/acties/start.js` (`archiefScherm`) | iedere deelnemer met een geldige link van een editie van de groep | laag | open |
 | AAN-31 | Links per editie | Flow | | nieuwe link en pincode per editie; oude links alleen-lezen na Afgerond | midden | open |
 | AAN-32 | Hashen | Regel | `src/server/crypto.js` (`ITERATIES`) | tokens SHA-256 zonder salt; pincode en wachtwoord iteratieve SHA-256 met salt, aantal iteraties zo dat een login in Apps Script onder 1 seconde blijft (meten in fase 20) | laag | open |
 | AAN-33 | Ingevuld-status | Regel | `src/shared/antwoorden.js` (`ontbreekt`) | minstens één weekend, beide budgetten en reistijd gekozen | laag | open |
@@ -101,6 +102,7 @@ die test aan en werk je hier de status bij.
 | AAN-68 | Maaltijden en koks | Regel | `src/shared/maaltijden.js` (`MAALTIJD_GRENZEN`) | maaltijden hebben een omschrijving tot 100 tekens en hooguit 12 per editie; de organisator past aan en voegt toe, verwijderen kan niet (de spec kent geen actie); een afgehaakte deelnemer kan geen kok worden en staat niet meer bij de koks; alleen de koks van een maaltijd krijgen de eetwensen (aantallen en vrije teksten, in willekeurige volgorde), de organisator alleen als hij zelf kookt; een ingrediënt kan alleen een kok van die maaltijd toevoegen, via `itemOpslaan` met `maaltijdId`, en blijft een boodschap | laag | open |
 | AAN-69 | Programmapunten en uitgelicht punt | Regel | `src/shared/maaltijden.js` (`uitgelicht`) | titel tot 80 tekens, adres tot 120, link https tot 300, notitie tot 300, hooguit 60 punten; het eind ligt na het begin; uitgelicht is het punt dat nu loopt (zonder eindtijd tot het volgende begint, het laatste tot het einde van de dag), anders het eerstvolgende; "vandaag" volgt de klok van het apparaat | laag | open |
 | AAN-70 | Grenzen en regels kamers en ritten | Regel | `src/shared/kamers.js` (`KAMER_GRENZEN`, `RIT_GRENZEN`) | kamernaam tot 40 tekens, 1 tot 12 slaapplaatsen, hooguit 30 kamers; vertrekplaats tot 60 tekens, 1 tot 8 vrije plaatsen; een deelnemer slaapt in hooguit één kamer en zit in hooguit één rit; een bestuurder heeft één rit (opnieuw aanbieden past hem aan) en rijdt niet bij een ander mee; minder plaatsen dan bewoners of meerijders kan niet; kamer en rit verwijderen gaat met `verwijderen: true` in `kamersOpslaan` en `ritOpslaan` (de spec kent geen aparte actie); afhaken haalt iemand uit kamer, rit en meerijders (zijn rit gaat mee weg) en terugdraaien brengt hem niet terug; iedereen ziet de wens voor een eigen kamer bij de naam, ID's alleen voor de organisator | laag | open |
+| AAN-71 | Menu en nieuwe editie | Flow | `src/shared/start.js` (`MENU_VANAF`), `src/server/acties/editie.js` (`bronEditie`) | het menu kent alleen de stap van de nieuwste editie van de organisator (een deelnemer heeft er één) en haalt die op bij elke navigatie; Overzicht staat vanaf de stap Overzicht in het menu, de overige deelnemersschermen vanaf Accommodatie, de beheerschermen van de organisator altijd; Nieuwe editie (`editieAanmaken` met `vanEditieId`) kan alleen vanuit een afgeronde editie waar de maker organisator van is, neemt blokken, voorkeursmaanden en lijsten over en zet leden en rollen als voorinvulling in het formulier (lege keuze op de server neemt alle actieve leden van de bron over); de aftelteller verdwijnt na de vrijdag | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -127,3 +129,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-67 toegevoegd in fase 14 (boodschappenlijst); AAN-27 kreeg zijn codeplek.
 - 2026-11-09: AAN-68 en AAN-69 toegevoegd in fase 15 (kookbeurten en programma); AAN-18, AAN-25 en AAN-34 kregen hun codeplek.
 - 2026-11-09: AAN-70 toegevoegd in fase 16 (kamers en carpool); AAN-23 en AAN-24 kregen hun codeplek.
+- 2026-11-09: AAN-71 toegevoegd in fase 17 (startschermen en archief); AAN-12, AAN-29 en AAN-30 kregen hun codeplek.

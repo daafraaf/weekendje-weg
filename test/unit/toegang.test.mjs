@@ -17,7 +17,7 @@ function opzet(opties) {
   const vraag = (verzoek) => nep.api.verwerk(JSON.stringify({ apiVersie: API_VERSIE, ...verzoek }));
   const login = (i, pin) => vraag({ actie: 'inloggenDeelnemer', data: { token: demo.tokens[i], pin } });
   // Het scherm heeft nog geen handler: 'ongeldig' betekent dat sessie en rechten zijn geslaagd.
-  const status = (sessie) => vraag({ actie: 'scherm', sessie, data: { naam: 'start' } }).fout;
+  const status = (sessie) => vraag({ actie: 'scherm', sessie, data: { naam: 'start' } }).fout || 'geldig';
   return { demo, klok, nep, vraag, login, status };
 }
 
@@ -47,13 +47,13 @@ test('TOE-2: juiste link en pincode geven een sessie die 60 dagen werkt (AAN-02)
   assert.equal(r.data.soort, 'deelnemer');
   assert.equal(Date.parse(r.data.verloopt), START + SESSIE_DEELNEMER_MS);
   assert.equal(SESSIE_DEELNEMER_MS, 60 * 24 * 3600 * 1000);
-  assert.equal(status(r.data.sessie), 'ongeldig');
+  assert.equal(status(r.data.sessie), 'geldig');
   nep.store.nieuwVerzoek();
   const rij = nep.store.lees('Sessies')[0];
   assert.equal(rij.tokenHash, hashToken(nodeSha256, r.data.sessie)); // alleen de hash staat in de Sheet
   assert.ok(!JSON.stringify(nep.store.lees('Sessies')).includes(r.data.sessie));
   klok.ms = START + SESSIE_DEELNEMER_MS - 1000;
-  assert.equal(status(r.data.sessie), 'ongeldig');
+  assert.equal(status(r.data.sessie), 'geldig');
   klok.ms = START + SESSIE_DEELNEMER_MS + 1000;
   assert.equal(status(r.data.sessie), 'verlopen');
 });
@@ -141,7 +141,7 @@ test('TOE-9: uitloggen verwijdert de sessie in de Sheet', () => {
   nep.store.nieuwVerzoek();
   assert.equal(nep.store.lees('Sessies').length, 1);
   assert.equal(vraag({ actie: 'scherm', sessie, data: { naam: 'start' } }).fout, 'geen_toegang');
-  assert.equal(status(andere), 'ongeldig');
+  assert.equal(status(andere), 'geldig');
   assert.equal(vraag({ actie: 'uitloggen' }).fout, 'geen_toegang');
 });
 

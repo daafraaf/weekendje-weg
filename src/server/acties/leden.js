@@ -43,7 +43,7 @@ export function beheerScherm({ store, sessie }) {
   const deelnemers = store.lees('Deelnemers');
   const eigenEdities = new Set(deelnemers.filter((d) => d.lidId === sessie.lidId && d.rol === 'organisator').map((d) => d.editieId));
   const edities = store.lees('Edities').filter((e) => eigenEdities.has(e.id)).map((e) => ({
-    id: e.id, titel: e.titel, jaar: e.jaar, stap: e.stap, deadline: e.deadline, stapData: e.stapData || {},
+    id: e.id, titel: e.titel, jaar: e.jaar, stap: e.stap, deadline: e.deadline, stapData: e.stapData || {}, voorkeursmaanden: e.voorkeursmaanden || [],
     blokken: blokkenVan(e), lijsten: lijstenVan(e),
     vragen: vragenVan(store, e.id).map((q) => ({ ...q, heeftAntwoord: heeftAntwoord(store, e.id, q.id) })),
     deelnemers: deelnemers.filter((d) => d.editieId === e.id).map((d) => ({ id: d.id, lidId: d.lidId, rol: d.rol, heeftLink: Boolean(d.tokenHash) })),

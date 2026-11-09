@@ -5,13 +5,22 @@ import { v } from '../validatie.js';
 import { hashToken, hashGeheim, maakToken, maakSalt, maakPincode } from '../crypto.js';
 import { resetPogingen } from './toegang.js';
 import { beheerlinkVoorLid } from './opzet.js';
-import { startlijsten } from '../../shared/lijsten.js';
+import { startlijsten, lijstenVan, blokkenVan } from '../../shared/lijsten.js';
 import { maakStartItems } from './items.js';
 import { BLOKKEN_STANDAARD, MAANDEN_STANDAARD, stapDatums } from '../../shared/editie.js';
 
 const MAX_DEELNEMERS = 20; // AAN-20: een groep heeft hooguit 20 leden
 
 const unieke = (lijst) => [...new Set(lijst)];
+
+// ARC-2, AAN-71: een nieuwe editie kan alleen voortbouwen op een afgeronde editie waar de maker organisator van is.
+function bronEditie(store, sessie, id) {
+  const bron = store.vind('Edities', id);
+  const organisator = bron && store.lees('Deelnemers').some((d) => d.editieId === id && d.lidId === sessie.lidId && d.rol === 'organisator');
+  if (!organisator) throw new ApiFout('geen_toegang');
+  if (bron.stap !== 'afgerond') throw new ApiFout('gesloten', 'Een nieuwe editie bouwt voort op een afgeronde editie.');
+  return bron;
+}
 
 export const editieAanmaken = {
   schema: v.object({
@@ -26,26 +35,32 @@ export const editieAanmaken = {
     })),
     deelnemers: v.lijst(v.id(), { max: MAX_DEELNEMERS }),
     organisatoren: v.lijst(v.id(), { max: MAX_DEELNEMERS }),
+    vanEditieId: v.optioneel(v.id()),
   }),
   uitvoeren({ store, sessie, data }) {
     const titel = data.titel.trim();
     if (!titel) throw new ApiFout('ongeldig', 'Geef de editie een titel.');
     if (data.periodeTot < data.periodeVan) throw new ApiFout('ongeldig', 'De periode eindigt voor ze begint.');
+    const bron = data.vanEditieId ? bronEditie(store, sessie, data.vanEditieId) : null;
+    // ARC-2, AAN-71: zonder eigen keuze nemen de deelnemers en organisatoren van de afgeronde editie over.
+    const overnemen = bron && !data.deelnemers.length && !data.organisatoren.length;
+    const vorige = (rol) => (overnemen ? store.lees('Deelnemers').filter((d) => d.editieId === bron.id && (!rol || d.rol === rol)).map((d) => d.lidId) : []);
     // AAN-46: wie de editie maakt, is er altijd deelnemer en organisator van; een editie heeft minstens twee deelnemers.
-    const organisatoren = unieke([sessie.lidId, ...data.organisatoren]);
-    const lidIds = unieke([...organisatoren, ...data.deelnemers]);
-    if (lidIds.length < 2) throw new ApiFout('ongeldig', 'Kies minstens twee deelnemers.');
     const leden = new Map(store.lees('Leden').map((l) => [l.id, l]));
+    const weg = (id) => overnemen && !(leden.get(id) || {}).actief; // een lid dat intussen inactief is, blijft bij overnemen weg
+    const organisatoren = unieke([sessie.lidId, ...data.organisatoren, ...vorige('organisator')]).filter((id) => id === sessie.lidId || !weg(id));
+    const lidIds = unieke([...organisatoren, ...data.deelnemers, ...vorige().filter((id) => !weg(id))]);
+    if (lidIds.length < 2) throw new ApiFout('ongeldig', 'Kies minstens twee deelnemers.');
     for (const id of lidIds) {
       const lid = leden.get(id);
       if (!lid || !lid.actief) throw new ApiFout('ongeldig', 'Een gekozen lid bestaat niet of is inactief.');
     }
-    const maanden = unieke(data.voorkeursmaanden || MAANDEN_STANDAARD).sort((a, b) => a - b);
-    const lijsten = startlijsten();
+    const maanden = unieke(data.voorkeursmaanden || (bron && bron.voorkeursmaanden) || MAANDEN_STANDAARD).sort((a, b) => a - b);
+    const lijsten = bron ? JSON.parse(JSON.stringify(lijstenVan(bron))) : startlijsten();
     const editie = store.voegToe('Edities', {
       jaar: data.jaar, titel, stap: 'invullen', stapData: stapDatums(data.deadline),
       periodeVan: data.periodeVan, periodeTot: data.periodeTot, voorkeursmaanden: maanden, deadline: data.deadline,
-      blokken: { ...BLOKKEN_STANDAARD, ...(data.blokken || {}) }, lijsten,
+      blokken: { ...(bron ? blokkenVan(bron) : BLOKKEN_STANDAARD), ...(data.blokken || {}) }, lijsten,
       vastgelegdWeekend: '', deelvorm: 'info', geboektAccommodatieId: '', boodschappenDefinitief: false,
     });
     maakStartItems(store, editie.id, lijsten); // §7.7.2: startlijst keuken en spullen

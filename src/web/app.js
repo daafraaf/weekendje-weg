@@ -24,7 +24,10 @@ import { maakAccommodatieBeheer } from './screens/accommodatie-beheer.js';
 import { maakMeenemen } from './screens/meenemen.js';
 import { maakBoodschappen } from './screens/boodschappen.js';
 import { maakKookbeurten } from './screens/kookbeurten.js';
-import { maakProgramma, maakProgrammaVandaag } from './screens/programma.js';
+import { maakProgramma } from './screens/programma.js';
+import { maakStart } from './screens/start.js';
+import { maakArchief } from './screens/archief.js';
+import { maakMenuItems } from './components/menu.js';
 import { maakKamers } from './screens/kamers.js';
 import { maakCarpool } from './screens/carpool.js';
 import { registreer, routelijst, start, ververs } from './router.js';
@@ -38,12 +41,17 @@ const VOORBEELD = {
 registreer('start', {
   titel: 'Start',
   icoon: ['m3 11 9-8 9 8', 'M5 10v10h5v-6h4v6h5V10'],
+  render(params) {
+    return maakStart({ sessie: leesSessie(localStorage), params, bijVerlopen: () => { wisSessie(localStorage); kies(); }, uitloggen, bijStap: zetMenuStap });
+  },
+});
+
+// ARC-1: alle edities van de groep, voor iedere deelnemer en organisator.
+registreer('archief', {
+  titel: 'Archief',
+  icoon: ['M4 6h16v4H4z', 'M5.5 10v9h13v-9', 'M10 14h4'],
   render() {
-    return h('section', { class: 'glass kaart' },
-      h('h1', { class: 't-title' }, 'Weekendje weg'),
-      h('p', { class: 't-body t-sec' }, 'Je bent ingelogd. Hier komt je startscherm.'),
-      soortNu() === 'deelnemer' ? maakProgrammaVandaag({ sessie: leesSessie(localStorage), bijVerlopen: () => { wisSessie(localStorage); kies(); } }) : null,
-      h('div', { class: 'start-acties' }, h('button', { class: 'btn btn-ghost', type: 'button', onclick: uitloggen }, 'Uitloggen')));
+    return maakArchief({ sessie: leesSessie(localStorage), bijVerlopen: () => { wisSessie(localStorage); kies(); } });
   },
 });
 
@@ -73,8 +81,8 @@ registreer('editie-nieuw', {
   titel: 'Nieuwe editie',
   soort: 'beheer',
   icoon: ['M5 6h14v14H5z', 'M5 10h14', 'M9 3v4M15 3v4', 'M12 13v4M10 15h4'],
-  render() {
-    return maakEditieNieuw({ sessie: leesSessie(localStorage), bijVerlopen: bijVerlopenBeheer, bijKlaar: (id) => { location.hash = `#/uitnodigen?editie=${id}`; } });
+  render(params) {
+    return maakEditieNieuw({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer, bijKlaar: (id) => { location.hash = `#/uitnodigen?editie=${id}`; } });
   },
 });
 
@@ -252,8 +260,28 @@ root.append(schil, melding);
 
 const soortNu = () => { const s = leesSessie(localStorage); return s ? s.soort : undefined; };
 
-function toonMenu(actief) {
-  menu.replaceChildren(...routelijst(soortNu()).map((r) => h('a', { href: `#/${r.naam}`, 'aria-current': r.naam === actief ? 'page' : false }, icoon(r.icoon, 24), h('span', {}, r.titel))));
+// STA-6: het menu hangt af van de stap van de editie. Het startscherm meldt die stap, de andere schermen laten de schil hem ophalen.
+let menuStap = null;
+let menuActief = '';
+function toonMenu(actief = menuActief) {
+  menuActief = actief;
+  menu.replaceChildren(...maakMenuItems({ routes: routelijst(soortNu()), stap: menuStap, actief }));
+}
+
+function zetMenuStap(stap) {
+  if (stap === menuStap) return;
+  menuStap = stap;
+  toonMenu();
+}
+
+async function haalMenuStap() {
+  const sessie = leesSessie(localStorage);
+  if (!sessie) return;
+  try {
+    const api = maakApi({ basisUrl: scriptUrl(sessie.scriptId), sessie: () => sessie.sessie, editieId: () => sessie.editieId || '' });
+    const g = await api.anroep('scherm', { naam: 'start' }, { schrijft: false });
+    if (leesSessie(localStorage)) zetMenuStap(g.editie ? g.editie.stap : null);
+  } catch { /* zonder verbinding blijft het menu zoals het was */ }
 }
 
 function toonBalk(params) {
@@ -281,7 +309,7 @@ function kies() {
   schil.hidden = !sessie;
   if (sessie) {
     const sleutel = sessie.sessie;
-    if (!schilGestart) { schilGestart = true; start(inhoud, (naam, params) => { toonMenu(naam); toonBalk(params); }, soortNu); } else if (sleutel !== laatsteSessie) ververs();
+    if (!schilGestart) { schilGestart = true; start(inhoud, (naam, params) => { toonMenu(naam); toonBalk(params); if (naam !== 'start') haalMenuStap(); }, soortNu); } else if (sleutel !== laatsteSessie) ververs();
     laatsteSessie = sleutel;
     return;
   }
@@ -305,6 +333,7 @@ function bijAnder() {
 
 function bijIngelogd(sessie) {
   geplakteBeheerlink = null;
+  menuStap = null; // een nieuwe sessie begint zonder stap
   bewaarSessie(localStorage, sessie);
   history.replaceState(null, '', `${location.pathname}${location.search}#/${sessie.soort === 'beheer' ? 'leden' : 'start'}`); // de link blijft niet in de adresbalk staan
   kies();
@@ -319,6 +348,7 @@ async function uitloggen() {
     } catch { /* AAN-42 */ }
   }
   wisSessie(localStorage);
+  menuStap = null;
   history.replaceState(null, '', `${location.pathname}${location.search}`);
   kies();
 }
