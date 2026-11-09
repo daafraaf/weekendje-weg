@@ -14,3 +14,4 @@ Oudere regels uit het sessielog van MEMORY.md.
 - 2026-11-09 fase 9: voortgang, overzicht, detail en stappen af (OVZ-1 t/m 7, EDI-7, 8, 10), check groen, AAN-56 t/m AAN-58 toegevoegd, AAN-04 t/m AAN-07 hebben hun codeplek; demo heeft nu antwoorden; zie `docs/overdracht/fase-09.md`.
 - 2026-11-09 fase 10: posten en verdeling af (GELD-1 t/m 7), check groen, AAN-59 t/m AAN-61 toegevoegd, AAN-09, 10, 16 hebben hun codeplek; mobiel menu scrolt; zie `docs/overdracht/fase-10.md`.
 - 2026-11-09 fase 11: afrekening, betalingen in rondes, betaalverzoek en afhaken af (GELD-8 t/m 11, EDI-9), check groen, AAN-62 toegevoegd, AAN-22 en AAN-35 hebben hun codeplek; zie `docs/overdracht/fase-11.md`.
+- 2026-11-09 fase 12: weekend vastleggen, accommodaties beheren, deelvorm en stemmen af (ACC-1 t/m 5), check groen, AAN-63 t/m AAN-65 toegevoegd, AAN-08 heeft zijn codeplek; zie `docs/overdracht/fase-12.md`.

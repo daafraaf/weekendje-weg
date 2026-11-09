@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.16, 9 november 2026: AAN-68 en AAN-69 (fase 15).
 Versie 0.15, 9 november 2026: AAN-67 (fase 14).
 Versie 0.14, 9 november 2026: AAN-66 (fase 13).
 Versie 0.13, 9 november 2026: AAN-63 t/m AAN-65 (fase 12).
@@ -45,14 +46,14 @@ die test aan en werk je hier de status bij.
 | AAN-15 | Kalendervenster | Instelling | `src/shared/datums.js` (`standaardPeriode`) | kalenderjaar van de editie: 1 januari tot en met 31 december van `jaar` (was: twaalf maanden vanaf aanmaken) | laag | bevestigd 9 nov 2026 |
 | AAN-16 | Categorieën van posten | Regel | `src/shared/geld.js` (`CATEGORIEEN`) | Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig | laag | open |
 | AAN-17 | Volgorde bij tikken in de kalender | Regel | `src/shared/beschikbaarheid.js` (`volgendeWaarde`) | leeg, ja, misschien, nee, leeg | laag | open |
-| AAN-18 | Standaardmaaltijden | Instelling | | vr diner; za ontbijt, lunch, diner; zo ontbijt, lunch | laag | open |
+| AAN-18 | Standaardmaaltijden | Instelling | `src/server/acties/maaltijden.js` (`maakStandaardMaaltijden`) | vr diner; za ontbijt, lunch, diner; zo ontbijt, lunch | laag | open |
 | AAN-19 | Categorie "Overig" en categorievoorstel | Regel | `src/shared/categorieen.js` (`stelCategorieVoor`) | 13e categorie Overig; voorstel uit een vaste woordenlijst | laag | open |
 | AAN-20 | Groepsgrootte | Regel | `src/server/acties/opzet.js` (`MIN_LEDEN`, `MAX_LEDEN`) | 2 tot en met 20 | laag | open |
 | AAN-21 | Eten en drinken, activiteiten en programma standaard aan | Instelling | | aan, uit te zetten door de organisator | laag | open |
 | AAN-22 | Geen rekeningnummer in betaalverzoek | Regel | `src/shared/whatsapp.js` (`betaalverzoekTekst`) | tekst zonder IBAN of betaallink | laag | open |
 | AAN-23 | Kamers | Flow | | organisator maakt kamers met slaapplaatsen en deelt in; niet voller dan slaapplaatsen | laag | open |
 | AAN-24 | Carpool | Flow | | bestuurder biedt rit aan, meerijder kiest zelf, organisator kan indelen | laag | open |
-| AAN-25 | Programma vullen | Regel | | alleen de organisator | laag | open |
+| AAN-25 | Programma vullen | Regel | `src/server/acties/programma.js` (`programmaOpslaan`) | alleen de organisator | laag | open |
 | AAN-26 | Items verwijderen | Regel | `src/server/acties/items.js` (`itemVerwijderen`) | eigen item tot definitief; organisator elk item | laag | open |
 | AAN-27 | Afvinken bij boodschappen | Regel | `src/server/acties/items.js` (`afvinken`) | iedereen, gedeeld | laag | open |
 | AAN-28 | Setupcode | Regel | `src/server/acties/opzet.js` (`setupcodeMaken`) | acht tekens, eenmalig, 30 minuten geldig | laag | open |
@@ -61,7 +62,7 @@ die test aan en werk je hier de status bij.
 | AAN-31 | Links per editie | Flow | | nieuwe link en pincode per editie; oude links alleen-lezen na Afgerond | midden | open |
 | AAN-32 | Hashen | Regel | `src/server/crypto.js` (`ITERATIES`) | tokens SHA-256 zonder salt; pincode en wachtwoord iteratieve SHA-256 met salt, aantal iteraties zo dat een login in Apps Script onder 1 seconde blijft (meten in fase 20) | laag | open |
 | AAN-33 | Ingevuld-status | Regel | `src/shared/antwoorden.js` (`ontbreekt`) | minstens één weekend, beide budgetten en reistijd gekozen | laag | open |
-| AAN-34 | Wat koks zien | Flow | | aantallen per eetwens en vrije tekst zonder namen; allergieën met namen alleen voor de organisator (volgt B-28; zonder deze regel kan ieder lid zich kok maken en alle allergieën met namen zien) | midden | open |
+| AAN-34 | Wat koks zien | Flow | `src/server/acties/maaltijden.js` (`eetwensen`) | aantallen per eetwens en vrije tekst zonder namen; allergieën met namen alleen voor de organisator (volgt B-28; zonder deze regel kan ieder lid zich kok maken en alle allergieën met namen zien) | midden | open |
 | AAN-35 | Afrekening goed genoeg in plaats van minimaal | Regel | `src/shared/afrekening.js` (`afrekening`) | eerst gelijke bedragen koppelen, daarna grootste schuldenaar naar grootste schuldeiser | laag | open |
 | AAN-36 | Wie de pincode kiest | Regel | `src/server/crypto.js` (`maakPincode`) | het script kiest willekeurig zes cijfers; de organisator verstuurt hem alleen (F-38 zei "de organisator voegt een wachtwoordje toe") | laag | open |
 | AAN-37 | Navigatielijst voor vaste externe links | Regel | `scripts/check-bronregels.mjs` (`NAVIGATIELIJST`) | de enige plek in `src/web` waar `wa.me` en `maps.google.com` mogen staan is `src/web/navigatie.js` (spec noemt de lijst, niet de bestandsnaam) | laag | open |
@@ -96,6 +97,8 @@ die test aan en werk je hier de status bij.
 
 | AAN-66 | Grenzen en gedrag van items | Regel | `src/server/acties/items.js` (`ITEM_GRENZEN`) | naam 1 tot 60 tekens en hooguit 200 items per editie; het voorstel voor de categorie geldt alleen als de aanvrager geen categorie meestuurt; een afgehaakte deelnemer kan niet claimen en terugdraaien van afhaken brengt de claims niet terug; de startlijst keuken en spullen komt als items uit de lijsten van de editie en is van niemand (alleen de organisator past ze aan); een bestaand item wijzigen volgt de regel voor verwijderen (AAN-26) | laag | open |
 | AAN-67 | Tellingen bij een boodschap | Regel | `src/shared/boodschappen.js` (`tellingenBij`) | een wens uit eten en drinken hoort bij een boodschap als al haar woorden in de itemnaam staan (begin van een woord telt vanaf vier tekens); alleen wensen met minstens één niet-afgehaakte persoon; de tekst staat bij het item ("2 personen"), niet in de gekopieerde tekst, die als "- naam" onder de categoriekop staat zonder afgevinkte items en zonder lege categorieën | laag | open |
+| AAN-68 | Maaltijden en koks | Regel | `src/shared/maaltijden.js` (`MAALTIJD_GRENZEN`) | maaltijden hebben een omschrijving tot 100 tekens en hooguit 12 per editie; de organisator past aan en voegt toe, verwijderen kan niet (de spec kent geen actie); een afgehaakte deelnemer kan geen kok worden en staat niet meer bij de koks; alleen de koks van een maaltijd krijgen de eetwensen (aantallen en vrije teksten, in willekeurige volgorde), de organisator alleen als hij zelf kookt; een ingrediënt kan alleen een kok van die maaltijd toevoegen, via `itemOpslaan` met `maaltijdId`, en blijft een boodschap | laag | open |
+| AAN-69 | Programmapunten en uitgelicht punt | Regel | `src/shared/maaltijden.js` (`uitgelicht`) | titel tot 80 tekens, adres tot 120, link https tot 300, notitie tot 300, hooguit 60 punten; het eind ligt na het begin; uitgelicht is het punt dat nu loopt (zonder eindtijd tot het volgende begint, het laatste tot het einde van de dag), anders het eerstvolgende; "vandaag" volgt de klok van het apparaat | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -120,3 +123,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-63 t/m AAN-65 toegevoegd in fase 12 (datum en accommodaties); AAN-08 kreeg zijn codeplek.
 - 2026-11-09: AAN-66 toegevoegd in fase 13 (wie neemt wat mee); AAN-11, AAN-19 en AAN-26 kregen hun codeplek.
 - 2026-11-09: AAN-67 toegevoegd in fase 14 (boodschappenlijst); AAN-27 kreeg zijn codeplek.
+- 2026-11-09: AAN-68 en AAN-69 toegevoegd in fase 15 (kookbeurten en programma); AAN-18, AAN-25 en AAN-34 kregen hun codeplek.

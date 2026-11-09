@@ -384,3 +384,30 @@ textarea.field { min-height: 88px; padding: 12px 14px; resize: vertical; }
 .vink .klaar { text-decoration: line-through; color: var(--text-secondary); }
 .mee-velden { flex: 1 1 auto; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .mee-plus { background: var(--accent-soft); color: var(--accent); }
+
+.kk-uit { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+.kk .row + .kk-uit { padding-top: 0; }
+.kk { border-top: 1px solid var(--line); }
+.kk:first-child { border-top: 0; }
+.kk-wensen { display: flex; flex-direction: column; gap: 8px; }
+.kk-privacy { display: flex; gap: 6px; align-items: center; }
+.kk-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.kk-ingredient { display: flex; flex-direction: column; gap: 8px; }
+.kk-nieuw { gap: 8px; border-top: 0; padding: 0; }
+.kk-nieuwe { display: flex; flex-direction: column; gap: 10px; }
+
+.tl { position: relative; padding-left: 26px; }
+.tl::before { content: ""; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px; background: var(--line-strong); border-radius: 1px; }
+.dot { position: absolute; left: -24px; top: 16px; width: 14px; height: 14px; border-radius: 50%; background: var(--surface-solid); border: 2.5px solid var(--accent); }
+.dot.now { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.prg-lijst { list-style: none; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.prg-punt { position: relative; }
+.prg-kaart { display: flex; gap: 14px; flex-wrap: wrap; }
+.prg-tijd { font-weight: 700; min-width: 48px; }
+.prg-tekst { flex: 1 1 0; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.prg-titel { font-weight: 650; }
+.prg-chip { min-height: 22px; margin-left: 6px; }
+.prg-site { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; }
+.prg-form { display: flex; flex-direction: column; gap: 10px; }
+.prg-acties { display: flex; gap: 10px; align-items: center; }
+.prg-vandaag { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }

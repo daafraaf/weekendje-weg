@@ -23,6 +23,8 @@ import { maakAccommodaties } from './screens/accommodaties.js';
 import { maakAccommodatieBeheer } from './screens/accommodatie-beheer.js';
 import { maakMeenemen } from './screens/meenemen.js';
 import { maakBoodschappen } from './screens/boodschappen.js';
+import { maakKookbeurten } from './screens/kookbeurten.js';
+import { maakProgramma, maakProgrammaVandaag } from './screens/programma.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 
 // AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
@@ -38,6 +40,7 @@ registreer('start', {
     return h('section', { class: 'glass kaart' },
       h('h1', { class: 't-title' }, 'Weekendje weg'),
       h('p', { class: 't-body t-sec' }, 'Je bent ingelogd. Hier komt je startscherm.'),
+      soortNu() === 'deelnemer' ? maakProgrammaVandaag({ sessie: leesSessie(localStorage), bijVerlopen: () => { wisSessie(localStorage); kies(); } }) : null,
       h('div', { class: 'start-acties' }, h('button', { class: 'btn btn-ghost', type: 'button', onclick: uitloggen }, 'Uitloggen')));
   },
 });
@@ -192,6 +195,24 @@ registreer('boodschappen', {
   icoon: ['M4 5h2l2 10h9l2-7H7', 'M10 19.5h.01M17 19.5h.01'],
   render(params) {
     return maakBoodschappen({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+  },
+});
+
+// KOK-1 t/m KOK-4: maaltijden met koks, ingrediënten en eetwensen.
+registreer('kookbeurten', {
+  titel: 'Kookbeurten',
+  icoon: ['M5 11h14v3a5 5 0 0 1-5 5h-4a5 5 0 0 1-5-5z', 'M8 7c0-1 1-1 1-2M12 7c0-1 1-1 1-2M16 7c0-1 1-1 1-2'],
+  render(params) {
+    return maakKookbeurten({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+  },
+});
+
+// PRG-1, PRG-2: het weekendprogramma per dag; de organisator beheert het hier.
+registreer('programma', {
+  titel: 'Programma',
+  icoon: ['M5 6h14v14H5z', 'M5 10h14', 'M9 3v4M15 3v4', 'M9 14h6'],
+  render(params) {
+    return maakProgramma({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
   },
 });
 

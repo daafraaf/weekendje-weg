@@ -38,6 +38,7 @@ export function maakBoodschappen({ sessie, params = {}, bijVerlopen, fetchFn }) 
     return h('label', { class: 'vink', 'data-item': i.id },
       vink,
       h('span', { class: i.afgevinkt ? 'bd-naam klaar' : 'bd-naam' }, i.naam),
+      i.maaltijd ? h('span', { class: 'tag', 'data-maaltijd': true }, i.maaltijd) : null, // KOK-3
       tellingen.map((t) => h('span', { class: 'tag tag-acc' }, `${t.label}: ${personenTekst(t.aantal)}`)),
       i.soort === 'keuken' ? h('span', { class: 'tag' }, 'uit eigen keuken, geen naam') : null);
   }

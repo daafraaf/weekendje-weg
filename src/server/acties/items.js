@@ -4,6 +4,7 @@ import { ApiFout } from '../fouten.js';
 import { v } from '../validatie.js';
 import { CATEGORIEEN, STANDAARD_CATEGORIE, stelCategorieVoor } from '../../shared/categorieen.js';
 import { blokkenVan, lijstenVan } from '../../shared/lijsten.js';
+import { maaltijdNaam } from '../../shared/maaltijden.js';
 import { kiesEditie } from './overzicht.js';
 import { editieStappen } from './stappen.js';
 import { deelnemersVan, mijnRij, naamFunctie } from './posten.js';
@@ -50,6 +51,7 @@ export const itemOpslaan = {
     soort: v.keuze(SOORTEN),
     naam: v.tekst({ min: 1, max: ITEM_GRENZEN.naamMax }),
     categorie: v.optioneel(v.keuze(CATEGORIEEN)),
+    maaltijdId: v.optioneel(v.id()),
   }),
   context: itemContext,
   uitvoeren({ store, sessie, editieId, data }) {
@@ -59,10 +61,19 @@ export const itemOpslaan = {
     let rij;
     if (!data.id) {
       if (itemsVan(store, editieId).length >= ITEM_GRENZEN.aantalMax) throw new ApiFout('ongeldig', `Er passen hooguit ${ITEM_GRENZEN.aantalMax} items in een editie.`);
-      rij = store.voegToe('Items', { editieId, soort: data.soort, naam, categorie, maaltijdId: '', toegevoegdDoor: mijnRij(store, sessie, editieId) || '', afgevinkt: false });
+      const ik = mijnRij(store, sessie, editieId) || '';
+      // KOK-3, §7.10.3: een ingrediënt is een boodschap met `maaltijdId`; alleen een kok van die maaltijd voegt het toe.
+      if (data.maaltijdId) {
+        const m = store.vind('Maaltijden', data.maaltijdId);
+        if (!m || m.editieId !== editieId) throw new ApiFout('gewijzigd');
+        if (!ik || !store.lees('Koks').some((k) => k.maaltijdId === m.id && k.deelnemerId === ik)) throw new ApiFout('geen_toegang');
+        if (data.soort !== 'boodschap') throw new ApiFout('ongeldig', 'Een ingrediënt is een boodschap.');
+      }
+      rij = store.voegToe('Items', { editieId, soort: data.soort, naam, categorie, maaltijdId: data.maaltijdId || '', toegevoegdDoor: ik, afgevinkt: false });
     } else {
       if (data.versie === undefined) throw new ApiFout('ongeldig', 'Veld data.versie: ontbreekt.');
-      bestaandItem(store, editieId, data.id);
+      const bestaand = bestaandItem(store, editieId, data.id);
+      if (bestaand.maaltijdId && data.soort !== 'boodschap') throw new ApiFout('ongeldig', 'Een ingrediënt is een boodschap.');
       rij = store.werkBij('Items', data.id, { soort: data.soort, naam, categorie }, data.versie);
     }
     return { id: rij.id, versie: rij.versie, categorie: rij.categorie };
@@ -144,7 +155,7 @@ export const boodschappenDefinitief = {
 };
 
 // MEE-9, spec §7.8.8: per vinkje in eten en drinken het aantal niet-afgehaakte deelnemers, zonder namen.
-function etenDrinkenTelling(store, editie, deelnemers) {
+export function etenDrinkenTelling(store, editie, deelnemers) {
   if (!blokkenVan(editie).etenDrinken) return [];
   const actief = new Set(deelnemers.filter((d) => !d.afgehaakt).map((d) => d.id));
   const datas = store.lees('Antwoorden').filter((a) => a.editieId === editie.id && actief.has(a.deelnemerId)).map((a) => a.data || {});
@@ -163,6 +174,8 @@ export function meenemenScherm(h) {
   const ik = mijnRij(store, sessie, editie.id);
   const claims = store.lees('Claims');
   const definitief = Boolean(editie.boodschappenDefinitief);
+  // KOK-3: de maaltijdnaam staat bij het ingrediënt op de boodschappenlijst.
+  const maaltijden = new Map(store.lees('Maaltijden').filter((m) => m.editieId === editie.id).map((m) => [m.id, maaltijdNaam(m)]));
   return {
     edities,
     editie: editieStappen(editie),
@@ -175,6 +188,7 @@ export function meenemenScherm(h) {
     items: itemsVan(store, editie.id).map((i) => ({
       id: i.id, soort: i.soort, naam: i.naam, categorie: i.categorie, versie: i.versie, afgevinkt: Boolean(i.afgevinkt),
       eigen: Boolean(ik) && i.toegevoegdDoor === ik,
+      maaltijd: (i.maaltijdId && maaltijden.get(i.maaltijdId)) || '',
       claims: claims.filter((c) => c.itemId === i.id).map((c) => ({
         naam: naam(c.deelnemerId), ik: c.deelnemerId === ik, ...(organisator ? { deelnemerId: c.deelnemerId } : {}),
       })),

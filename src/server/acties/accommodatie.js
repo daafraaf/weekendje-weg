@@ -8,6 +8,7 @@ import { DEELVORMEN, ACC_GRENZEN, prijsPerPersoon, isHttpsLink } from '../../sha
 import { kiesEditie } from './overzicht.js';
 import { editieStappen } from './stappen.js';
 import { deelnemersVan, mijnRij } from './posten.js';
+import { maakStandaardMaaltijden } from './maaltijden.js';
 
 const accommodatiesVan = (store, editieId) => store.lees('Accommodaties').filter((a) => a.editieId === editieId);
 const stemmenVan = (store, editieId) => store.lees('Stemmen').filter((s) => s.editieId === editieId);
@@ -25,7 +26,8 @@ export const weekendVastleggen = {
     const toegestaan = editie.periodeVan && editie.periodeTot ? vrijdagen(editie.periodeVan, editie.periodeTot) : [];
     if (!toegestaan.includes(data.vrijdag)) throw new ApiFout('ongeldig', 'Kies een vrijdag binnen de periode van de editie.');
     store.werkBij('Edities', editie.id, { vastgelegdWeekend: data.vrijdag }, editie.versie);
-    return { vastgelegdWeekend: data.vrijdag };
+    const maaltijden = maakStandaardMaaltijden(store, editie.id); // KOK-1
+    return { vastgelegdWeekend: data.vrijdag, maaltijden };
   },
 };
 
