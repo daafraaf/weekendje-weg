@@ -13,14 +13,17 @@ export const MELDINGEN = {
 };
 
 export class ApiFout extends Error {
-  constructor(code, melding) {
+  constructor(code, melding, data) {
     super(code);
     this.code = MELDINGEN[code] ? code : 'fout';
     this.melding = melding || MELDINGEN[this.code];
+    this.data = data; // optioneel, bijvoorbeeld { tot } bij een blokkade
   }
 }
 
-export function foutAntwoord(code, melding) {
+export function foutAntwoord(code, melding, data) {
   const c = MELDINGEN[code] ? code : 'fout';
-  return { ok: false, fout: c, melding: melding || MELDINGEN[c] };
+  const antwoord = { ok: false, fout: c, melding: melding || MELDINGEN[c] };
+  if (data !== undefined) antwoord.data = data;
+  return antwoord;
 }

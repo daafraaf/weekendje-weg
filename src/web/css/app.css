@@ -95,6 +95,33 @@ a:hover { text-decoration: underline; }
   .offline-melding { left: 244px; right: 24px; bottom: 24px; max-width: 700px; }
 }
 
+/* Binnenkomen (TOE-1 t/m TOE-4): link plakken en pincode */
+.binnen { max-width: 440px; margin: 0 auto; padding: calc(32px + env(safe-area-inset-top)) 12px 32px; display: flex; flex-direction: column; gap: 16px; }
+.binnen-kop { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 20px 0 8px; }
+.binnen-kop img { border-radius: 16px; }
+.binnen-kop p { max-width: 290px; }
+.binnen-kaart { gap: 16px; }
+.field { width: 100%; min-height: 50px; padding: 0 14px; border-radius: var(--radius-field); border: 1px solid var(--line-strong); background: var(--surface-solid); font: inherit; font-size: 15px; color: var(--text-primary); }
+.label { display: block; font-size: 14px; font-weight: 600; margin: 0 0 6px; padding: 0; }
+.hint { display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; color: var(--text-secondary); margin: 6px 0 0; min-height: 18px; }
+.hint.herkend { color: var(--ja); font-weight: 600; }
+.hint.niet-herkend { color: var(--nee); font-weight: 600; }
+.pin-groep { border: 0; padding: 0; margin: 0; min-width: 0; }
+.pin { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.pin input { width: 100%; height: 58px; border-radius: 14px; border: 1.5px solid var(--line-strong); background: var(--surface-solid); text-align: center; font-size: 24px; font-weight: 700; color: var(--text-primary); }
+.pin-groep:disabled .pin input { opacity: .5; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 20px; border-radius: 16px; border: 0; font-weight: 650; font-size: 16px; width: 100%; }
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-ghost { background: var(--accent-soft); color: var(--accent); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.melding-fout { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 16px; background: var(--nee-soft); }
+.melding-fout .ico { color: var(--nee); display: inline-flex; flex: 0 0 auto; }
+.melding-fout p { margin: 0; }
+.priv { display: flex; align-items: flex-start; gap: 6px; margin: 0 6px; font-size: 13px; line-height: 17px; color: var(--text-secondary); font-weight: 500; }
+.priv svg { flex: 0 0 auto; }
+.start-acties { display: flex; margin-top: 8px; }
+.start-acties .btn { width: auto; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }

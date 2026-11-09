@@ -1,11 +1,13 @@
-// App-schil (fase 2): router, stappenbalk, menu, offline-melding en service worker. Nog geen login.
+// App-schil: binnenkomen met link en pincode (fase 3), daarna router, stappenbalk, menu, offline-melding en service worker.
 import { STAPPEN } from '../shared/stappen.js';
 import { h, icoon } from './dom.js';
-import { OFFLINE_TEKST } from './api.js';
+import { OFFLINE_TEKST, maakApi } from './api.js';
+import { maakBinnenkomen } from './screens/pincode.js';
+import { leesLink, leesSessie, bewaarSessie, wisSessie, scriptUrl } from './sessie.js';
 import { maakStappenbalk } from './components/stappenbalk.js';
 import { registreer, routelijst, start } from './router.js';
 
-// AAN-40: tot de login er is toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
+// AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
 const VOORBEELD = {
   titel: 'Studievrienden · Weekendje weg 2027',
   stapData: { invullen: '2026-12-01', overzicht: '2026-12-03', accommodatie: '2026-12-15' },
@@ -17,7 +19,8 @@ registreer('start', {
   render() {
     return h('section', { class: 'glass kaart' },
       h('h1', { class: 't-title' }, 'Weekendje weg'),
-      h('p', { class: 't-body t-sec' }, 'Hier komt je startscherm zodra je bent ingelogd.'));
+      h('p', { class: 't-body t-sec' }, 'Je bent ingelogd. Hier komt je startscherm.'),
+      h('div', { class: 'start-acties' }, h('button', { class: 'btn btn-ghost', type: 'button', onclick: uitloggen }, 'Uitloggen')));
   },
 });
 
@@ -28,7 +31,9 @@ const menu = h('nav', { class: 'glass menu', 'aria-label': 'Menu' });
 const melding = h('div', { class: 'glass toast offline-melding', role: 'alert', hidden: true },
   h('span', { class: 'ico' }, icoon(['M3 3l18 18', 'M8.5 16.2a5 5 0 0 1 7 0', 'M5 12.6a10 10 0 0 1 4-2.3', 'M14.8 10.4A10 10 0 0 1 19 12.6', 'M2 9a15 15 0 0 1 4.3-2.6', 'M11 5.1A15 15 0 0 1 22 9', 'M12 19.5h.01'], 22)),
   h('span', {}, h('span', { class: 'titel' }, OFFLINE_TEKST)));
-const schil = h('div', { class: 'schil' }, menu, balkPlek, inhoud);
+const schil = h('div', { class: 'schil', hidden: true }, menu, balkPlek, inhoud);
+let binnen = null;
+let schilGestart = false;
 root.append(schil, melding);
 
 function toonMenu(actief) {
@@ -50,6 +55,41 @@ addEventListener('online', zetVerbinding);
 addEventListener('offline', zetVerbinding);
 zetVerbinding();
 
-start(inhoud, (naam, params) => { toonMenu(naam); toonBalk(params); });
+// TOE-1, TOE-2, TOE-11: zonder sessie (of met een link in het fragment) staat er alleen het pinscherm.
+function kies() {
+  const link = leesLink(location.hash);
+  const sessie = link ? null : leesSessie(localStorage);
+  binnen?.remove();
+  binnen = null;
+  schil.hidden = !sessie;
+  if (sessie) {
+    if (!schilGestart) { schilGestart = true; start(inhoud, (naam, params) => { toonMenu(naam); toonBalk(params); }); }
+    return;
+  }
+  binnen = maakBinnenkomen({ link, startTekst: link ? location.href : '', bijIngelogd });
+  root.prepend(binnen);
+}
+
+function bijIngelogd(sessie) {
+  bewaarSessie(localStorage, sessie);
+  history.replaceState(null, '', `${location.pathname}${location.search}#/start`); // de link blijft niet in de adresbalk staan
+  kies();
+}
+
+// TOE-9: de sessie verdwijnt in de Sheet en op dit apparaat. AAN-42: lukt het script niet, dan wist het apparaat toch.
+async function uitloggen() {
+  const sessie = leesSessie(localStorage);
+  if (sessie) {
+    try {
+      await maakApi({ basisUrl: scriptUrl(sessie.scriptId), sessie: () => sessie.sessie, editieId: () => sessie.editieId }).anroep('uitloggen', {}, { schrijft: true });
+    } catch { /* AAN-42 */ }
+  }
+  wisSessie(localStorage);
+  history.replaceState(null, '', `${location.pathname}${location.search}`);
+  kies();
+}
+
+addEventListener('hashchange', kies);
+kies();
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});

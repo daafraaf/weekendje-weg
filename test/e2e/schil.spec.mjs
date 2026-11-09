@@ -1,4 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { test as basis, expect } from '@playwright/test';
+import { logIn } from './hulp.mjs';
+
+// De schil staat achter het pinscherm; deze tests starten met een bestaande sessie (fase 3).
+const test = basis.extend({
+  context: async ({ context }, use) => { await logIn(context); await use(context); },
+});
 
 const breedtes = [360, 1440];
 

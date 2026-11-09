@@ -4,7 +4,7 @@ export const API_VERSIE = 1;
 export const OFFLINE_TEKST = 'Geen verbinding, je gegevens zijn veilig opgeslagen in de Sheet';
 
 export class ApiFoutKlient extends Error {
-  constructor(code, melding) { super(melding); this.code = code; }
+  constructor(code, melding, data) { super(melding); this.code = code; this.data = data; }
 }
 
 export function maakApi({ basisUrl, sessie = () => '', editieId = () => '', fetchFn = (...a) => fetch(...a), online = () => navigator.onLine }) {
@@ -17,13 +17,13 @@ export function maakApi({ basisUrl, sessie = () => '', editieId = () => '', fetc
         const r = await fetchFn(basisUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ actie, sessie: sessie(), editieId: editieId(), data, apiVersie: API_VERSIE }),
+          body: JSON.stringify({ actie, ...(sessie() ? { sessie: sessie() } : {}), ...(editieId() ? { editieId: editieId() } : {}), data, apiVersie: API_VERSIE }),
         });
         antwoord = await r.json();
       } catch {
         throw new ApiFoutKlient('offline', OFFLINE_TEKST);
       }
-      if (!antwoord.ok) throw new ApiFoutKlient(antwoord.fout, antwoord.melding);
+      if (!antwoord.ok) throw new ApiFoutKlient(antwoord.fout, antwoord.melding, antwoord.data);
       return antwoord.data;
     },
   };

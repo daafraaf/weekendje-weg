@@ -152,7 +152,7 @@ export function maakApi(deps) {
         lock.releaseLock();
       }
     } catch (e) {
-      if (e instanceof ApiFout) return foutAntwoord(e.code, e.melding);
+      if (e instanceof ApiFout) return foutAntwoord(e.code, e.melding, e.data);
       logFout(e);
       return foutAntwoord('fout');
     }

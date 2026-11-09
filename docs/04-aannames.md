@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.5, 9 november 2026: AAN-41 en AAN-42 (fase 3).
 Versie 0.4, 9 november 2026: AAN-40 (fase 2).
 Versie 0.3, 9 november 2026: AAN-38 en AAN-39 (fase 1).
 Versie 0.2, 9 november 2026: AAN-15 bevestigd met het kalenderjaar.
@@ -17,8 +18,8 @@ die test aan en werk je hier de status bij.
 
 | ID | Aanname | Soort | Plek in de code | Standaard | Impact bij ander antwoord | Status |
 |---|---|---|---|---|---|---|
-| AAN-01 | Blokkering na foute pincodes | Regel | | 5 pogingen, 15 minuten; na 3 blokkades nieuwe pincode nodig | laag | open |
-| AAN-02 | Duur van een sessie | Regel | | deelnemer 60 dagen, beheer 12 uur | laag | open |
+| AAN-01 | Blokkering na foute pincodes | Regel | `src/server/acties/toegang.js` (`MAX_FOUT`) | 5 pogingen, 15 minuten; na 3 blokkades nieuwe pincode nodig | laag | open |
+| AAN-02 | Duur van een sessie | Regel | `src/server/acties/toegang.js` (`SESSIE_DEELNEMER_MS`) | deelnemer 60 dagen, beheer 12 uur | laag | open |
 | AAN-03 | Roulerende organisator | Flow | `src/server/rechten.js` (`REGELS.editieAanmaken`) | Beheerlinks horen bij een lid; elke houder van een beheerlink kan een nieuwe editie aanmaken en beheerlinks voor andere leden maken; het nieuwe lid kiest zijn eigen wachtwoord; de eigenaar kan via het Sheet-menu altijd een beheerlink maken | midden | open |
 | AAN-04 | Naar Overzicht gaan sluit het invullen | Flow | | ja, ook voor de deadline | midden | open |
 | AAN-05 | Stap terug | Regel | | één stap terug, niet meer terug naar Invullen vanaf Accommodatie | laag | open |
@@ -57,6 +58,8 @@ die test aan en werk je hier de status bij.
 | AAN-38 | Rechten voor acties die §6 niet letterlijk noemt | Regel | `src/server/rechten.js` (`SCHERMEN`) | eigen antwoorden en de andere schermen lezen mag elk lid van de editie, ook na de deadline; een bestaand item of een bestaande post wijzigen volgt de regel voor verwijderen; `deelnemersBeheren` en `vragenBeheren` vallen onder de rij Editie; `betalingTerugdraaien` volgt "Betaling markeren" | laag | open |
 | AAN-39 | Eigen antwoorden en stem van de organisator | Regel | `src/server/rechten.js` (`eigenAntwoorden`) | de beheersessie werkt voor de deelnemersrij van het eigen lid in die editie; deadline en stap Invullen gelden ook voor de organisator (§7.2.3 "niemand") | laag | open |
 | AAN-40 | Voorbeeldeditie in de schil | Regel | `src/web/app.js` (`VOORBEELD`) | tot de login er is (fase 3) toont de schil een voorbeeldeditie; de stap komt uit `#/start?stap=...`, een onbekende stap valt terug op Invullen | laag | open |
+| AAN-41 | Beheerlink voor de beheerlogin bestaat | Flow | `src/web/screens/pincode.js` (`beheerNotitie`) | een geplakte beheerlink wordt herkend, maar toont tot de beheerlogin (TOE-5) alleen de melding dat inloggen als organisator volgt | laag | open |
+| AAN-42 | Uitloggen zonder verbinding | Flow | `src/web/app.js` (`uitloggen`) | de knop wist altijd de sessie op het apparaat; lukt het script niet (offline of fout), dan blijft de sessie in de Sheet tot ze verloopt | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -69,3 +72,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-08: AAN-34 t/m AAN-36 toegevoegd en AAN-03, AAN-07, AAN-21, AAN-32 aangepast na de spec-review.
 - 2026-11-09: AAN-38 en AAN-39 toegevoegd in fase 1 (rechten).
 - 2026-11-09: AAN-40 toegevoegd in fase 2 (schil).
+- 2026-11-09: AAN-41 en AAN-42 toegevoegd in fase 3 (inloggen).

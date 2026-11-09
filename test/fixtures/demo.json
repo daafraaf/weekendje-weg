@@ -1,0 +1,16 @@
+{
+  "scriptId": "demo-weekendje-weg-0001",
+  "groep": { "naam": "Studievrienden", "apiVersie": 1, "opgezet": true, "aangemaakt": "2026-11-09T09:00:00Z" },
+  "leden": [
+    { "id": "lid0000000000001", "voornaam": "Eva", "woonplaats": "Utrecht", "actief": true },
+    { "id": "lid0000000000002", "voornaam": "Anna", "woonplaats": "Zwolle", "actief": true },
+    { "id": "lid0000000000003", "voornaam": "Bram", "woonplaats": "Arnhem", "actief": true },
+    { "id": "lid0000000000004", "voornaam": "Chris", "woonplaats": "Breda", "actief": true }
+  ],
+  "deelnemers": [
+    { "id": "dln0000000000001", "lidId": "lid0000000000001", "rol": "organisator", "token": "DemoLinksEva0000000001", "pin": "123456" },
+    { "id": "dln0000000000002", "lidId": "lid0000000000002", "rol": "deelnemer", "token": "DemoLinksAnna000000002", "pin": "123456" },
+    { "id": "dln0000000000003", "lidId": "lid0000000000003", "rol": "deelnemer", "token": "DemoLinksBram000000003", "pin": "123456" },
+    { "id": "dln0000000000004", "lidId": "lid0000000000004", "rol": "deelnemer", "token": "DemoLinksChris00000004", "pin": "123456" }
+  ]
+}

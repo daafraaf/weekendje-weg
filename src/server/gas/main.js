@@ -4,6 +4,7 @@ import { maakApi, SLOT_WACHTTIJD_MS } from '../api.js';
 import { foutAntwoord } from '../fouten.js';
 import { mag } from '../rechten.js';
 import { hashGeheim } from '../crypto.js';
+import { ALLE_HANDLERS } from '../acties/index.js';
 import { maakSheetStore } from './sheetstore.js';
 import { maakGasRandom, maakGasSha256 } from './random.js';
 
@@ -17,7 +18,7 @@ function maakDeps() {
     tryLock(ms) { slot = LockService.getScriptLock(); return slot.tryLock(ms); },
     releaseLock() { if (slot) slot.releaseLock(); slot = null; },
   };
-  return { store, lock, sha256, random, nu, logFout: (e) => console.error(String((e && e.stack) || e)) };
+  return { store, lock, sha256, random, nu, handlers: ALLE_HANDLERS, logFout: (e) => console.error(String((e && e.stack) || e)) };
 }
 
 function json(antwoord) {

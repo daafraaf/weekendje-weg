@@ -74,6 +74,9 @@ Na elke fase hier aanvullen met wat de volgende sessie moet weten en niet uit de
 Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar een skill in
 `.claude/skills/`.
 
+- e2e met de nepbackend: `startServer({ port: 0, seed })` per test plus `context.route('https://script.google.com/**')` die naar de nepserver doorstuurt, met `test.use({ serviceWorkers: 'block' })` (WebKit). Sessie voor schil-tests: `logIn(context)` in `test/e2e/hulp.mjs`.
+- Een handler die een fout gooit maar toch moet schrijven (pogingenteller) roept zelf `store.flush()` aan; `api.js` flusht alleen na succes.
+
 - Een actie bouwen: handler `{ schema, context?, uitvoeren }` in `src/server/acties/<groep>.js`
   en registreren in `STANDAARD` van `src/server/api.js`. `context` levert rijvelden als `eigen`,
   `nieuw`, `betrokken` voor `reden()` in `rechten.js`; de API doet slot, sessie, editie, Log en flush.
