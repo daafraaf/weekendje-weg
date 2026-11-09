@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { maakApi } from '../../src/server/api.js';
 import { ALLE_HANDLERS } from '../../src/server/acties/index.js';
-import { maakMemoryStore, maakMemoryLock, nodeSha256, nodeRandom } from './memorystore.mjs';
+import { maakMemoryStore, maakMemoryLock, maakMemoryEigenschappen, nodeSha256, nodeRandom } from './memorystore.mjs';
+import { setupcodeMaken, beheerlinkAanmaken } from '../../src/server/acties/opzet.js';
 import { maakDemo } from './demo.mjs';
 
 const MAX_BODY = 256 * 1024;
@@ -14,8 +15,19 @@ const MAX_BODY = 256 * 1024;
 export function maakNepApi({ seed = {}, handlers = ALLE_HANDLERS, nu = () => new Date() } = {}) {
   const { store, adapter } = maakMemoryStore(seed, { nu });
   const lock = maakMemoryLock();
-  const api = maakApi({ store, lock, sha256: nodeSha256, random: nodeRandom, nu, handlers, logFout: (e) => console.error(e) });
-  return { api, store, adapter, lock };
+  const eigenschappen = maakMemoryEigenschappen();
+  const deps = { store, lock, sha256: nodeSha256, random: nodeRandom, nu, handlers, eigenschappen, logFout: (e) => console.error(e) };
+  const api = maakApi(deps);
+  // Het Sheet-menu "Setupcode tonen" van de nepbackend: geeft een verse setupcode.
+  const setupcode = () => setupcodeMaken(deps);
+  // Het Sheet-menu "Beheerlink maken": geeft het token van een nieuwe beheerlink voor een lid (zonder wachtwoord).
+  const beheerlink = (lidId, wachtwoord) => {
+    store.nieuwVerzoek();
+    const r = beheerlinkAanmaken({ store, deps }, lidId, wachtwoord);
+    store.flush();
+    return r.token;
+  };
+  return { api, store, adapter, lock, eigenschappen, setupcode, beheerlink };
 }
 
 export function startServer({ port = 8787, host = '127.0.0.1', ...opties } = {}) {
@@ -42,10 +54,16 @@ export function startServer({ port = 8787, host = '127.0.0.1', ...opties } = {})
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const port = Number(process.env.MOCK_PORT || 8787);
+  const leeg = process.argv.includes('--leeg'); // lege Sheet: probeer de opzetwizard met de setupcode uit de console
   const demo = maakDemo();
-  const { url } = await startServer({ port, seed: demo.seed });
+  const { url, setupcode } = await startServer({ port, seed: leeg ? {} : demo.seed });
   const app = process.env.APP_URL || 'http://127.0.0.1:4173/';
-  console.log(`Nepbackend draait op ${url}/macros/s/${demo.scriptId}/exec`);
-  console.log(`Pincode van alle demodeelnemers: ${demo.pin}`);
-  demo.namen.forEach((naam, i) => console.log(`Demolink ${naam}: ${app}${demo.fragment(i)}`));
+  if (leeg) {
+    console.log(`Nepbackend (lege Sheet) draait op ${url}/macros/s/${demo.scriptId}/exec`);
+    console.log(`Setupcode (30 minuten geldig, eenmalig): ${setupcode()}`);
+  } else {
+    console.log(`Nepbackend draait op ${url}/macros/s/${demo.scriptId}/exec`);
+    console.log(`Pincode van alle demodeelnemers: ${demo.pin}`);
+    demo.namen.forEach((naam, i) => console.log(`Demolink ${naam}: ${app}${demo.fragment(i)}`));
+  }
 }

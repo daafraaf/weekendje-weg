@@ -1,11 +1,14 @@
-// App-schil: binnenkomen met link en pincode (fase 3), daarna router, stappenbalk, menu, offline-melding en service worker.
+// App-schil: binnenkomen met link en pincode (fase 3), beheerlogin en opzetwizard (fase 4), daarna router, stappenbalk, menu, offline-melding en service worker.
 import { STAPPEN } from '../shared/stappen.js';
 import { h, icoon } from './dom.js';
 import { OFFLINE_TEKST, maakApi } from './api.js';
 import { maakBinnenkomen } from './screens/pincode.js';
+import { maakBeheerlogin } from './screens/beheerlogin.js';
+import { maakOpzetten } from './screens/opzetten.js';
+import { maakLeden } from './screens/leden.js';
 import { leesLink, leesSessie, bewaarSessie, wisSessie, scriptUrl } from './sessie.js';
 import { maakStappenbalk } from './components/stappenbalk.js';
-import { registreer, routelijst, start } from './router.js';
+import { registreer, routelijst, start, ververs } from './router.js';
 
 // AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
 const VOORBEELD = {
@@ -24,6 +27,16 @@ registreer('start', {
   },
 });
 
+// GRP-5: het beheerscherm; alleen zichtbaar voor een beheersessie.
+registreer('leden', {
+  titel: 'Leden',
+  soort: 'beheer',
+  icoon: ['M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20', 'M10 11.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7', 'M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.3', 'M15.5 4.7a3.5 3.5 0 0 1 0 6.6'],
+  render() {
+    return maakLeden({ sessie: leesSessie(localStorage), uitloggen, bijVerlopen: () => { wisSessie(localStorage); kies(); } });
+  },
+});
+
 const root = document.getElementById('app');
 const balkPlek = h('div', { class: 'balk-plek' });
 const inhoud = h('main', { class: 'inhoud', id: 'inhoud' });
@@ -34,13 +47,18 @@ const melding = h('div', { class: 'glass toast offline-melding', role: 'alert', 
 const schil = h('div', { class: 'schil', hidden: true }, menu, balkPlek, inhoud);
 let binnen = null;
 let schilGestart = false;
+let laatsteSessie = '';
+let geplakteBeheerlink = null; // TOE-11: een beheerlink uit het plakveld leidt naar de beheerlogin
 root.append(schil, melding);
 
+const soortNu = () => { const s = leesSessie(localStorage); return s ? s.soort : undefined; };
+
 function toonMenu(actief) {
-  menu.replaceChildren(...routelijst().map((r) => h('a', { href: `#/${r.naam}`, 'aria-current': r.naam === actief ? 'page' : false }, icoon(r.icoon, 24), h('span', {}, r.titel))));
+  menu.replaceChildren(...routelijst(soortNu()).map((r) => h('a', { href: `#/${r.naam}`, 'aria-current': r.naam === actief ? 'page' : false }, icoon(r.icoon, 24), h('span', {}, r.titel))));
 }
 
 function toonBalk(params) {
+  if (soortNu() === 'beheer') { balkPlek.replaceChildren(); return; } // beheren hoort bij de groep, niet bij een editie
   const stap = STAPPEN.includes(params.stap) ? params.stap : 'invullen';
   balkPlek.replaceChildren(maakStappenbalk({ stap, stapData: VOORBEELD.stapData, titel: VOORBEELD.titel }));
 }
@@ -63,16 +81,33 @@ function kies() {
   binnen = null;
   schil.hidden = !sessie;
   if (sessie) {
-    if (!schilGestart) { schilGestart = true; start(inhoud, (naam, params) => { toonMenu(naam); toonBalk(params); }); }
+    const sleutel = sessie.sessie;
+    if (!schilGestart) { schilGestart = true; start(inhoud, (naam, params) => { toonMenu(naam); toonBalk(params); }, soortNu); } else if (sleutel !== laatsteSessie) ververs();
+    laatsteSessie = sleutel;
     return;
   }
-  binnen = maakBinnenkomen({ link, startTekst: link ? location.href : '', bijIngelogd });
+  laatsteSessie = '';
+  const beheerlink = link && link.soort === 'beheer' ? link : geplakteBeheerlink;
+  if (beheerlink) {
+    binnen = maakBeheerlogin({ link: beheerlink, bijIngelogd, bijAnder });
+  } else if (location.hash === '#/opzetten') {
+    binnen = maakOpzetten({ bijIngelogd });
+  } else {
+    binnen = maakBinnenkomen({ link, startTekst: link ? location.href : '', bijIngelogd, bijBeheerlink: (l) => { geplakteBeheerlink = l; kies(); } });
+  }
   root.prepend(binnen);
 }
 
+function bijAnder() {
+  geplakteBeheerlink = null;
+  history.replaceState(null, '', `${location.pathname}${location.search}`);
+  kies();
+}
+
 function bijIngelogd(sessie) {
+  geplakteBeheerlink = null;
   bewaarSessie(localStorage, sessie);
-  history.replaceState(null, '', `${location.pathname}${location.search}#/start`); // de link blijft niet in de adresbalk staan
+  history.replaceState(null, '', `${location.pathname}${location.search}#/${sessie.soort === 'beheer' ? 'leden' : 'start'}`); // de link blijft niet in de adresbalk staan
   kies();
 }
 

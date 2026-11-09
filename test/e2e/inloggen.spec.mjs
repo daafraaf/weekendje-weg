@@ -108,12 +108,11 @@ test('TOE-11: in een nieuwe context zonder fragment accepteert de app de geplakt
   await context.close();
 });
 
-test('TOE-11 AAN-41: een geplakte beheerlink wordt herkend zonder pinvakjes', async ({ page, nep }) => {
+test('TOE-11 TOE-5: een geplakte beheerlink leidt naar de beheerlogin zonder pinvakjes', async ({ page, nep }) => {
   await page.goto('/');
   await page.getByLabel('Plak je persoonlijke link').fill(`#b=${nep.demo.scriptId}&beheer=${'B'.repeat(22)}`);
-  await expect(page.getByText('Link herkend')).toBeVisible();
-  await expect(page.getByText('Dit is een beheerlink')).toBeVisible();
-  await expect(page.getByLabel('Cijfer 1')).toBeHidden();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Beheren');
+  await expect(page.getByLabel('Cijfer 1')).toHaveCount(0);
 });
 
 test('TOE-10 NFR-2: een scriptId buiten het patroon wordt geweigerd en verkeer gaat alleen naar script.google.com', async ({ page, nep }) => {

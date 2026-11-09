@@ -38,6 +38,12 @@ export function maakMemoryLock() {
   };
 }
 
+// Eigenschappen zoals PropertiesService.getScriptProperties(): kleine geheimen buiten de Sheet (setupcode).
+export function maakMemoryEigenschappen() {
+  const m = new Map();
+  return { lees: (k) => (m.has(k) ? m.get(k) : null), zet: (k, w) => { m.set(k, String(w)); }, wis: (k) => { m.delete(k); } };
+}
+
 // seed: { Tab: [rijobject, ...] }, letterlijk opgeslagen (ook versie en bijgewerkt).
 export function maakMemoryStore(seed = {}, { random = nodeRandom, nu = () => new Date() } = {}) {
   const adapter = maakMemoryAdapter();

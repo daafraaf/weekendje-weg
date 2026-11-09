@@ -29,6 +29,7 @@ Fase 0 legt de scripts vast in `package.json`; vul deze lijst aan als er een bij
   één groene of rode regel. Groen vóór elke commit (NFR-13)
 - `npm run mock`: nepbackend met de demodata op localhost; toont de demolinks in de console,
   pincode `123456`
+- `npm run mock -- --leeg`: nepbackend met lege Sheet en een setupcode in de console, voor de opzetwizard
 - `npm run vakanties`: haalt de schoolvakanties op en schrijft `data/vakanties.json` (AAN-13)
 - `clasp deploy -i <id>`: alleen in fase 20, samen met David. Altijd een nieuwe versie op de
   bestaande implementatie, nooit een nieuwe implementatie (spec §3)

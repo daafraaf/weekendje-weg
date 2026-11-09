@@ -31,13 +31,13 @@ die test aan en werk je hier de status bij.
 | AAN-11 | Claims van wie afhaakt | Regel | | vervallen, item staat weer open | laag | open |
 | AAN-12 | Bereikbaarheid onderdelen | Flow | | voor Accommodatie alleen formulier, voortgang, archief; daarna alles via het menu | laag | open |
 | AAN-13 | Bron van schoolvakanties | Regel | | `data/vakanties.json` uit de open data van de Rijksoverheid, bijgewerkt met `npm run vakanties` | laag | open |
-| AAN-14 | Verouderd script per groep | Flow | | API-versiecontrole met instructie voor de eigenaar | midden | open |
+| AAN-14 | Verouderd script per groep | Flow | `src/web/api.js` (`VEROUDERD_TEKST`) | API-versiecontrole met instructie voor de eigenaar | midden | open |
 | AAN-15 | Kalendervenster | Instelling | | kalenderjaar van de editie: 1 januari tot en met 31 december van `jaar` (was: twaalf maanden vanaf aanmaken) | laag | bevestigd 9 nov 2026 |
 | AAN-16 | Categorieën van posten | Regel | | Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig | laag | open |
 | AAN-17 | Volgorde bij tikken in de kalender | Regel | | leeg, ja, misschien, nee, leeg | laag | open |
 | AAN-18 | Standaardmaaltijden | Instelling | | vr diner; za ontbijt, lunch, diner; zo ontbijt, lunch | laag | open |
 | AAN-19 | Categorie "Overig" en categorievoorstel | Regel | | 13e categorie Overig; voorstel uit een vaste woordenlijst | laag | open |
-| AAN-20 | Groepsgrootte | Regel | | 2 tot en met 20 | laag | open |
+| AAN-20 | Groepsgrootte | Regel | `src/server/acties/opzet.js` (`MIN_LEDEN`, `MAX_LEDEN`) | 2 tot en met 20 | laag | open |
 | AAN-21 | Eten en drinken, activiteiten en programma standaard aan | Instelling | | aan, uit te zetten door de organisator | laag | open |
 | AAN-22 | Geen rekeningnummer in betaalverzoek | Regel | | tekst zonder IBAN of betaallink | laag | open |
 | AAN-23 | Kamers | Flow | | organisator maakt kamers met slaapplaatsen en deelt in; niet voller dan slaapplaatsen | laag | open |
@@ -45,7 +45,7 @@ die test aan en werk je hier de status bij.
 | AAN-25 | Programma vullen | Regel | | alleen de organisator | laag | open |
 | AAN-26 | Items verwijderen | Regel | | eigen item tot definitief; organisator elk item | laag | open |
 | AAN-27 | Afvinken bij boodschappen | Regel | | iedereen, gedeeld | laag | open |
-| AAN-28 | Setupcode | Regel | | acht tekens, eenmalig, 30 minuten geldig | laag | open |
+| AAN-28 | Setupcode | Regel | `src/server/acties/opzet.js` (`setupcodeMaken`) | acht tekens, eenmalig, 30 minuten geldig | laag | open |
 | AAN-29 | Na Afgerond | Regel | `src/server/rechten.js` (`reden`) | editie alleen-lezen | laag | open |
 | AAN-30 | Wie het archief ziet | Flow | | iedere deelnemer met een geldige link van een editie van de groep | laag | open |
 | AAN-31 | Links per editie | Flow | | nieuwe link en pincode per editie; oude links alleen-lezen na Afgerond | midden | open |
@@ -58,8 +58,11 @@ die test aan en werk je hier de status bij.
 | AAN-38 | Rechten voor acties die §6 niet letterlijk noemt | Regel | `src/server/rechten.js` (`SCHERMEN`) | eigen antwoorden en de andere schermen lezen mag elk lid van de editie, ook na de deadline; een bestaand item of een bestaande post wijzigen volgt de regel voor verwijderen; `deelnemersBeheren` en `vragenBeheren` vallen onder de rij Editie; `betalingTerugdraaien` volgt "Betaling markeren" | laag | open |
 | AAN-39 | Eigen antwoorden en stem van de organisator | Regel | `src/server/rechten.js` (`eigenAntwoorden`) | de beheersessie werkt voor de deelnemersrij van het eigen lid in die editie; deadline en stap Invullen gelden ook voor de organisator (§7.2.3 "niemand") | laag | open |
 | AAN-40 | Voorbeeldeditie in de schil | Regel | `src/web/app.js` (`VOORBEELD`) | tot de login er is (fase 3) toont de schil een voorbeeldeditie; de stap komt uit `#/start?stap=...`, een onbekende stap valt terug op Invullen | laag | open |
-| AAN-41 | Beheerlink voor de beheerlogin bestaat | Flow | `src/web/screens/pincode.js` (`beheerNotitie`) | een geplakte beheerlink wordt herkend, maar toont tot de beheerlogin (TOE-5) alleen de melding dat inloggen als organisator volgt | laag | open |
+| AAN-41 | Beheerlink voor de beheerlogin bestaat | Flow | `src/web/screens/pincode.js` (`bijBeheerlink`) | een geplakte beheerlink wordt herkend en leidt naar de beheerlogin; de tijdelijke melding uit fase 3 is vervallen met fase 4 | laag | vervallen |
 | AAN-42 | Uitloggen zonder verbinding | Flow | `src/web/app.js` (`uitloggen`) | de knop wist altijd de sessie op het apparaat; lukt het script niet (offline of fout), dan blijft de sessie in de Sheet tot ze verloopt | laag | open |
+| AAN-43 | Eigenaar is na opzetten ingelogd | Flow | `src/server/acties/opzet.js` (`groepOpzetten`) | `groepOpzetten` geeft naast de beheerlink een beheersessie van 12 uur terug, zodat "Naar beheren" geen tweede wachtwoordinvoer vraagt | laag | open |
+| AAN-44 | Blokkade bij foute beheerwachtwoorden | Regel | `src/server/acties/beheertoegang.js` (`inloggenBeheer`) | vijf fouten geven 15 minuten blokkade (zelfde teller als de pincode), zonder blijvende blokkade; een reset via het Sheet-menu zet de teller op nul | laag | open |
+| AAN-45 | Beheerlink uit het Sheet-menu | Flow | `src/server/gas/menu.js` (`scriptId`) | het script kent de Pages-URL niet; het menu toont `#b=<scriptId>&beheer=<token>` om achter het adres van de app te zetten | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -73,3 +76,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-38 en AAN-39 toegevoegd in fase 1 (rechten).
 - 2026-11-09: AAN-40 toegevoegd in fase 2 (schil).
 - 2026-11-09: AAN-41 en AAN-42 toegevoegd in fase 3 (inloggen).
+- 2026-11-09: AAN-43 t/m AAN-45 toegevoegd in fase 4 (groep opzetten); AAN-41 vervallen.

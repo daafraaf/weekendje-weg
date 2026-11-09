@@ -1,6 +1,8 @@
 // Verbinding met het script (spec §3, §5.3): POST met text/plain, geen preflight.
 // NFR-5: fetch gaat alleen naar script.google.com; de nepbackend gebruikt dezelfde vorm op localhost.
 export const API_VERSIE = 1;
+// AAN-14 (§7.17): een verouderd script krijgt overal dezelfde melding met de weg naar de uitleg.
+export const VEROUDERD_TEKST = 'Het script van deze groep is verouderd. De eigenaar werkt het bij via de uitleg in de README (onderdeel Script bijwerken), altijd als nieuwe versie op de bestaande implementatie en nooit als nieuwe implementatie.';
 export const OFFLINE_TEKST = 'Geen verbinding, je gegevens zijn veilig opgeslagen in de Sheet';
 
 export class ApiFoutKlient extends Error {
@@ -23,7 +25,7 @@ export function maakApi({ basisUrl, sessie = () => '', editieId = () => '', fetc
       } catch {
         throw new ApiFoutKlient('offline', OFFLINE_TEKST);
       }
-      if (!antwoord.ok) throw new ApiFoutKlient(antwoord.fout, antwoord.melding, antwoord.data);
+      if (!antwoord.ok) throw new ApiFoutKlient(antwoord.fout, antwoord.fout === 'api_versie' ? VEROUDERD_TEKST : antwoord.melding, antwoord.data);
       return antwoord.data;
     },
   };

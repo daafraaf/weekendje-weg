@@ -26,9 +26,11 @@ async function bundel() {
   return code;
 }
 
-function gasOmgeving({ kapot = false } = {}) {
+function gasOmgeving({ kapot = false, antwoord = '1' } = {}) {
   const ss = nepSpreadsheet();
   const menu = [];
+  const meldingen = [];
+  const eigenschappen = new Map();
   const ctx = {
     console: { error: () => {}, log: () => {} },
     Utilities: nepUtilities(),
@@ -41,11 +43,16 @@ function gasOmgeving({ kapot = false } = {}) {
           addItem: (label, fn) => { menu.push(fn); return ui; },
           addSeparator: () => ui,
           addToUi: () => {},
-          alert: () => {},
+          alert: (...a) => { meldingen.push(a.join(' | ')); },
+          prompt: () => ({ getSelectedButton: () => 'OK', getResponseText: () => antwoord }),
+          Button: { OK: 'OK' },
+          ButtonSet: { OK: 'OK', OK_CANCEL: 'OK_CANCEL' },
         };
         return ui;
       },
     },
+    PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => (eigenschappen.has(k) ? eigenschappen.get(k) : null), setProperty: (k, w) => { eigenschappen.set(k, w); }, deleteProperty: (k) => { eigenschappen.delete(k); } }) },
+    ScriptApp: { getService: () => ({ getUrl: () => 'https://script.google.com/macros/s/AKfycbx1234567890abcdefghij/exec' }) },
     LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock: () => {} }) },
     ContentService: {
       MimeType: { JSON: 'application/json' },
@@ -53,8 +60,11 @@ function gasOmgeving({ kapot = false } = {}) {
     },
   };
   vm.createContext(ctx);
-  return { ctx, ss, menu };
+  return { ctx, ss, menu, meldingen, eigenschappen };
 }
+
+// De alert van Setupcode tonen is "titel | code, uitleg | knop"; de code staat vooraan in het tweede deel.
+const codeUit = (melding) => /^([A-Z2-9]{8})/.exec(melding.split(' | ')[1])?.[1];
 
 async function laad(opties) {
   const omg = gasOmgeving(opties);
@@ -111,6 +121,44 @@ test('NFR-20: onOpen zet het menu met de menufuncties', async () => {
   vm.runInContext('onOpen()', ctx);
   assert.equal(menu[0], 'Weekendje weg');
   for (const fn of menu.slice(1)) assert.ok(INGANGEN.includes(fn), fn);
+});
+
+test('GRP-1: het menu heeft Setupcode tonen, Beheerlink maken, Beheerwachtwoord resetten en Uitleg', async () => {
+  const { ctx, menu } = await laad();
+  vm.runInContext('onOpen()', ctx);
+  assert.equal(menu[0], 'Weekendje weg');
+  assert.deepEqual(menu.slice(1), ['menuSetupcode', 'menuBeheerlink', 'menuWachtwoordResetten', 'menuUitleg', 'menuLogLegen']);
+});
+
+test('GRP-1 AAN-28: Setupcode tonen toont acht tekens en bewaart alleen de hash; de bundel kan er een groep mee opzetten', async () => {
+  const { ctx, meldingen, eigenschappen } = await laad();
+  vm.runInContext('menuSetupcode()', ctx);
+  const code = codeUit(meldingen[0]);
+  assert.ok(code, meldingen[0]);
+  assert.ok(!eigenschappen.get('setupcode').includes(code));
+  const verzoek = JSON.stringify({ actie: 'groepOpzetten', apiVersie: 1, data: { setupcode: code, groepsnaam: 'Test', leden: [{ voornaam: 'A', woonplaats: '' }, { voornaam: 'B', woonplaats: '' }], eigenaar: 1, wachtwoord: 'lang-genoeg-wachtwoord' } });
+  ctx.verzoek = verzoek;
+  const r = JSON.parse(vm.runInContext('doPost({ postData: { contents: verzoek } })', ctx).tekst);
+  assert.equal(r.ok, true, JSON.stringify(r));
+  assert.equal(eigenschappen.has('setupcode'), false);
+  // GRP-3: de tweede keer wordt geweigerd, ook het menu maakt geen setupcode meer.
+  assert.equal(JSON.parse(vm.runInContext('doPost({ postData: { contents: verzoek } })', ctx).tekst).fout, 'gesloten');
+  vm.runInContext('menuSetupcode()', ctx);
+  assert.match(meldingen.at(-1), /al opgezet/);
+});
+
+test('GRP-1: Beheerlink maken toont het fragment, Beheerwachtwoord resetten maakt het wachtwoord leeg, Uitleg noemt de nieuwe versie', async () => {
+  const { ctx, meldingen } = await laad();
+  vm.runInContext('menuSetupcode()', ctx);
+  const code = codeUit(meldingen[0]);
+  ctx.verzoek = JSON.stringify({ actie: 'groepOpzetten', apiVersie: 1, data: { setupcode: code, groepsnaam: 'Test', leden: [{ voornaam: 'A', woonplaats: '' }, { voornaam: 'B', woonplaats: '' }], eigenaar: 0, wachtwoord: 'lang-genoeg-wachtwoord' } });
+  assert.equal(JSON.parse(vm.runInContext('doPost({ postData: { contents: verzoek } })', ctx).tekst).ok, true);
+  vm.runInContext('menuBeheerlink()', ctx);
+  assert.match(meldingen.at(-1), /#b=AKfycbx1234567890abcdefghij&beheer=[A-Za-z0-9_-]{22}/);
+  vm.runInContext('menuWachtwoordResetten()', ctx);
+  assert.match(meldingen.at(-1), /wachtwoord is leeg/);
+  vm.runInContext('menuUitleg()', ctx);
+  assert.match(meldingen.at(-1), /nieuwe versie op de bestaande implementatie/);
 });
 
 test('NFR-16: het Sheet-menu leegt het log', async () => {

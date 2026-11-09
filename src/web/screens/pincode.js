@@ -15,7 +15,7 @@ export function tijdTekst(iso) {
 
 // beginLink: { scriptId, soort, token } uit het fragment, of null als er geplakt moet worden.
 // startTekst: de tekst die in het veld staat. bijIngelogd(sessie) krijgt { scriptId, sessie, soort, verloopt, editieId }.
-export function maakBinnenkomen({ link: beginLink = null, startTekst = '', bijIngelogd, fetchFn }) {
+export function maakBinnenkomen({ link: beginLink = null, startTekst = '', bijIngelogd, bijBeheerlink = () => {}, fetchFn }) {
   let link = beginLink;
   let timer = null;
 
@@ -29,14 +29,12 @@ export function maakBinnenkomen({ link: beginLink = null, startTekst = '', bijIn
   const knop = h('button', { class: 'btn btn-primary', type: 'submit', 'data-schrijft': true }, 'Inloggen');
   const meldingTekst = h('p', { class: 't-small' });
   const melding = h('div', { class: 'melding-fout', role: 'alert', hidden: true }, h('span', { class: 'ico' }, icoon(WAARSCHUWING, 22)), meldingTekst);
-  const beheerNotitie = h('p', { class: 't-small t-sec', hidden: true }, 'Dit is een beheerlink. Inloggen als organisator komt in een volgende versie van de app.');
 
   const pin = () => velden.map((x) => x.value).join('');
   const bijwerken = () => {
     const deelnemer = Boolean(link) && link.soort === 'deelnemer';
     pinGroep.hidden = Boolean(link) && !deelnemer;
     knop.hidden = Boolean(link) && !deelnemer;
-    beheerNotitie.hidden = !(link && link.soort === 'beheer');
     knop.disabled = !(deelnemer && pin().length === LENGTE && !pinGroep.disabled);
   };
   const toonMelding = (tekst) => {
@@ -59,6 +57,7 @@ export function maakBinnenkomen({ link: beginLink = null, startTekst = '', bijIn
 
   veld.addEventListener('input', () => {
     link = leesLink(veld.value);
+    if (link && link.soort === 'beheer') { bijBeheerlink(link); return; } // TOE-5, TOE-11: de beheerlogin neemt het over
     zetHerkend();
     toonMelding('');
     bijwerken();
@@ -105,7 +104,7 @@ export function maakBinnenkomen({ link: beginLink = null, startTekst = '', bijIn
 
   const formulier = h('form', { class: 'glass card binnen-kaart', novalidate: true },
     h('div', {}, h('label', { class: 'label', for: 'plak-link' }, 'Plak je persoonlijke link'), veld, herkend),
-    melding, pinGroep, beheerNotitie, knop);
+    melding, pinGroep, knop);
 
   formulier.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -135,5 +134,6 @@ export function maakBinnenkomen({ link: beginLink = null, startTekst = '', bijIn
       h('h1', { class: 't-title' }, 'Weekendje weg'),
       h('p', { class: 't-body t-sec' }, 'Plan samen één weekend per jaar, van datum tot afrekening.')),
     formulier,
-    h('p', { class: 'priv' }, icoon(SLOT, 16), h('span', {}, 'Link en pincode krijg je in twee losse berichten van je organisator. Ze blijven alleen op dit apparaat.')));
+    h('p', { class: 'priv' }, icoon(SLOT, 16), h('span', {}, 'Link en pincode krijg je in twee losse berichten van je organisator. Ze blijven alleen op dit apparaat.')),
+    h('p', { class: 't-small t-sec binnen-opzet' }, 'Eigenaar van een nieuwe groep? ', h('a', { href: '#/opzetten' }, 'Groep opzetten')));
 }
