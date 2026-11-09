@@ -30,6 +30,11 @@ export function beheerlinkVan(basis, scriptId, token) {
   return `${basis}#b=${scriptId}&beheer=${token}`;
 }
 
+// EDI-4: de persoonlijke link van een deelnemer, achter het adres van de app.
+export function persoonlijkeLinkVan(basis, scriptId, token) {
+  return `${basis}#b=${scriptId}&t=${token}`;
+}
+
 // TOE-11: haalt b en t (of beheer) uit een volledige link, een fragment of kale parameters.
 // Geeft { scriptId, soort: 'deelnemer' | 'beheer', token } of null.
 export function leesLink(tekst) {

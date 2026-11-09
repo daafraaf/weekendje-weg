@@ -151,6 +151,18 @@ a:hover { text-decoration: underline; }
 .binnen-opzet { text-align: center; }
 .hint.fout { color: var(--nee); font-weight: 600; }
 .beheer { display: flex; flex-direction: column; gap: 16px; }
+.ed-raster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; }
+.ed-vink { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; }
+.ed-vink input { width: 22px; height: 22px; accent-color: var(--accent); flex: 0 0 auto; }
+.ed-lid { flex-wrap: wrap; }
+.ed-keuzes { display: flex; flex-direction: column; flex: 1 1 100%; }
+.dl-rij { align-items: flex-start; }
+.dl-inhoud { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.dl-inhoud .rij-naam { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.dl-knoppen { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; }
+.dl-knoppen .hint { margin: 0; }
+.dl-info { display: flex; gap: 12px; align-items: flex-start; }
+.dl-info .ico { color: var(--nee); display: inline-flex; flex: 0 0 auto; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

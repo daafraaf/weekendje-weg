@@ -1,5 +1,7 @@
 # Aannameregister Weekendje weg
 
+Versie 0.7, 9 november 2026: AAN-46 t/m AAN-48 (fase 5).
+Versie 0.6, 9 november 2026: AAN-43 t/m AAN-45 (fase 4).
 Versie 0.5, 9 november 2026: AAN-41 en AAN-42 (fase 3).
 Versie 0.4, 9 november 2026: AAN-40 (fase 2).
 Versie 0.3, 9 november 2026: AAN-38 en AAN-39 (fase 1).
@@ -63,6 +65,9 @@ die test aan en werk je hier de status bij.
 | AAN-43 | Eigenaar is na opzetten ingelogd | Flow | `src/server/acties/opzet.js` (`groepOpzetten`) | `groepOpzetten` geeft naast de beheerlink een beheersessie van 12 uur terug, zodat "Naar beheren" geen tweede wachtwoordinvoer vraagt | laag | open |
 | AAN-44 | Blokkade bij foute beheerwachtwoorden | Regel | `src/server/acties/beheertoegang.js` (`inloggenBeheer`) | vijf fouten geven 15 minuten blokkade (zelfde teller als de pincode), zonder blijvende blokkade; een reset via het Sheet-menu zet de teller op nul | laag | open |
 | AAN-45 | Beheerlink uit het Sheet-menu | Flow | `src/server/gas/menu.js` (`scriptId`) | het script kent de Pages-URL niet; het menu toont `#b=<scriptId>&beheer=<token>` om achter het adres van de app te zetten | laag | open |
+| AAN-46 | Maker van een editie | Regel | `src/server/acties/editie.js` (`editieAanmaken`) | wie een editie maakt is er altijd deelnemer en organisator van (anders kan hij haar niet beheren); een editie heeft minstens twee deelnemers, net als een groep | laag | open |
+| AAN-47 | Links maken voor wie nog geen link heeft | Regel | `src/server/acties/editie.js` (`linksMaken`) | `linksMaken` maakt alleen voor deelnemers zonder link; wie er al een heeft houdt die, vernieuwen gaat via `linkVernieuwen` en `pincodeVernieuwen` | laag | open |
+| AAN-48 | Tijdstip van de deadline | Regel | `src/shared/editie.js` (`deadlineIso`) | de organisator kiest een dag; de deadline eindigt om 23:59 Amsterdamse tijd (zomer- of wintertijd) | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -77,3 +82,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-40 toegevoegd in fase 2 (schil).
 - 2026-11-09: AAN-41 en AAN-42 toegevoegd in fase 3 (inloggen).
 - 2026-11-09: AAN-43 t/m AAN-45 toegevoegd in fase 4 (groep opzetten); AAN-41 vervallen.
+- 2026-11-09: AAN-46 t/m AAN-48 toegevoegd in fase 5 (editie aanmaken en uitnodigen).

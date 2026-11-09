@@ -6,6 +6,8 @@ import { maakBinnenkomen } from './screens/pincode.js';
 import { maakBeheerlogin } from './screens/beheerlogin.js';
 import { maakOpzetten } from './screens/opzetten.js';
 import { maakLeden } from './screens/leden.js';
+import { maakEditieNieuw } from './screens/editie-nieuw.js';
+import { maakUitnodigen } from './screens/uitnodigen.js';
 import { leesLink, leesSessie, bewaarSessie, wisSessie, scriptUrl } from './sessie.js';
 import { maakStappenbalk } from './components/stappenbalk.js';
 import { registreer, routelijst, start, ververs } from './router.js';
@@ -34,6 +36,26 @@ registreer('leden', {
   icoon: ['M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20', 'M10 11.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7', 'M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.3', 'M15.5 4.7a3.5 3.5 0 0 1 0 6.6'],
   render() {
     return maakLeden({ sessie: leesSessie(localStorage), uitloggen, bijVerlopen: () => { wisSessie(localStorage); kies(); } });
+  },
+});
+
+// EDI-1: een nieuwe editie maken; EDI-4, EDI-5, EDI-6: uitnodigen, vernieuwen en een beheerlink voor een lid.
+const bijVerlopenBeheer = () => { wisSessie(localStorage); kies(); };
+registreer('editie-nieuw', {
+  titel: 'Nieuwe editie',
+  soort: 'beheer',
+  icoon: ['M5 6h14v14H5z', 'M5 10h14', 'M9 3v4M15 3v4', 'M12 13v4M10 15h4'],
+  render() {
+    return maakEditieNieuw({ sessie: leesSessie(localStorage), bijVerlopen: bijVerlopenBeheer, bijKlaar: (id) => { location.hash = `#/uitnodigen?editie=${id}`; } });
+  },
+});
+
+registreer('uitnodigen', {
+  titel: 'Uitnodigen',
+  soort: 'beheer',
+  icoon: ['M4 6.5h16v11H4z', 'm4.5 7 7.5 6 7.5-6'],
+  render(params) {
+    return maakUitnodigen({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
   },
 });
 

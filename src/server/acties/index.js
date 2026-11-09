@@ -4,6 +4,7 @@ import { toegangHandlers } from './toegang.js';
 import { beheertoegangHandlers } from './beheertoegang.js';
 import { opzetHandlers } from './opzet.js';
 import { ledenHandlers, beheerScherm } from './leden.js';
+import { editieHandlers } from './editie.js';
 
 // Leesactie `scherm`: per naam één functie; schermen zonder functie bestaan nog niet.
 const SCHERM_UITVOEREN = { beheer: beheerScherm };
@@ -15,4 +16,4 @@ const scherm = {
   },
 };
 
-export const ALLE_HANDLERS = { ...toegangHandlers, ...beheertoegangHandlers, ...opzetHandlers, ...ledenHandlers, scherm };
+export const ALLE_HANDLERS = { ...toegangHandlers, ...beheertoegangHandlers, ...opzetHandlers, ...ledenHandlers, ...editieHandlers, scherm };

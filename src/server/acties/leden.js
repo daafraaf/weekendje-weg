@@ -35,13 +35,20 @@ export const ledenBeheren = {
   },
 };
 
-// Scherm `beheer` (voor nu: groep, leden en beheerlinks zonder geheimen; editie-instellingen volgen met EDI).
+// Scherm `beheer`: groep, leden, beheerlinks en de edities van deze organisator, zonder geheimen (TOE-8).
 export function beheerScherm({ store, sessie }) {
   const groep = store.lees('Groep')[0];
+  const deelnemers = store.lees('Deelnemers');
+  const eigenEdities = new Set(deelnemers.filter((d) => d.lidId === sessie.lidId && d.rol === 'organisator').map((d) => d.editieId));
+  const edities = store.lees('Edities').filter((e) => eigenEdities.has(e.id)).map((e) => ({
+    id: e.id, titel: e.titel, jaar: e.jaar, stap: e.stap,
+    deelnemers: deelnemers.filter((d) => d.editieId === e.id).map((d) => ({ id: d.id, lidId: d.lidId, rol: d.rol, heeftLink: Boolean(d.tokenHash) })),
+  }));
   return {
     groep: { naam: groep ? groep.naam : '' },
     eigenLidId: sessie.lidId,
     leden: store.lees('Leden'),
+    edities,
     beheerlinks: store.lees('Beheerlinks').map((b) => ({ id: b.id, lidId: b.lidId, actief: b.actief, heeftWachtwoord: Boolean(b.wachtwoordHash), gemaakt: b.gemaakt })),
   };
 }
