@@ -11,7 +11,9 @@ export const DEMO_EDITIE_ID = 'demo-editie-2027';
 // opties.antwoorden: de demoantwoorden uit de fixture (Anna vult niets in); `npm run mock` zet ze aan.
 // opties.stap: de stap van de demo-editie.
 // opties.posten: twee demoposten uit de fixture (Eva boodschappen, Bram kanoverhuur).
-export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen', posten = false } = {}) {
+// opties.afrekening: daarbovenop het huisje (Eva, gelijk over vier), één betaalde betaling (Bram aan Eva)
+// en Chris afgehaakt met zijn aandeel in het huisje (spec §11, stap afrekenen).
+export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen', posten = false, afrekening = false } = {}) {
   const ingevuld = new Map(antwoorden ? fixture.antwoorden.map((a) => [a.deelnemerId, a.ingevuldOp]) : []);
   const deelnemers = fixture.deelnemers.map((d) => {
     const pinSalt = maakSalt(nodeRandom);
@@ -35,8 +37,12 @@ export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen',
   if (antwoorden) {
     seed.Antwoorden = fixture.antwoorden.map((a) => ({ id: a.id, editieId: DEMO_EDITIE_ID, deelnemerId: a.deelnemerId, data: a.data, versie: 1, bijgewerkt: a.ingevuldOp }));
   }
-  if (posten) {
-    seed.Posten = fixture.posten.map((p) => ({ ...p, editieId: DEMO_EDITIE_ID, aangepastDoorOrganisator: false, versie: 1, bijgewerkt: fixture.groep.aangemaakt }));
+  const alsPost = (p) => ({ ...p, editieId: DEMO_EDITIE_ID, aangepastDoorOrganisator: false, versie: 1, bijgewerkt: fixture.groep.aangemaakt });
+  if (posten || afrekening) seed.Posten = fixture.posten.map(alsPost);
+  if (afrekening) {
+    seed.Posten.push(...fixture.afrekening.posten.map(alsPost));
+    seed.Betalingen = fixture.afrekening.betalingen.map((b) => ({ ...b, editieId: DEMO_EDITIE_ID }));
+    for (const d of deelnemers) if (d.id === fixture.afrekening.afgehaakt) d.afgehaakt = true;
   }
   if (blokkades) seed.Pogingen = [{ sleutel: deelnemers[0].tokenHash, fout: 0, geblokkeerdTot: '', blokkades }];
   const fragment = (i) => `#b=${fixture.scriptId}&t=${fixture.deelnemers[i].token}`;

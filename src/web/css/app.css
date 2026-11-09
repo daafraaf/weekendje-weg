@@ -341,3 +341,16 @@ textarea.field { min-height: 88px; padding: 12px 14px; resize: vertical; }
 .post-bedrag.plus { color: var(--ja); }
 .post-bedrag.min { color: var(--nee); }
 .post-aantekening { display: inline-flex; gap: 4px; align-items: center; }
+
+/* Afrekening (GELD-8 t/m GELD-11, EDI-9) */
+.af-kaart { display: flex; flex-direction: column; gap: 12px; padding: 22px; }
+.af-kaart .t-display { font-size: 40px; }
+.af-kaart .btn { width: 100%; }
+.af-aan { display: flex; align-items: center; gap: 8px; }
+.af-cap { padding: 12px 14px 2px; }
+.af-rij { flex-wrap: wrap; }
+.af-rij.betaald .af-bedrag { text-decoration: line-through; color: var(--text-secondary); }
+.af-status { display: inline-flex; align-items: center; gap: 6px; }
+.af-knoppen { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; width: 100%; }
+.t-display { font-size: 44px; line-height: 48px; font-weight: 700; letter-spacing: -.03em; margin: 0; }
+.av-sm { width: 28px; height: 28px; font-size: 12px; }

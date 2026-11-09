@@ -3,6 +3,7 @@
 // de pincodetekst alleen de pincode en de naam van de editie.
 import { datumLang } from './datums.js';
 import { STAPPEN } from './stappen.js';
+import { euro } from './geld.js';
 
 export function uitnodigingTekst({ voornaam, editieTitel, link }) {
   return `Hoi ${voornaam}, je bent uitgenodigd voor ${editieTitel}. Vul hier je beschikbaarheid en wensen in: ${link}\nDe pincode krijg je in een apart bericht.`;
@@ -55,4 +56,10 @@ export function heeftLinkEnPincode(tekst) {
   const link = /https?:\/\/|#b=/.test(tekst);
   const pin = /(^|[^0-9A-Za-z_-])[0-9]{6}([^0-9A-Za-z_-]|$)/.test(tekst.replace(/(https?:\/\/\S+|#b=\S+)/g, ''));
   return link && pin;
+}
+
+// GELD-10 (§7.12.2): betaalverzoek per betaling. AAN-22: zonder rekeningnummer of betaallink;
+// het bedrag in centen wordt `€ 12,40`.
+export function betaalverzoekTekst({ bedrag, editieTitel }) {
+  return `Wil je ${euro(bedrag)} overmaken voor ${editieTitel}?`;
 }

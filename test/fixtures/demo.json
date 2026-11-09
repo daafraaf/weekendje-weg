@@ -36,5 +36,15 @@
       "verdeling": { "wijze": "gelijk", "deelnemers": ["dln0000000000001", "dln0000000000002", "dln0000000000003", "dln0000000000004"] }, "aangemaaktDoor": "dln0000000000001" },
     { "id": "pst0000000000002", "soort": "uitgave", "omschrijving": "Kanoverhuur", "bedrag": 9000, "betalerId": "dln0000000000003", "datum": "2027-06-12", "categorie": "activiteit",
       "verdeling": { "wijze": "aandeel", "aandelen": { "dln0000000000003": 1, "dln0000000000004": 2 } }, "aangemaaktDoor": "dln0000000000003" }
-  ]
+  ],
+  "afrekening": {
+    "afgehaakt": "dln0000000000004",
+    "posten": [
+      { "id": "pst0000000000003", "soort": "uitgave", "omschrijving": "Huisje Veluwe", "bedrag": 48000, "betalerId": "dln0000000000001", "datum": "2027-05-01", "categorie": "verblijf",
+        "verdeling": { "wijze": "gelijk", "deelnemers": ["dln0000000000001", "dln0000000000002", "dln0000000000003", "dln0000000000004"] }, "aangemaaktDoor": "dln0000000000001" }
+    ],
+    "betalingen": [
+      { "id": "bet0000000000001", "vanId": "dln0000000000003", "naarId": "dln0000000000001", "bedrag": 10660, "betaaldOp": "2027-06-20T10:00:00Z" }
+    ]
+  }
 }

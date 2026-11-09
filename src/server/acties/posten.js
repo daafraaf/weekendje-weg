@@ -16,17 +16,17 @@ const verdelingSchema = v.object({
   bedragen: v.optioneel(v.map(v.id(), v.getal({ min: 0, max: POST_GRENZEN.bedragMax }), { max: MAX_DEELNEMERS })),
 });
 
-const deelnemersVan = (store, editieId) => store.lees('Deelnemers').filter((d) => d.editieId === editieId);
+export const deelnemersVan = (store, editieId) => store.lees('Deelnemers').filter((d) => d.editieId === editieId);
 const postenVan = (store, editieId) => store.lees('Posten').filter((p) => p.editieId === editieId);
 
 // De deelnemersrij van de sessie in deze editie; een beheersessie zonder editieId zoekt hem op via het lid.
-function mijnRij(store, sessie, editieId) {
+export function mijnRij(store, sessie, editieId) {
   if (sessie.deelnemerId) return sessie.deelnemerId;
   const rij = deelnemersVan(store, editieId).find((d) => d.lidId === sessie.lidId);
   return rij ? rij.id : null;
 }
 
-function naamFunctie(store, deelnemers) {
+export function naamFunctie(store, deelnemers) {
   const leden = new Map(store.lees('Leden').map((l) => [l.id, l.voornaam]));
   const namen = new Map(deelnemers.map((d) => [d.id, leden.get(d.lidId) || '']));
   return (id) => namen.get(id) || '';

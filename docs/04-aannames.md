@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.12, 9 november 2026: AAN-62 (fase 11).
 Versie 0.11, 9 november 2026: AAN-59 t/m AAN-61 (fase 10).
 Versie 0.10, 9 november 2026: AAN-56 t/m AAN-58 (fase 9).
 Versie 0.9, 9 november 2026: AAN-51 en AAN-52 (fase 7); AAN-50 vervallen.
@@ -45,7 +46,7 @@ die test aan en werk je hier de status bij.
 | AAN-19 | Categorie "Overig" en categorievoorstel | Regel | | 13e categorie Overig; voorstel uit een vaste woordenlijst | laag | open |
 | AAN-20 | Groepsgrootte | Regel | `src/server/acties/opzet.js` (`MIN_LEDEN`, `MAX_LEDEN`) | 2 tot en met 20 | laag | open |
 | AAN-21 | Eten en drinken, activiteiten en programma standaard aan | Instelling | | aan, uit te zetten door de organisator | laag | open |
-| AAN-22 | Geen rekeningnummer in betaalverzoek | Regel | | tekst zonder IBAN of betaallink | laag | open |
+| AAN-22 | Geen rekeningnummer in betaalverzoek | Regel | `src/shared/whatsapp.js` (`betaalverzoekTekst`) | tekst zonder IBAN of betaallink | laag | open |
 | AAN-23 | Kamers | Flow | | organisator maakt kamers met slaapplaatsen en deelt in; niet voller dan slaapplaatsen | laag | open |
 | AAN-24 | Carpool | Flow | | bestuurder biedt rit aan, meerijder kiest zelf, organisator kan indelen | laag | open |
 | AAN-25 | Programma vullen | Regel | | alleen de organisator | laag | open |
@@ -58,7 +59,7 @@ die test aan en werk je hier de status bij.
 | AAN-32 | Hashen | Regel | `src/server/crypto.js` (`ITERATIES`) | tokens SHA-256 zonder salt; pincode en wachtwoord iteratieve SHA-256 met salt, aantal iteraties zo dat een login in Apps Script onder 1 seconde blijft (meten in fase 20) | laag | open |
 | AAN-33 | Ingevuld-status | Regel | `src/shared/antwoorden.js` (`ontbreekt`) | minstens één weekend, beide budgetten en reistijd gekozen | laag | open |
 | AAN-34 | Wat koks zien | Flow | | aantallen per eetwens en vrije tekst zonder namen; allergieën met namen alleen voor de organisator (volgt B-28; zonder deze regel kan ieder lid zich kok maken en alle allergieën met namen zien) | midden | open |
-| AAN-35 | Afrekening goed genoeg in plaats van minimaal | Regel | | eerst gelijke bedragen koppelen, daarna grootste schuldenaar naar grootste schuldeiser | laag | open |
+| AAN-35 | Afrekening goed genoeg in plaats van minimaal | Regel | `src/shared/afrekening.js` (`afrekening`) | eerst gelijke bedragen koppelen, daarna grootste schuldenaar naar grootste schuldeiser | laag | open |
 | AAN-36 | Wie de pincode kiest | Regel | `src/server/crypto.js` (`maakPincode`) | het script kiest willekeurig zes cijfers; de organisator verstuurt hem alleen (F-38 zei "de organisator voegt een wachtwoordje toe") | laag | open |
 | AAN-37 | Navigatielijst voor vaste externe links | Regel | `scripts/check-bronregels.mjs` (`NAVIGATIELIJST`) | de enige plek in `src/web` waar `wa.me` en `maps.google.com` mogen staan is `src/web/navigatie.js` (spec noemt de lijst, niet de bestandsnaam) | laag | open |
 | AAN-38 | Rechten voor acties die §6 niet letterlijk noemt | Regel | `src/server/rechten.js` (`SCHERMEN`) | eigen antwoorden en de andere schermen lezen mag elk lid van de editie, ook na de deadline; een bestaand item of een bestaande post wijzigen volgt de regel voor verwijderen; `deelnemersBeheren` en `vragenBeheren` vallen onder de rij Editie; `betalingTerugdraaien` volgt "Betaling markeren" | laag | open |
@@ -85,6 +86,7 @@ die test aan en werk je hier de status bij.
 | AAN-59 | Grenzen van een post | Regel | `src/shared/geld.js` (`POST_GRENZEN`) | de spec zegt alleen bedrag groter dan 0; een post is 1 cent tot € 100.000 met een omschrijving van 1 tot 80 tekens, de betaler en iedereen in de verdeling zijn deelnemers van de editie (afgehaakt mag) | laag | open |
 | AAN-60 | Totalen en jouw deel netto | Regel | `src/shared/saldo.js` (`totalen`) | GELD-6 noemt totalen per categorie; een ontvangst gaat van de uitgaven in zijn categorie af, het totaal bovenaan is netto en "jouw deel" is je aandeel in uitgaven min je aandeel in ontvangsten | laag | open |
 | AAN-61 | Knop "Iedereen" | Regel | `src/shared/verdeling.js` (`iedereen`) | "Iedereen" vinkt net als de standaardverdeling (§7.13.5) alle niet-afgehaakte deelnemers aan; een afgehaakte komt er alleen bij met een eigen vinkje (§7.13.9) | laag | open |
+| AAN-62 | Welke betaling je als betaald markeert | Regel | `src/server/acties/afrekening.js` (`betalingMarkeren`) | alleen een betaling die op dat moment open staat in de afrekening (zelfde van, naar en bedrag); is de afrekening intussen veranderd, dan krijg je "gewijzigd" en laad je opnieuw. Een los bedrag buiten de afrekening om kan niet | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -105,3 +107,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-53 t/m AAN-55 toegevoegd in fase 8 (wensblokken en eigen vragen); AAN-21 kreeg zijn codeplek.
 - 2026-11-09: AAN-56 t/m AAN-58 toegevoegd in fase 9 (voortgang, overzicht en stappen); AAN-04 t/m AAN-07 kregen hun codeplek.
 - 2026-11-09: AAN-59 t/m AAN-61 toegevoegd in fase 10 (posten en verdeling); AAN-09, AAN-10 en AAN-16 kregen hun codeplek.
+- 2026-11-09: AAN-62 toegevoegd in fase 11 (afrekenen en afhaken); AAN-22 en AAN-35 kregen hun codeplek.
