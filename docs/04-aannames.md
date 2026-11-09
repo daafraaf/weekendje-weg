@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.15, 9 november 2026: AAN-67 (fase 14).
 Versie 0.14, 9 november 2026: AAN-66 (fase 13).
 Versie 0.13, 9 november 2026: AAN-63 t/m AAN-65 (fase 12).
 Versie 0.12, 9 november 2026: AAN-62 (fase 11).
@@ -53,7 +54,7 @@ die test aan en werk je hier de status bij.
 | AAN-24 | Carpool | Flow | | bestuurder biedt rit aan, meerijder kiest zelf, organisator kan indelen | laag | open |
 | AAN-25 | Programma vullen | Regel | | alleen de organisator | laag | open |
 | AAN-26 | Items verwijderen | Regel | `src/server/acties/items.js` (`itemVerwijderen`) | eigen item tot definitief; organisator elk item | laag | open |
-| AAN-27 | Afvinken bij boodschappen | Regel | | iedereen, gedeeld | laag | open |
+| AAN-27 | Afvinken bij boodschappen | Regel | `src/server/acties/items.js` (`afvinken`) | iedereen, gedeeld | laag | open |
 | AAN-28 | Setupcode | Regel | `src/server/acties/opzet.js` (`setupcodeMaken`) | acht tekens, eenmalig, 30 minuten geldig | laag | open |
 | AAN-29 | Na Afgerond | Regel | `src/server/rechten.js` (`reden`) | editie alleen-lezen | laag | open |
 | AAN-30 | Wie het archief ziet | Flow | | iedere deelnemer met een geldige link van een editie van de groep | laag | open |
@@ -94,6 +95,8 @@ die test aan en werk je hier de status bij.
 | AAN-65 | Geboekt hoort bij één accommodatie | Regel | `src/server/acties/accommodatie.js` (`deelvormZetten`) | `geboekt` kiezen vraagt de accommodatie (of de al geboekte); een andere deelvorm wist de geboekte; verwijderen van de geboekte zet de deelvorm terug op `info`; een verwijderde accommodatie neemt zijn stemmen mee; de groep ziet bij `geboekt` alleen die ene accommodatie | laag | open |
 
 | AAN-66 | Grenzen en gedrag van items | Regel | `src/server/acties/items.js` (`ITEM_GRENZEN`) | naam 1 tot 60 tekens en hooguit 200 items per editie; het voorstel voor de categorie geldt alleen als de aanvrager geen categorie meestuurt; een afgehaakte deelnemer kan niet claimen en terugdraaien van afhaken brengt de claims niet terug; de startlijst keuken en spullen komt als items uit de lijsten van de editie en is van niemand (alleen de organisator past ze aan); een bestaand item wijzigen volgt de regel voor verwijderen (AAN-26) | laag | open |
+| AAN-67 | Tellingen bij een boodschap | Regel | `src/shared/boodschappen.js` (`tellingenBij`) | een wens uit eten en drinken hoort bij een boodschap als al haar woorden in de itemnaam staan (begin van een woord telt vanaf vier tekens); alleen wensen met minstens één niet-afgehaakte persoon; de tekst staat bij het item ("2 personen"), niet in de gekopieerde tekst, die als "- naam" onder de categoriekop staat zonder afgevinkte items en zonder lege categorieën | laag | open |
+
 ## Volgorde voor het gesprek
 
 Eerst de flow-aannames: AAN-34, AAN-03, AAN-04, AAN-07, AAN-14, AAN-31, daarna AAN-12, AAN-23,
@@ -116,3 +119,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-62 toegevoegd in fase 11 (afrekenen en afhaken); AAN-22 en AAN-35 kregen hun codeplek.
 - 2026-11-09: AAN-63 t/m AAN-65 toegevoegd in fase 12 (datum en accommodaties); AAN-08 kreeg zijn codeplek.
 - 2026-11-09: AAN-66 toegevoegd in fase 13 (wie neemt wat mee); AAN-11, AAN-19 en AAN-26 kregen hun codeplek.
+- 2026-11-09: AAN-67 toegevoegd in fase 14 (boodschappenlijst); AAN-27 kreeg zijn codeplek.

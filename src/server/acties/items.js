@@ -3,7 +3,7 @@
 import { ApiFout } from '../fouten.js';
 import { v } from '../validatie.js';
 import { CATEGORIEEN, STANDAARD_CATEGORIE, stelCategorieVoor } from '../../shared/categorieen.js';
-import { lijstenVan } from '../../shared/lijsten.js';
+import { blokkenVan, lijstenVan } from '../../shared/lijsten.js';
 import { kiesEditie } from './overzicht.js';
 import { editieStappen } from './stappen.js';
 import { deelnemersVan, mijnRij, naamFunctie } from './posten.js';
@@ -122,7 +122,37 @@ export function claimsVervallen(store, editieId, deelnemerId) {
   for (const c of store.lees('Claims').filter((x) => x.deelnemerId === deelnemerId && mijn.has(x.itemId))) store.verwijder('Claims', c.id);
 }
 
+// MEE-7, AAN-27: afvinken is voor iedereen en gedeeld, ook na definitief. Een item van soort spullen wordt nooit gekocht.
+// Zonder versie: twee mensen die tegelijk afvinken hoeven elkaar niet te blokkeren, de laatste schrijft.
+export const afvinken = {
+  schema: v.object({ itemId: v.id(), afgevinkt: v.bool() }),
+  uitvoeren({ store, editieId, data }) {
+    const i = bestaandItem(store, editieId, data.itemId);
+    if (i.soort === 'spullen') throw new ApiFout('ongeldig', 'Spullen staan niet op de boodschappenlijst.');
+    if (i.afgevinkt !== data.afgevinkt) store.werkBij('Items', i.id, { afgevinkt: data.afgevinkt }, i.versie);
+    return { itemId: i.id, afgevinkt: data.afgevinkt };
+  },
+};
+
+// MEE-6, spec §7.8.5: alleen de organisator zet de lijst definitief of draait dat terug.
+export const boodschappenDefinitief = {
+  schema: v.object({ definitief: v.bool() }),
+  uitvoeren({ store, editie, data }) {
+    if (Boolean(editie.boodschappenDefinitief) !== data.definitief) store.werkBij('Edities', editie.id, { boodschappenDefinitief: data.definitief }, editie.versie);
+    return { definitief: data.definitief };
+  },
+};
+
+// MEE-9, spec §7.8.8: per vinkje in eten en drinken het aantal niet-afgehaakte deelnemers, zonder namen.
+function etenDrinkenTelling(store, editie, deelnemers) {
+  if (!blokkenVan(editie).etenDrinken) return [];
+  const actief = new Set(deelnemers.filter((d) => !d.afgehaakt).map((d) => d.id));
+  const datas = store.lees('Antwoorden').filter((a) => a.editieId === editie.id && actief.has(a.deelnemerId)).map((a) => a.data || {});
+  return lijstenVan(editie).etenDrinken.map((o) => ({ label: o.label, aantal: datas.filter((d) => Array.isArray(d.etenDrinken) && d.etenDrinken.includes(o.sleutel)).length }));
+}
+
 // Scherm `meenemen`: alle items met de namen van wie ze meeneemt, op volgorde van claim (§7.7.3).
+// Daarbij de afvinkstand en de tellingen voor de boodschappenlijst (§7.8.6, §7.8.8).
 export function meenemenScherm(h) {
   const { store, sessie } = h;
   const { editie, edities } = kiesEditie(h);
@@ -141,8 +171,9 @@ export function meenemenScherm(h) {
     alleenLezen: editie.stap === 'afgerond',
     definitief,
     categorieen: CATEGORIEEN,
+    wensen: etenDrinkenTelling(store, editie, alle),
     items: itemsVan(store, editie.id).map((i) => ({
-      id: i.id, soort: i.soort, naam: i.naam, categorie: i.categorie, versie: i.versie,
+      id: i.id, soort: i.soort, naam: i.naam, categorie: i.categorie, versie: i.versie, afgevinkt: Boolean(i.afgevinkt),
       eigen: Boolean(ik) && i.toegevoegdDoor === ik,
       claims: claims.filter((c) => c.itemId === i.id).map((c) => ({
         naam: naam(c.deelnemerId), ik: c.deelnemerId === ik, ...(organisator ? { deelnemerId: c.deelnemerId } : {}),
@@ -151,4 +182,4 @@ export function meenemenScherm(h) {
   };
 }
 
-export const itemsHandlers = { itemOpslaan, itemVerwijderen, claimen, claimIntrekken };
+export const itemsHandlers = { itemOpslaan, itemVerwijderen, claimen, claimIntrekken, afvinken, boodschappenDefinitief };
