@@ -25,6 +25,8 @@ import { maakMeenemen } from './screens/meenemen.js';
 import { maakBoodschappen } from './screens/boodschappen.js';
 import { maakKookbeurten } from './screens/kookbeurten.js';
 import { maakProgramma, maakProgrammaVandaag } from './screens/programma.js';
+import { maakKamers } from './screens/kamers.js';
+import { maakCarpool } from './screens/carpool.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 
 // AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
@@ -213,6 +215,24 @@ registreer('programma', {
   icoon: ['M5 6h14v14H5z', 'M5 10h14', 'M9 3v4M15 3v4', 'M9 14h6'],
   render(params) {
     return maakProgramma({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+  },
+});
+
+// KMR-1: kamers met bewoners; de organisator maakt kamers en deelt in.
+registreer('kamers', {
+  titel: 'Kamers',
+  icoon: ['M3 18v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7', 'M3 15h18', 'M6 9V6.5A1.5 1.5 0 0 1 7.5 5h9A1.5 1.5 0 0 1 18 6.5V9'],
+  render(params) {
+    return maakKamers({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+  },
+});
+
+// CAR-1, CAR-2: ritten met vrije plaatsen en wie nog geen rit heeft.
+registreer('carpool', {
+  titel: 'Carpool',
+  icoon: ['M5 16V11l1.7-4h10.6L19 11v5', 'M5 16h14v2.5H5z', 'M8 13h.01M16 13h.01'],
+  render(params) {
+    return maakCarpool({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
   },
 });
 

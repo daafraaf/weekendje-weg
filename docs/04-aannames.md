@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.17, 9 november 2026: AAN-70 (fase 16).
 Versie 0.16, 9 november 2026: AAN-68 en AAN-69 (fase 15).
 Versie 0.15, 9 november 2026: AAN-67 (fase 14).
 Versie 0.14, 9 november 2026: AAN-66 (fase 13).
@@ -51,8 +52,8 @@ die test aan en werk je hier de status bij.
 | AAN-20 | Groepsgrootte | Regel | `src/server/acties/opzet.js` (`MIN_LEDEN`, `MAX_LEDEN`) | 2 tot en met 20 | laag | open |
 | AAN-21 | Eten en drinken, activiteiten en programma standaard aan | Instelling | | aan, uit te zetten door de organisator | laag | open |
 | AAN-22 | Geen rekeningnummer in betaalverzoek | Regel | `src/shared/whatsapp.js` (`betaalverzoekTekst`) | tekst zonder IBAN of betaallink | laag | open |
-| AAN-23 | Kamers | Flow | | organisator maakt kamers met slaapplaatsen en deelt in; niet voller dan slaapplaatsen | laag | open |
-| AAN-24 | Carpool | Flow | | bestuurder biedt rit aan, meerijder kiest zelf, organisator kan indelen | laag | open |
+| AAN-23 | Kamers | Flow | `src/server/acties/kamers.js` (`kamerIndelen`) | organisator maakt kamers met slaapplaatsen en deelt in; niet voller dan slaapplaatsen | laag | open |
+| AAN-24 | Carpool | Flow | `src/server/acties/ritten.js` (`meerijden`) | bestuurder biedt rit aan, meerijder kiest zelf, organisator kan indelen | laag | open |
 | AAN-25 | Programma vullen | Regel | `src/server/acties/programma.js` (`programmaOpslaan`) | alleen de organisator | laag | open |
 | AAN-26 | Items verwijderen | Regel | `src/server/acties/items.js` (`itemVerwijderen`) | eigen item tot definitief; organisator elk item | laag | open |
 | AAN-27 | Afvinken bij boodschappen | Regel | `src/server/acties/items.js` (`afvinken`) | iedereen, gedeeld | laag | open |
@@ -99,6 +100,7 @@ die test aan en werk je hier de status bij.
 | AAN-67 | Tellingen bij een boodschap | Regel | `src/shared/boodschappen.js` (`tellingenBij`) | een wens uit eten en drinken hoort bij een boodschap als al haar woorden in de itemnaam staan (begin van een woord telt vanaf vier tekens); alleen wensen met minstens één niet-afgehaakte persoon; de tekst staat bij het item ("2 personen"), niet in de gekopieerde tekst, die als "- naam" onder de categoriekop staat zonder afgevinkte items en zonder lege categorieën | laag | open |
 | AAN-68 | Maaltijden en koks | Regel | `src/shared/maaltijden.js` (`MAALTIJD_GRENZEN`) | maaltijden hebben een omschrijving tot 100 tekens en hooguit 12 per editie; de organisator past aan en voegt toe, verwijderen kan niet (de spec kent geen actie); een afgehaakte deelnemer kan geen kok worden en staat niet meer bij de koks; alleen de koks van een maaltijd krijgen de eetwensen (aantallen en vrije teksten, in willekeurige volgorde), de organisator alleen als hij zelf kookt; een ingrediënt kan alleen een kok van die maaltijd toevoegen, via `itemOpslaan` met `maaltijdId`, en blijft een boodschap | laag | open |
 | AAN-69 | Programmapunten en uitgelicht punt | Regel | `src/shared/maaltijden.js` (`uitgelicht`) | titel tot 80 tekens, adres tot 120, link https tot 300, notitie tot 300, hooguit 60 punten; het eind ligt na het begin; uitgelicht is het punt dat nu loopt (zonder eindtijd tot het volgende begint, het laatste tot het einde van de dag), anders het eerstvolgende; "vandaag" volgt de klok van het apparaat | laag | open |
+| AAN-70 | Grenzen en regels kamers en ritten | Regel | `src/shared/kamers.js` (`KAMER_GRENZEN`, `RIT_GRENZEN`) | kamernaam tot 40 tekens, 1 tot 12 slaapplaatsen, hooguit 30 kamers; vertrekplaats tot 60 tekens, 1 tot 8 vrije plaatsen; een deelnemer slaapt in hooguit één kamer en zit in hooguit één rit; een bestuurder heeft één rit (opnieuw aanbieden past hem aan) en rijdt niet bij een ander mee; minder plaatsen dan bewoners of meerijders kan niet; kamer en rit verwijderen gaat met `verwijderen: true` in `kamersOpslaan` en `ritOpslaan` (de spec kent geen aparte actie); afhaken haalt iemand uit kamer, rit en meerijders (zijn rit gaat mee weg) en terugdraaien brengt hem niet terug; iedereen ziet de wens voor een eigen kamer bij de naam, ID's alleen voor de organisator | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -124,3 +126,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-66 toegevoegd in fase 13 (wie neemt wat mee); AAN-11, AAN-19 en AAN-26 kregen hun codeplek.
 - 2026-11-09: AAN-67 toegevoegd in fase 14 (boodschappenlijst); AAN-27 kreeg zijn codeplek.
 - 2026-11-09: AAN-68 en AAN-69 toegevoegd in fase 15 (kookbeurten en programma); AAN-18, AAN-25 en AAN-34 kregen hun codeplek.
+- 2026-11-09: AAN-70 toegevoegd in fase 16 (kamers en carpool); AAN-23 en AAN-24 kregen hun codeplek.

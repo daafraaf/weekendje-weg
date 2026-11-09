@@ -16,9 +16,11 @@ import { accommodatieHandlers, accommodatiesScherm } from './accommodatie.js';
 import { itemsHandlers, meenemenScherm } from './items.js';
 import { maaltijdenHandlers, kookbeurtenScherm } from './maaltijden.js';
 import { programmaHandlers, programmaScherm } from './programma.js';
+import { kamersHandlers, kamersScherm } from './kamers.js';
+import { rittenHandlers, carpoolScherm } from './ritten.js';
 
 // Leesactie `scherm`: per naam één functie; schermen zonder functie bestaan nog niet.
-const SCHERM_UITVOEREN = { beheer: beheerScherm, formulier: formulierScherm, voortgang: voortgangScherm, overzicht: overzichtScherm, posten: postenScherm, afrekening: afrekeningScherm, accommodaties: accommodatiesScherm, meenemen: meenemenScherm, kookbeurten: kookbeurtenScherm, programma: programmaScherm };
+const SCHERM_UITVOEREN = { beheer: beheerScherm, formulier: formulierScherm, voortgang: voortgangScherm, overzicht: overzichtScherm, posten: postenScherm, afrekening: afrekeningScherm, accommodaties: accommodatiesScherm, meenemen: meenemenScherm, kookbeurten: kookbeurtenScherm, programma: programmaScherm, kamers: kamersScherm, carpool: carpoolScherm };
 const scherm = {
   uitvoeren(h) {
     const f = SCHERM_UITVOEREN[h.ctx.scherm];
@@ -27,4 +29,4 @@ const scherm = {
   },
 };
 
-export const ALLE_HANDLERS = { ...toegangHandlers, ...beheertoegangHandlers, ...opzetHandlers, ...ledenHandlers, ...editieHandlers, ...antwoordenHandlers, ...vragenHandlers, ...stappenHandlers, ...postenHandlers, ...afrekeningHandlers, ...afhakenHandlers, ...accommodatieHandlers, ...itemsHandlers, ...maaltijdenHandlers, ...programmaHandlers, scherm };
+export const ALLE_HANDLERS = { ...toegangHandlers, ...beheertoegangHandlers, ...opzetHandlers, ...ledenHandlers, ...editieHandlers, ...antwoordenHandlers, ...vragenHandlers, ...stappenHandlers, ...postenHandlers, ...afrekeningHandlers, ...afhakenHandlers, ...accommodatieHandlers, ...itemsHandlers, ...maaltijdenHandlers, ...programmaHandlers, ...kamersHandlers, ...rittenHandlers, scherm };
