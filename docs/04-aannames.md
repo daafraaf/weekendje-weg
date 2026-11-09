@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.11, 9 november 2026: AAN-59 t/m AAN-61 (fase 10).
 Versie 0.10, 9 november 2026: AAN-56 t/m AAN-58 (fase 9).
 Versie 0.9, 9 november 2026: AAN-51 en AAN-52 (fase 7); AAN-50 vervallen.
 Versie 0.8, 9 november 2026: AAN-49 en AAN-50 (fase 6).
@@ -31,14 +32,14 @@ die test aan en werk je hier de status bij.
 | AAN-06 | Rangorde voorkeursdatum | Regel | `src/shared/rangorde.js` (`vergelijk`) | minste nee, meeste ja, meeste misschien, voorkeursmaand, vroegste | midden | open |
 | AAN-07 | Wat de groep ziet na vrijgave | Flow | `src/server/acties/overzicht.js` (`overzichtScherm`) | aantallen zonder namen, bandbreedte van budget en reistijd; vrije tekst en allergieën met namen alleen voor de organisator | midden | open |
 | AAN-08 | Stemmen op accommodaties | Regel | | één favoriet per persoon, aantallen zichtbaar, wijzigen mag | laag | open |
-| AAN-09 | Verdeling per bedrag moet sluiten | Regel | | opslaan pas bij verschil nul | laag | open |
-| AAN-10 | Restcent als de betaler niet meedeelt | Regel | | eerste deelnemer in de verdeling op voornaam | laag | open |
+| AAN-09 | Verdeling per bedrag moet sluiten | Regel | `src/shared/verdeling.js` (`verdelingFout`) | opslaan pas bij verschil nul | laag | open |
+| AAN-10 | Restcent als de betaler niet meedeelt | Regel | `src/shared/verdeling.js` (`restNaar`) | eerste deelnemer in de verdeling op voornaam | laag | open |
 | AAN-11 | Claims van wie afhaakt | Regel | | vervallen, item staat weer open | laag | open |
 | AAN-12 | Bereikbaarheid onderdelen | Flow | | voor Accommodatie alleen formulier, voortgang, archief; daarna alles via het menu | laag | open |
 | AAN-13 | Bron van schoolvakanties | Regel | `scripts/vakanties.mjs` | `data/vakanties.json` uit de open data van de Rijksoverheid, bijgewerkt met `npm run vakanties` | laag | open |
 | AAN-14 | Verouderd script per groep | Flow | `src/web/api.js` (`VEROUDERD_TEKST`) | API-versiecontrole met instructie voor de eigenaar | midden | open |
 | AAN-15 | Kalendervenster | Instelling | `src/shared/datums.js` (`standaardPeriode`) | kalenderjaar van de editie: 1 januari tot en met 31 december van `jaar` (was: twaalf maanden vanaf aanmaken) | laag | bevestigd 9 nov 2026 |
-| AAN-16 | Categorieën van posten | Regel | | Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig | laag | open |
+| AAN-16 | Categorieën van posten | Regel | `src/shared/geld.js` (`CATEGORIEEN`) | Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig | laag | open |
 | AAN-17 | Volgorde bij tikken in de kalender | Regel | `src/shared/beschikbaarheid.js` (`volgendeWaarde`) | leeg, ja, misschien, nee, leeg | laag | open |
 | AAN-18 | Standaardmaaltijden | Instelling | | vr diner; za ontbijt, lunch, diner; zo ontbijt, lunch | laag | open |
 | AAN-19 | Categorie "Overig" en categorievoorstel | Regel | | 13e categorie Overig; voorstel uit een vaste woordenlijst | laag | open |
@@ -81,6 +82,9 @@ die test aan en werk je hier de status bij.
 | AAN-56 | Eigen vragen in het overzicht | Regel | `src/server/acties/overzicht.js` (`TELBARE_VRAGEN`) | §7.5.3 noemt "per eigen keuzevraag het aantal per optie"; deelnemers zien dat voor ja/nee, keuze, meerkeuze en schaal (aantal per cijfer); tekstvragen zien alleen de organisator, met naam | laag | open |
 | AAN-57 | Deadline verlengen | Regel | `src/server/acties/stappen.js` (`stapWijzigingen`) | verlengen kan alleen naar een latere deadline dan de huidige, zolang de stap Invullen is; de verwachte datum van Invullen schuift mee, Overzicht en Accommodatie blijven staan | laag | open |
 | AAN-58 | Teksten per stap | Regel | `src/shared/whatsapp.js` (`STAP_VERWACHT`) | de spec zegt wat een stapbericht bevat, niet de woorden; per stap één zin over wat er nu verwacht wordt, plus "<volgende stap> volgt rond <datum>" of "volgt later" als die datum leeg is | laag | open |
+| AAN-59 | Grenzen van een post | Regel | `src/shared/geld.js` (`POST_GRENZEN`) | de spec zegt alleen bedrag groter dan 0; een post is 1 cent tot € 100.000 met een omschrijving van 1 tot 80 tekens, de betaler en iedereen in de verdeling zijn deelnemers van de editie (afgehaakt mag) | laag | open |
+| AAN-60 | Totalen en jouw deel netto | Regel | `src/shared/saldo.js` (`totalen`) | GELD-6 noemt totalen per categorie; een ontvangst gaat van de uitgaven in zijn categorie af, het totaal bovenaan is netto en "jouw deel" is je aandeel in uitgaven min je aandeel in ontvangsten | laag | open |
+| AAN-61 | Knop "Iedereen" | Regel | `src/shared/verdeling.js` (`iedereen`) | "Iedereen" vinkt net als de standaardverdeling (§7.13.5) alle niet-afgehaakte deelnemers aan; een afgehaakte komt er alleen bij met een eigen vinkje (§7.13.9) | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -100,3 +104,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-51 en AAN-52 toegevoegd in fase 7 (invulformulier); AAN-50 vervallen; AAN-33 kreeg zijn codeplek.
 - 2026-11-09: AAN-53 t/m AAN-55 toegevoegd in fase 8 (wensblokken en eigen vragen); AAN-21 kreeg zijn codeplek.
 - 2026-11-09: AAN-56 t/m AAN-58 toegevoegd in fase 9 (voortgang, overzicht en stappen); AAN-04 t/m AAN-07 kregen hun codeplek.
+- 2026-11-09: AAN-59 t/m AAN-61 toegevoegd in fase 10 (posten en verdeling); AAN-09, AAN-10 en AAN-16 kregen hun codeplek.

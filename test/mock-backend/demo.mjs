@@ -10,7 +10,8 @@ export const DEMO_EDITIE_ID = 'demo-editie-2027';
 // opties.blokkades: aantal blokkades dat de organisator (eerste deelnemer) al heeft gehad.
 // opties.antwoorden: de demoantwoorden uit de fixture (Anna vult niets in); `npm run mock` zet ze aan.
 // opties.stap: de stap van de demo-editie.
-export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen' } = {}) {
+// opties.posten: twee demoposten uit de fixture (Eva boodschappen, Bram kanoverhuur).
+export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen', posten = false } = {}) {
   const ingevuld = new Map(antwoorden ? fixture.antwoorden.map((a) => [a.deelnemerId, a.ingevuldOp]) : []);
   const deelnemers = fixture.deelnemers.map((d) => {
     const pinSalt = maakSalt(nodeRandom);
@@ -33,6 +34,9 @@ export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen' 
   };
   if (antwoorden) {
     seed.Antwoorden = fixture.antwoorden.map((a) => ({ id: a.id, editieId: DEMO_EDITIE_ID, deelnemerId: a.deelnemerId, data: a.data, versie: 1, bijgewerkt: a.ingevuldOp }));
+  }
+  if (posten) {
+    seed.Posten = fixture.posten.map((p) => ({ ...p, editieId: DEMO_EDITIE_ID, aangepastDoorOrganisator: false, versie: 1, bijgewerkt: fixture.groep.aangemaakt }));
   }
   if (blokkades) seed.Pogingen = [{ sleutel: deelnemers[0].tokenHash, fout: 0, geblokkeerdTot: '', blokkades }];
   const fragment = (i) => `#b=${fixture.scriptId}&t=${fixture.deelnemers[i].token}`;

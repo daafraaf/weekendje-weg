@@ -56,7 +56,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const port = Number(process.env.MOCK_PORT || 8787);
   const leeg = process.argv.includes('--leeg'); // lege Sheet: probeer de opzetwizard met de setupcode uit de console
   const stapArg = process.argv.find((a) => a.startsWith('--stap='));
-  const demo = maakDemo({ antwoorden: true, stap: stapArg ? stapArg.slice(7) : 'invullen' });
+  const demo = maakDemo({ antwoorden: true, posten: true, stap: stapArg ? stapArg.slice(7) : 'invullen' });
   const { url, setupcode } = await startServer({ port, seed: leeg ? {} : demo.seed });
   const app = process.env.APP_URL || 'http://127.0.0.1:4173/';
   if (leeg) {

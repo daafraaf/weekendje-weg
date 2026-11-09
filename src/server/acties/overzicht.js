@@ -17,7 +17,7 @@ function eigenEdities(store, sessie) {
 }
 
 // Een beheersessie zonder gekozen editie krijgt de nieuwste eigen editie; een deelnemer altijd zijn eigen editie.
-function kiesEditie({ store, sessie, editie }) {
+export function kiesEditie({ store, sessie, editie }) {
   if (!isOrganisator(sessie)) {
     if (!editie) throw new ApiFout('geen_toegang');
     return { editie, edities: undefined };

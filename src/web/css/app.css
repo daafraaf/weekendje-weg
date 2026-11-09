@@ -74,6 +74,8 @@ a:hover { text-decoration: underline; }
 /* Menu */
 .menu { position: fixed; left: 12px; right: 12px; bottom: calc(20px + env(safe-area-inset-bottom)); height: 70px; border-radius: 26px; display: flex; align-items: stretch; padding: 6px; z-index: 6; }
 .menu a { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: var(--tap-min); border-radius: 20px; color: var(--text-secondary); font-size: 11px; font-weight: 600; text-decoration: none; }
+.menu { overflow-x: auto; scrollbar-width: none; }
+.menu a { min-width: 60px; }
 .menu a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
 
 /* Offline-melding (NFR-12) */
@@ -311,3 +313,31 @@ textarea.field { min-height: 88px; padding: 12px 14px; resize: vertical; }
   .heat-rij { grid-template-columns: 56px repeat(5, minmax(0, 72px)); }
   .detail-dl { grid-template-columns: 180px minmax(0, 1fr); }
 }
+
+/* Posten en verdeling (GELD-1 t/m GELD-7) */
+.segm { display: flex; padding: 4px; border-radius: 15px; gap: 4px; background: var(--line); }
+.segm button { flex: 1 1 0; min-height: 42px; border: 0; border-radius: 11px; background: transparent; font: inherit; font-weight: 600; font-size: 15px; color: var(--text-primary); cursor: pointer; }
+.segm button[aria-pressed="true"] { background: var(--surface-solid); box-shadow: 0 1px 3px rgba(19, 32, 45, .12); color: var(--accent); }
+.segm button:disabled { cursor: default; }
+.verdeelinvoer, .verdeel-rijen { display: flex; flex-direction: column; gap: 10px; }
+.verdeel-rijen .btn-sm { align-self: flex-start; }
+.verdeel-naam { flex: 1 1 auto; font-weight: 600; }
+.verdeel-knop { background: var(--line); }
+.verdeel-teller { width: 24px; text-align: center; font-weight: 700; }
+.verdeel-bedrag { width: 84px; text-align: right; }
+.verdeel-veld { width: 110px; min-height: 44px; text-align: right; }
+.verdeel-status { margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 650; }
+.verdeel-status.ok { color: var(--ja); }
+.verdeel-status.fout { color: var(--nee); }
+.post-bewerken { display: flex; flex-direction: column; gap: 16px; }
+.post-kop { display: flex; align-items: center; justify-content: space-between; }
+.post-kop .icon-btn { background: var(--line); }
+.post-totaal { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.post-rij { width: 100%; border: 0; border-top: 1px solid var(--line); background: transparent; text-align: left; font: inherit; color: var(--text-primary); cursor: pointer; }
+[role="listitem"]:first-child .post-rij { border-top: 0; }
+.post-ico { width: 40px; height: 40px; border-radius: 13px; background: var(--accent-soft); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.post-rij .rij-tekst { flex: 1 1 auto; }
+.post-bedrag { font-weight: 700; margin-left: auto; white-space: nowrap; }
+.post-bedrag.plus { color: var(--ja); }
+.post-bedrag.min { color: var(--nee); }
+.post-aantekening { display: inline-flex; gap: 4px; align-items: center; }

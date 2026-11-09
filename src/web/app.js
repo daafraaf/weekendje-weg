@@ -17,6 +17,7 @@ import { maakVoortgang } from './screens/voortgang.js';
 import { maakOverzicht } from './screens/overzicht.js';
 import { maakDetail } from './screens/detail.js';
 import { maakStappenBeheer } from './screens/stappen-beheer.js';
+import { maakPosten } from './screens/posten.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 
 // AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
@@ -131,6 +132,15 @@ registreer('stappen', {
   icoon: ['M4 12h12', 'm12 6 6 6-6 6', 'M20 5v14'],
   render(params) {
     return maakStappenBeheer({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
+  },
+});
+
+// GELD-1 t/m GELD-7: posten, verdeling en saldi; voor deelnemers en de organisator.
+registreer('posten', {
+  titel: 'Geld',
+  icoon: ['M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2', 'M3 10h18M16 15h2'],
+  render(params) {
+    return maakPosten({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
   },
 });
 

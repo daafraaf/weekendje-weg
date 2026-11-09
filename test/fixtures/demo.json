@@ -30,5 +30,11 @@
       "beschikbaarheid": { "2027-04-09": "ja", "2027-05-14": "ja", "2027-06-11": "ja", "2027-09-24": "misschien", "2027-10-01": "misschien" },
       "budgetVerblijf": 20000, "budgetWeekend": 40000, "woonplaats": "Breda", "maxReistijdUur": 4,
       "activiteiten": ["wandelen", "escaperoom"], "programma": ["uitslapen"], "etenDrinken": ["vegetarisch", "nulbier"] } }
+  ],
+  "posten": [
+    { "id": "pst0000000000001", "soort": "uitgave", "omschrijving": "Boodschappen vrijdag", "bedrag": 18640, "betalerId": "dln0000000000001", "datum": "2027-06-11", "categorie": "boodschappen",
+      "verdeling": { "wijze": "gelijk", "deelnemers": ["dln0000000000001", "dln0000000000002", "dln0000000000003", "dln0000000000004"] }, "aangemaaktDoor": "dln0000000000001" },
+    { "id": "pst0000000000002", "soort": "uitgave", "omschrijving": "Kanoverhuur", "bedrag": 9000, "betalerId": "dln0000000000003", "datum": "2027-06-12", "categorie": "activiteit",
+      "verdeling": { "wijze": "aandeel", "aandelen": { "dln0000000000003": 1, "dln0000000000004": 2 } }, "aangemaaktDoor": "dln0000000000003" }
   ]
 }
