@@ -12,6 +12,9 @@ export async function build() {
   await rm(path.join(root, 'dist'), { recursive: true, force: true });
   await mkdir(out, { recursive: true });
   await cp(path.join(root, 'src/web/index.html'), path.join(out, 'index.html'));
+  for (const f of ['manifest.webmanifest', 'sw.js']) await cp(path.join(root, 'src/web', f), path.join(out, f));
+  await cp(path.join(root, 'src/web/css'), path.join(out, 'css'), { recursive: true });
+  await cp(path.join(root, 'src/web/icons'), path.join(out, 'icons'), { recursive: true });
   await esbuild({
     entryPoints: [path.join(root, 'src/web/app.js')],
     outfile: path.join(out, 'app.js'),

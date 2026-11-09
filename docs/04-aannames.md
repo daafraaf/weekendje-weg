@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.4, 9 november 2026: AAN-40 (fase 2).
 Versie 0.3, 9 november 2026: AAN-38 en AAN-39 (fase 1).
 Versie 0.2, 9 november 2026: AAN-15 bevestigd met het kalenderjaar.
 Versie 0.1, 8 november 2026
@@ -55,6 +56,7 @@ die test aan en werk je hier de status bij.
 | AAN-37 | Navigatielijst voor vaste externe links | Regel | `scripts/check-bronregels.mjs` (`NAVIGATIELIJST`) | de enige plek in `src/web` waar `wa.me` en `maps.google.com` mogen staan is `src/web/navigatie.js` (spec noemt de lijst, niet de bestandsnaam) | laag | open |
 | AAN-38 | Rechten voor acties die §6 niet letterlijk noemt | Regel | `src/server/rechten.js` (`SCHERMEN`) | eigen antwoorden en de andere schermen lezen mag elk lid van de editie, ook na de deadline; een bestaand item of een bestaande post wijzigen volgt de regel voor verwijderen; `deelnemersBeheren` en `vragenBeheren` vallen onder de rij Editie; `betalingTerugdraaien` volgt "Betaling markeren" | laag | open |
 | AAN-39 | Eigen antwoorden en stem van de organisator | Regel | `src/server/rechten.js` (`eigenAntwoorden`) | de beheersessie werkt voor de deelnemersrij van het eigen lid in die editie; deadline en stap Invullen gelden ook voor de organisator (§7.2.3 "niemand") | laag | open |
+| AAN-40 | Voorbeeldeditie in de schil | Regel | `src/web/app.js` (`VOORBEELD`) | tot de login er is (fase 3) toont de schil een voorbeeldeditie; de stap komt uit `#/start?stap=...`, een onbekende stap valt terug op Invullen | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -66,3 +68,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-08: register aangemaakt uit het interview.
 - 2026-11-08: AAN-34 t/m AAN-36 toegevoegd en AAN-03, AAN-07, AAN-21, AAN-32 aangepast na de spec-review.
 - 2026-11-09: AAN-38 en AAN-39 toegevoegd in fase 1 (rechten).
+- 2026-11-09: AAN-40 toegevoegd in fase 2 (schil).

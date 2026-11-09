@@ -1,0 +1,100 @@
+/* App-schil: achtergrond, glas, stappenbalk, menu en offline-melding. Tokens staan in tokens.css. */
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { background: var(--bg-bottom); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--text-primary);
+  background: linear-gradient(to bottom, var(--bg-top), var(--bg-bottom)) fixed;
+  -webkit-text-size-adjust: 100%;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: var(--accent); font-weight: 600; text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.glass {
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-rim);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: var(--glass-fallback); }
+}
+.solid { background: var(--surface-solid); border: 1px solid var(--line); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.t-title { font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -.02em; margin: 0; }
+.t-h2 { font-size: 20px; line-height: 26px; font-weight: 650; margin: 0; }
+.t-body { font-size: 16px; line-height: 22px; margin: 0; }
+.t-small { font-size: 14px; line-height: 19px; margin: 0; }
+.t-cap { font-size: 13px; line-height: 17px; font-weight: 600; letter-spacing: .02em; margin: 0; color: var(--text-secondary); }
+.t-sec { color: var(--text-secondary); }
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; width: var(--tap-min); height: var(--tap-min); border-radius: 14px; border: 0; background: transparent; }
+.toast { display: flex; align-items: center; gap: 12px; border-radius: 18px; padding: 12px 14px; }
+
+/* Indeling: mobiel is één kolom met het menu onderaan, desktop heeft het menu links. */
+.schil { display: flex; flex-direction: column; gap: 12px; min-height: 100vh; padding: calc(12px + env(safe-area-inset-top)) 12px calc(104px + env(safe-area-inset-bottom)); }
+/* De wrappers voor balk en inhoud blijven onzichtbaar voor de indeling. */
+.balk-plek { display: contents; }
+.inhoud { width: 100%; max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.kaart { border-radius: var(--radius-card); padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+
+/* Stappenbalk, mobiel */
+.stappenbalk { border-radius: 22px; padding: 8px 8px 12px 16px; }
+.sb-lijst { display: none; list-style: none; margin: 0; padding: 0; }
+.stappenbalk.open .sb-lijst { display: flex; flex-direction: column; gap: 4px; margin: 4px 8px 0 0; }
+.stappenbalk.open .sb-segmenten, .stappenbalk.open .sb-rij { display: none; }
+.sb-kop { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sb-knop { width: var(--tap-min); height: var(--tap-min); flex: 0 0 auto; }
+.sb-knop svg { transition: transform .2s; }
+.stappenbalk.open .sb-knop svg { transform: rotate(180deg); }
+.sb-segmenten { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; list-style: none; margin: 2px 8px 10px 0; padding: 0; align-items: start; }
+.seg { height: 6px; border-radius: 3px; background: var(--line-strong); }
+.seg.done { background: var(--accent); }
+.seg.now { background: var(--accent); height: 10px; margin-top: -2px; box-shadow: 0 0 0 3px var(--accent-soft); }
+.sb-rij { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-right: 8px; }
+.sb-buur { display: flex; align-items: center; gap: 2px; font-size: 13px; flex: 1 1 0; min-width: 0; }
+.sb-rechts { justify-content: flex-end; }
+.sb-nu { font-weight: 700; font-size: 15px; white-space: nowrap; }
+
+/* Stappen in de uitgeklapte lijst en op desktop */
+.sb-stap { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; min-width: 0; min-height: var(--tap-min); }
+.sb-stap.now { background: var(--accent-soft); }
+.sb-nr { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-weight: 700; font-size: 13px; flex: 0 0 auto; border: 1.5px solid var(--line-strong); color: var(--text-secondary); }
+.sb-stap.done .sb-nr, .sb-stap.now .sb-nr { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.sb-tekst { display: flex; flex-direction: column; min-width: 0; position: relative; }
+.sb-naam { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-stap.now .sb-naam { font-weight: 700; color: var(--accent); }
+.sb-datum { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
+
+/* Menu */
+.menu { position: fixed; left: 12px; right: 12px; bottom: calc(20px + env(safe-area-inset-bottom)); height: 70px; border-radius: 26px; display: flex; align-items: stretch; padding: 6px; z-index: 6; }
+.menu a { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: var(--tap-min); border-radius: 20px; color: var(--text-secondary); font-size: 11px; font-weight: 600; text-decoration: none; }
+.menu a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+
+/* Offline-melding (NFR-12) */
+.offline-melding { position: fixed; left: 12px; right: 12px; bottom: calc(104px + env(safe-area-inset-bottom)); z-index: 7; }
+.offline-melding .titel { display: block; font-weight: 650; }
+.offline-melding .ico { color: var(--nee); display: inline-flex; }
+.is-offline [data-schrijft] { opacity: .5; pointer-events: none; }
+
+@media (min-width: 768px) {
+  .schil { display: grid; grid-template-columns: 220px minmax(0, 1fr); grid-template-areas: "menu balk" "menu inhoud"; align-content: start; gap: 16px; padding: 20px; }
+  .stappenbalk { grid-area: balk; max-width: 960px; width: 100%; margin: 0 auto; padding: 8px; }
+  .inhoud { grid-area: inhoud; }
+  .sb-compact { display: none; }
+  .sb-lijst, .stappenbalk.open .sb-lijst { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin: 0; }
+  .sb-stap { padding: 8px 6px; gap: 6px; }
+  .menu { grid-area: menu; position: sticky; top: 20px; left: auto; right: auto; bottom: auto; height: auto; align-self: start; flex-direction: column; border-radius: 26px; gap: 4px; }
+  .menu a { flex: 0 0 auto; flex-direction: row; justify-content: flex-start; gap: 12px; padding: 0 12px; font-size: 15px; font-weight: 550; color: var(--text-primary); }
+  .menu a[aria-current="page"] { color: var(--accent); }
+  .offline-melding { left: 244px; right: 24px; bottom: 24px; max-width: 700px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
