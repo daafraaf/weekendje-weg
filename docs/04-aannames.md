@@ -51,6 +51,7 @@ die test aan en werk je hier de status bij.
 | AAN-34 | Wat koks zien | Flow | | aantallen per eetwens en vrije tekst zonder namen; allergieën met namen alleen voor de organisator (volgt B-28; zonder deze regel kan ieder lid zich kok maken en alle allergieën met namen zien) | midden | open |
 | AAN-35 | Afrekening goed genoeg in plaats van minimaal | Regel | | eerst gelijke bedragen koppelen, daarna grootste schuldenaar naar grootste schuldeiser | laag | open |
 | AAN-36 | Wie de pincode kiest | Regel | | het script kiest willekeurig zes cijfers; de organisator verstuurt hem alleen (F-38 zei "de organisator voegt een wachtwoordje toe") | laag | open |
+| AAN-37 | Navigatielijst voor vaste externe links | Regel | `scripts/check-bronregels.mjs` (`NAVIGATIELIJST`) | de enige plek in `src/web` waar `wa.me` en `maps.google.com` mogen staan is `src/web/navigatie.js` (spec noemt de lijst, niet de bestandsnaam) | laag | open |
 
 ## Volgorde voor het gesprek
 

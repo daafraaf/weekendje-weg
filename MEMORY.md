@@ -1,10 +1,10 @@
 # MEMORY.md — Weekendje weg
 
-Laatst bijgewerkt: 2026-11-08 (overdracht)
+Laatst bijgewerkt: 2026-11-09 (fase 0)
 
 ## Status
 
-Fase 0 nog te bouwen. De repo bevat alleen de docs uit de Werkplaats: spec v0.3, aannames
+Fase 0 klaar, volgende is fase 1. De repo bevat naast de opzet de docs uit de Werkplaats: spec v0.3, aannames
 v0.2 (36), 21 fasen (0 tot en met 20), designbrief v0.3 en het ontwerp in `docs/design/`
 (README, tokens.css, iconen en 37 artboards, stand 9 november 2026).
 
@@ -19,3 +19,5 @@ Nog geen.
 
 Nieuwste bovenaan. Houd hier de laatste drie fasen; oudere regels naar
 `docs/sessielog-archief.md`.
+
+- 2026-11-09 fase 0: opzet af (NFR-3, NFR-4, NFR-13, NFR-18), check groen, AAN-37 toegevoegd; zie `docs/overdracht/fase-00.md`.
