@@ -114,7 +114,7 @@ export function maakBinnenkomen({ link: beginLink = null, startTekst = '', bijIn
     try {
       const api = maakApi({ basisUrl: scriptUrl(link.scriptId), ...(fetchFn ? { fetchFn } : {}) });
       const r = await api.anroep('inloggenDeelnemer', { token: link.token, pin: pin() }, { schrijft: true });
-      bijIngelogd({ scriptId: link.scriptId, sessie: r.sessie, soort: r.soort, verloopt: r.verloopt, editieId: r.editieId });
+      bijIngelogd({ scriptId: link.scriptId, sessie: r.sessie, soort: r.soort, verloopt: r.verloopt, editieId: r.editieId }, link);
     } catch (f) {
       if (f.code === 'geblokkeerd') {
         blokkeer(f);

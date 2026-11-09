@@ -11,6 +11,7 @@ const test = basis.extend({
     const demo = maakDemo({ blokkades });
     const nep = await startServer({ port: 0, seed: demo.seed });
     const urls = [];
+    await context.addInitScript(() => localStorage.setItem('ww-rondleiding', '1')); // RON-1: deze tests gaan niet over de rondleiding
     await context.route('https://script.google.com/**', async (route) => {
       const verzoek = route.request();
       urls.push(verzoek.url());
@@ -91,6 +92,7 @@ test('TOE-4 AAN-01 [drie blokkades]: de pincode werkt niet meer en de organisato
 
 test('TOE-11: in een nieuwe context zonder fragment accepteert de app de geplakte demolink', async ({ browser, nep, baseURL }) => {
   const context = await browser.newContext({ baseURL, serviceWorkers: 'block' });
+  await context.addInitScript(() => localStorage.setItem('ww-rondleiding', '1'));
   await context.route('https://script.google.com/**', async (route) => {
     const antwoord = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: route.request().postData() || '' });
     await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: await antwoord.text() });
@@ -141,4 +143,30 @@ test('NFR-5: html in het linkveld wordt als tekst behandeld en voert niets uit',
   expect(await page.getByLabel('Plak je persoonlijke link').inputValue()).toBe(aanval);
   await page.waitForTimeout(200);
   expect(dialogen).toEqual([]);
+});
+
+// AAN-72 en AAN-73: na het inloggen met een link opent de rondleiding; "Kopieer mijn link" bestaat alleen zolang de app de link nog in het geheugen heeft.
+test('RON-2 AAN-72 AAN-73: na inloggen volgt de rondleiding met Kopieer mijn link, later niet meer', async ({ browser, nep, baseURL }) => {
+  const context = await browser.newContext({ baseURL, serviceWorkers: 'block' });
+  await context.route('https://script.google.com/**', async (route) => {
+    const antwoord = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: route.request().postData() || '' });
+    await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: await antwoord.text() });
+  });
+  const page = await context.newPage();
+  await page.addInitScript(() => Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1' }));
+  await page.goto(`/${nep.demo.fragment(1)}`);
+  await pinInvoer(page, nep.demo.pin);
+  await page.getByRole('button', { name: 'Inloggen' }).click();
+  await expect(page.getByRole('heading', { name: 'Welkom bij Weekendje weg' })).toBeVisible();
+  await page.getByRole('button', { name: 'Volgende' }).click();
+  await page.getByRole('button', { name: 'Volgende' }).click();
+  await expect(page.getByRole('button', { name: 'Kopieer mijn link' })).toBeVisible();
+  await page.getByRole('button', { name: 'Overslaan' }).click();
+  await page.reload();
+  await page.getByRole('navigation', { name: 'Menu' }).getByRole('link', { name: 'Uitleg' }).click();
+  await page.getByRole('button', { name: 'Volgende' }).click();
+  await page.getByRole('button', { name: 'Volgende' }).click();
+  await expect(page.getByRole('button', { name: 'Kopieer mijn link' })).toHaveCount(0);
+  await expect(page.getByText('Je link staat in het bericht')).toBeVisible();
+  await context.close();
 });

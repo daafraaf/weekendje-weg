@@ -14,6 +14,7 @@ const test = basis.extend({
     const oud = testInfo.title.includes('[oud script]');
     const demo = maakDemo();
     const nep = await startServer({ port: 0, seed: leeg ? {} : demo.seed });
+    await context.addInitScript(() => localStorage.setItem('ww-rondleiding', '1')); // RON-1: deze tests gaan niet over de rondleiding
     await context.route('https://script.google.com/**', async (route) => {
       const body = route.request().postData() || '';
       if (oud && JSON.parse(body).actie === 'status') {

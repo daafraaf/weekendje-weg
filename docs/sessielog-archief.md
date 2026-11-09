@@ -17,3 +17,4 @@ Oudere regels uit het sessielog van MEMORY.md.
 - 2026-11-09 fase 12: weekend vastleggen, accommodaties beheren, deelvorm en stemmen af (ACC-1 t/m 5), check groen, AAN-63 t/m AAN-65 toegevoegd, AAN-08 heeft zijn codeplek; zie `docs/overdracht/fase-12.md`.
 - 2026-11-09 fase 13: wie neemt wat mee af (MEE-1 t/m 4), check groen, AAN-66 toegevoegd, AAN-11, 19, 26 hebben hun codeplek; zie `docs/overdracht/fase-13.md`.
 - 2026-11-09 fase 14: boodschappenlijst af (MEE-5 t/m 9), check groen, AAN-67 toegevoegd, AAN-27 heeft zijn codeplek; zie `docs/overdracht/fase-14.md`.
+- 2026-11-09 fase 15: kookbeurten en programma af (KOK-1 t/m 4, PRG-1 t/m 3), check groen, AAN-68 en AAN-69 toegevoegd, AAN-18, 25, 34 hebben hun codeplek; zie `docs/overdracht/fase-15.md`.

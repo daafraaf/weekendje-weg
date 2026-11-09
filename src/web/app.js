@@ -10,7 +10,7 @@ import { maakEditieNieuw } from './screens/editie-nieuw.js';
 import { maakUitnodigen } from './screens/uitnodigen.js';
 import { maakLijstenBeheer } from './screens/lijsten-beheer.js';
 import { maakVragenBeheer } from './screens/vragen-beheer.js';
-import { leesLink, leesSessie, bewaarSessie, wisSessie, scriptUrl } from './sessie.js';
+import { leesLink, leesSessie, bewaarSessie, wisSessie, scriptUrl, persoonlijkeLinkVan } from './sessie.js';
 import { maakStappenbalk } from './components/stappenbalk.js';
 import { maakFormulier } from './screens/formulier.js';
 import { maakVoortgang } from './screens/voortgang.js';
@@ -30,6 +30,8 @@ import { maakArchief } from './screens/archief.js';
 import { maakMenuItems } from './components/menu.js';
 import { maakKamers } from './screens/kamers.js';
 import { maakCarpool } from './screens/carpool.js';
+import { maakRondleiding, rondleidingGezien } from './screens/rondleiding.js';
+import { luisterNaarInstallatie } from './platform.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 
 // AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
@@ -244,6 +246,18 @@ registreer('carpool', {
   },
 });
 
+// RON-1, RON-4: de rondleiding, vanzelf bij eerste gebruik en later onder Uitleg in het menu.
+registreer('uitleg', {
+  titel: 'Uitleg',
+  icoon: ['M12 20.5a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17', 'M12 11v5M12 8h.01'],
+  render() {
+    return maakRondleiding({ opslag: localStorage, link: onthoudenLink, bijKlaar: () => { location.hash = '#/start'; } });
+  },
+});
+
+// RON-3: beforeinstallprompt komt vroeg; de app bewaart hem voor de knop Installeren.
+luisterNaarInstallatie();
+
 const root = document.getElementById('app');
 const balkPlek = h('div', { class: 'balk-plek' });
 const inhoud = h('main', { class: 'inhoud', id: 'inhoud' });
@@ -255,6 +269,8 @@ const schil = h('div', { class: 'schil', hidden: true }, menu, balkPlek, inhoud)
 let binnen = null;
 let schilGestart = false;
 let laatsteSessie = '';
+// AAN-72: de persoonlijke link blijft alleen in het geheugen, voor de knop "Kopieer mijn link" direct na het inloggen.
+let onthoudenLink = null;
 let geplakteBeheerlink = null; // TOE-11: een beheerlink uit het plakveld leidt naar de beheerlogin
 root.append(schil, melding);
 
@@ -309,6 +325,8 @@ function kies() {
   schil.hidden = !sessie;
   if (sessie) {
     const sleutel = sessie.sessie;
+    // RON-1, AAN-73: een deelnemer zonder gezien-vlag op dit apparaat begint met de rondleiding.
+    if (sessie.soort === 'deelnemer' && !rondleidingGezien(localStorage) && !location.hash.startsWith('#/uitleg')) history.replaceState(null, '', `${location.pathname}${location.search}#/uitleg`);
     if (!schilGestart) { schilGestart = true; start(inhoud, (naam, params) => { toonMenu(naam); toonBalk(params); if (naam !== 'start') haalMenuStap(); }, soortNu); } else if (sleutel !== laatsteSessie) ververs();
     laatsteSessie = sleutel;
     return;
@@ -331,8 +349,9 @@ function bijAnder() {
   kies();
 }
 
-function bijIngelogd(sessie) {
+function bijIngelogd(sessie, link = null) {
   geplakteBeheerlink = null;
+  onthoudenLink = link && link.soort === 'deelnemer' ? persoonlijkeLinkVan(`${location.origin}${location.pathname}`, link.scriptId, link.token) : null;
   menuStap = null; // een nieuwe sessie begint zonder stap
   bewaarSessie(localStorage, sessie);
   history.replaceState(null, '', `${location.pathname}${location.search}#/${sessie.soort === 'beheer' ? 'leden' : 'start'}`); // de link blijft niet in de adresbalk staan
@@ -348,6 +367,7 @@ async function uitloggen() {
     } catch { /* AAN-42 */ }
   }
   wisSessie(localStorage);
+  onthoudenLink = null;
   menuStap = null;
   history.replaceState(null, '', `${location.pathname}${location.search}`);
   kies();
