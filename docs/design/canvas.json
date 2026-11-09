@@ -1,0 +1,769 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-08T14:00:00Z"
+ },
+ "title": "Weekendje weg · ontwerp",
+ "launch": {
+  "view": "canvas",
+  "page": "mobiel"
+ },
+ "pages": [
+  {
+   "id": "fundament",
+   "name": "Fundament"
+  },
+  {
+   "id": "mobiel",
+   "name": "Mobiel licht"
+  },
+  {
+   "id": "donker",
+   "name": "Mobiel donker"
+  },
+  {
+   "id": "desktop",
+   "name": "Desktop"
+  },
+  {
+   "id": "desktop-donker",
+   "name": "Desktop donker"
+  },
+  {
+   "id": "toestanden",
+   "name": "Toestanden"
+  }
+ ],
+ "boards": {
+  "Tokens.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1280,
+   "h": 1060,
+   "title": "Tokens",
+   "page": "fundament"
+  },
+  "Tokens-donker.dc.html": {
+   "x": 1360,
+   "y": 0,
+   "w": 1280,
+   "h": 1060,
+   "title": "Tokens · donker",
+   "page": "fundament"
+  },
+  "Componenten.dc.html": {
+   "x": 0,
+   "y": 1480,
+   "w": 1280,
+   "h": 1800,
+   "title": "Componenten",
+   "page": "fundament"
+  },
+  "Componenten-donker.dc.html": {
+   "x": 1360,
+   "y": 1480,
+   "w": 1280,
+   "h": 1800,
+   "title": "Componenten · donker",
+   "page": "fundament"
+  },
+  "Icoon.dc.html": {
+   "x": 0,
+   "y": 3700,
+   "w": 1280,
+   "h": 640,
+   "title": "App-icoon",
+   "page": "fundament"
+  },
+  "Binnenkomen.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Link plakken en pincode",
+   "page": "mobiel"
+  },
+  "Beheerlogin.dc.html": {
+   "x": 470,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Beheerlogin",
+   "page": "mobiel"
+  },
+  "Rondleiding.dc.html": {
+   "x": 940,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Rondleiding",
+   "page": "mobiel"
+  },
+  "Opzetwizard.dc.html": {
+   "x": 1410,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Opzetwizard",
+   "page": "mobiel"
+  },
+  "Uitnodigen.dc.html": {
+   "x": 1880,
+   "y": 0,
+   "w": 390,
+   "h": 960,
+   "title": "Editie nieuw en uitnodigen",
+   "page": "mobiel"
+  },
+  "Main.dc.html": {
+   "x": 0,
+   "y": 1380,
+   "w": 390,
+   "h": 1080,
+   "title": "Startscherm deelnemer",
+   "page": "mobiel"
+  },
+  "StartOrganisator.dc.html": {
+   "x": 470,
+   "y": 1380,
+   "w": 390,
+   "h": 1240,
+   "title": "Startscherm organisator",
+   "page": "mobiel"
+  },
+  "Formulier.dc.html": {
+   "x": 940,
+   "y": 1380,
+   "w": 390,
+   "h": 7600,
+   "title": "Formulier",
+   "page": "mobiel",
+   "is_interactive": true
+  },
+  "Voortgang.dc.html": {
+   "x": 1410,
+   "y": 1380,
+   "w": 390,
+   "h": 1100,
+   "title": "Voortgang",
+   "page": "mobiel"
+  },
+  "Overlap.dc.html": {
+   "x": 1880,
+   "y": 1380,
+   "w": 390,
+   "h": 2750,
+   "title": "Overlapoverzicht",
+   "page": "mobiel"
+  },
+  "Detail.dc.html": {
+   "x": 2350,
+   "y": 1380,
+   "w": 390,
+   "h": 1500,
+   "title": "Detailoverzicht",
+   "page": "mobiel"
+  },
+  "Accommodaties.dc.html": {
+   "x": 2820,
+   "y": 1380,
+   "w": 390,
+   "h": 1560,
+   "title": "Accommodaties",
+   "page": "mobiel"
+  },
+  "Meenemen.dc.html": {
+   "x": 0,
+   "y": 9400,
+   "w": 390,
+   "h": 1700,
+   "title": "Wie neemt wat mee",
+   "page": "mobiel"
+  },
+  "Boodschappen.dc.html": {
+   "x": 470,
+   "y": 9400,
+   "w": 390,
+   "h": 1980,
+   "title": "Boodschappenlijst",
+   "page": "mobiel"
+  },
+  "Kookbeurten.dc.html": {
+   "x": 940,
+   "y": 9400,
+   "w": 390,
+   "h": 1500,
+   "title": "Kookbeurten",
+   "page": "mobiel"
+  },
+  "KamersCarpool.dc.html": {
+   "x": 1410,
+   "y": 9400,
+   "w": 390,
+   "h": 1400,
+   "title": "Kamers en carpool",
+   "page": "mobiel"
+  },
+  "Programma.dc.html": {
+   "x": 1880,
+   "y": 9400,
+   "w": 390,
+   "h": 1060,
+   "title": "Programma",
+   "page": "mobiel"
+  },
+  "Posten.dc.html": {
+   "x": 0,
+   "y": 11800,
+   "w": 390,
+   "h": 960,
+   "title": "Posten en verdeling",
+   "page": "mobiel"
+  },
+  "UitgaveToevoegen.dc.html": {
+   "x": 470,
+   "y": 11800,
+   "w": 390,
+   "h": 1120,
+   "title": "Uitgave toevoegen",
+   "page": "mobiel",
+   "is_interactive": true
+  },
+  "Afrekening.dc.html": {
+   "x": 940,
+   "y": 11800,
+   "w": 390,
+   "h": 1460,
+   "title": "Afrekening",
+   "page": "mobiel"
+  },
+  "Archief.dc.html": {
+   "x": 1410,
+   "y": 11800,
+   "w": 390,
+   "h": 844,
+   "title": "Archief",
+   "page": "mobiel"
+  },
+  "Binnenkomen-donker.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Link plakken en pincode · donker",
+   "page": "donker"
+  },
+  "Beheerlogin-donker.dc.html": {
+   "x": 470,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Beheerlogin · donker",
+   "page": "donker"
+  },
+  "Rondleiding-donker.dc.html": {
+   "x": 940,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Rondleiding · donker",
+   "page": "donker"
+  },
+  "Opzetwizard-donker.dc.html": {
+   "x": 1410,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Opzetwizard · donker",
+   "page": "donker"
+  },
+  "Uitnodigen-donker.dc.html": {
+   "x": 1880,
+   "y": 0,
+   "w": 390,
+   "h": 960,
+   "title": "Editie nieuw en uitnodigen · donker",
+   "page": "donker"
+  },
+  "Main-donker.dc.html": {
+   "x": 0,
+   "y": 1380,
+   "w": 390,
+   "h": 1080,
+   "title": "Startscherm deelnemer · donker",
+   "page": "donker"
+  },
+  "StartOrganisator-donker.dc.html": {
+   "x": 470,
+   "y": 1380,
+   "w": 390,
+   "h": 1240,
+   "title": "Startscherm organisator · donker",
+   "page": "donker"
+  },
+  "Formulier-donker.dc.html": {
+   "x": 940,
+   "y": 1380,
+   "w": 390,
+   "h": 7600,
+   "title": "Formulier · donker",
+   "page": "donker",
+   "is_interactive": true
+  },
+  "Voortgang-donker.dc.html": {
+   "x": 1410,
+   "y": 1380,
+   "w": 390,
+   "h": 1100,
+   "title": "Voortgang · donker",
+   "page": "donker"
+  },
+  "Overlap-donker.dc.html": {
+   "x": 1880,
+   "y": 1380,
+   "w": 390,
+   "h": 2750,
+   "title": "Overlapoverzicht · donker",
+   "page": "donker"
+  },
+  "Detail-donker.dc.html": {
+   "x": 2350,
+   "y": 1380,
+   "w": 390,
+   "h": 1500,
+   "title": "Detailoverzicht · donker",
+   "page": "donker"
+  },
+  "Accommodaties-donker.dc.html": {
+   "x": 2820,
+   "y": 1380,
+   "w": 390,
+   "h": 1560,
+   "title": "Accommodaties · donker",
+   "page": "donker"
+  },
+  "Meenemen-donker.dc.html": {
+   "x": 0,
+   "y": 9400,
+   "w": 390,
+   "h": 1700,
+   "title": "Wie neemt wat mee · donker",
+   "page": "donker"
+  },
+  "Boodschappen-donker.dc.html": {
+   "x": 470,
+   "y": 9400,
+   "w": 390,
+   "h": 1980,
+   "title": "Boodschappenlijst · donker",
+   "page": "donker"
+  },
+  "Kookbeurten-donker.dc.html": {
+   "x": 940,
+   "y": 9400,
+   "w": 390,
+   "h": 1500,
+   "title": "Kookbeurten · donker",
+   "page": "donker"
+  },
+  "KamersCarpool-donker.dc.html": {
+   "x": 1410,
+   "y": 9400,
+   "w": 390,
+   "h": 1400,
+   "title": "Kamers en carpool · donker",
+   "page": "donker"
+  },
+  "Programma-donker.dc.html": {
+   "x": 1880,
+   "y": 9400,
+   "w": 390,
+   "h": 1060,
+   "title": "Programma · donker",
+   "page": "donker"
+  },
+  "Posten-donker.dc.html": {
+   "x": 0,
+   "y": 11800,
+   "w": 390,
+   "h": 960,
+   "title": "Posten en verdeling · donker",
+   "page": "donker"
+  },
+  "UitgaveToevoegen-donker.dc.html": {
+   "x": 470,
+   "y": 11800,
+   "w": 390,
+   "h": 1120,
+   "title": "Uitgave toevoegen · donker",
+   "page": "donker",
+   "is_interactive": true
+  },
+  "Afrekening-donker.dc.html": {
+   "x": 940,
+   "y": 11800,
+   "w": 390,
+   "h": 1460,
+   "title": "Afrekening · donker",
+   "page": "donker"
+  },
+  "Archief-donker.dc.html": {
+   "x": 1410,
+   "y": 11800,
+   "w": 390,
+   "h": 844,
+   "title": "Archief · donker",
+   "page": "donker"
+  },
+  "D-StartOrganisator.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1280,
+   "h": 1240,
+   "title": "Desktop · startscherm organisator",
+   "page": "desktop",
+   "expand": "fill"
+  },
+  "D-Overlap.dc.html": {
+   "x": 1360,
+   "y": 0,
+   "w": 1280,
+   "h": 1300,
+   "title": "Desktop · overlapoverzicht",
+   "page": "desktop",
+   "expand": "fill"
+  },
+  "D-Detail.dc.html": {
+   "x": 2720,
+   "y": 0,
+   "w": 1280,
+   "h": 1020,
+   "title": "Desktop · detailoverzicht",
+   "page": "desktop",
+   "expand": "fill"
+  },
+  "D-Formulier.dc.html": {
+   "x": 0,
+   "y": 1420,
+   "w": 1280,
+   "h": 2700,
+   "title": "Desktop · formulier",
+   "page": "desktop",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "D-Posten.dc.html": {
+   "x": 1360,
+   "y": 1420,
+   "w": 1280,
+   "h": 1080,
+   "title": "Desktop · posten en verdeling",
+   "page": "desktop",
+   "expand": "fill"
+  },
+  "D-Afrekening.dc.html": {
+   "x": 2720,
+   "y": 1420,
+   "w": 1280,
+   "h": 1180,
+   "title": "Desktop · afrekening",
+   "page": "desktop",
+   "expand": "fill"
+  },
+  "D-StartOrganisator-donker.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1280,
+   "h": 1240,
+   "title": "Desktop · startscherm organisator · donker",
+   "page": "desktop-donker",
+   "expand": "fill"
+  },
+  "D-Overlap-donker.dc.html": {
+   "x": 1360,
+   "y": 0,
+   "w": 1280,
+   "h": 1300,
+   "title": "Desktop · overlapoverzicht · donker",
+   "page": "desktop-donker",
+   "expand": "fill"
+  },
+  "D-Detail-donker.dc.html": {
+   "x": 2720,
+   "y": 0,
+   "w": 1280,
+   "h": 1020,
+   "title": "Desktop · detailoverzicht · donker",
+   "page": "desktop-donker",
+   "expand": "fill"
+  },
+  "D-Formulier-donker.dc.html": {
+   "x": 0,
+   "y": 1420,
+   "w": 1280,
+   "h": 2700,
+   "title": "Desktop · formulier · donker",
+   "page": "desktop-donker",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "D-Posten-donker.dc.html": {
+   "x": 1360,
+   "y": 1420,
+   "w": 1280,
+   "h": 1080,
+   "title": "Desktop · posten en verdeling · donker",
+   "page": "desktop-donker",
+   "expand": "fill"
+  },
+  "D-Afrekening-donker.dc.html": {
+   "x": 2720,
+   "y": 1420,
+   "w": 1280,
+   "h": 1180,
+   "title": "Desktop · afrekening · donker",
+   "page": "desktop-donker",
+   "expand": "fill"
+  },
+  "T-Laden.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Toestand · laden",
+   "page": "toestanden"
+  },
+  "T-Druk.dc.html": {
+   "x": 470,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Toestand · druk",
+   "page": "toestanden"
+  },
+  "T-Offline.dc.html": {
+   "x": 940,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Toestand · geen verbinding",
+   "page": "toestanden"
+  },
+  "T-Leeg.dc.html": {
+   "x": 1410,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Toestand · leeg",
+   "page": "toestanden"
+  },
+  "T-AlleenLezen.dc.html": {
+   "x": 1880,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Toestand · alleen-lezen",
+   "page": "toestanden"
+  },
+  "T-Blokkade.dc.html": {
+   "x": 2350,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Toestand · pincode geblokkeerd",
+   "page": "toestanden"
+  },
+  "T-Gewijzigd.dc.html": {
+   "x": 2820,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Toestand · elders gewijzigd",
+   "page": "toestanden"
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Tokens.dc.html",
+  "Tokens-donker.dc.html",
+  "Componenten.dc.html",
+  "Componenten-donker.dc.html",
+  "Icoon.dc.html",
+  "Binnenkomen.dc.html",
+  "Beheerlogin.dc.html",
+  "Rondleiding.dc.html",
+  "Opzetwizard.dc.html",
+  "Uitnodigen.dc.html",
+  "StartOrganisator.dc.html",
+  "Formulier.dc.html",
+  "Voortgang.dc.html",
+  "Overlap.dc.html",
+  "Detail.dc.html",
+  "Accommodaties.dc.html",
+  "Meenemen.dc.html",
+  "Boodschappen.dc.html",
+  "Kookbeurten.dc.html",
+  "KamersCarpool.dc.html",
+  "Programma.dc.html",
+  "Posten.dc.html",
+  "UitgaveToevoegen.dc.html",
+  "Afrekening.dc.html",
+  "Archief.dc.html",
+  "Binnenkomen-donker.dc.html",
+  "Beheerlogin-donker.dc.html",
+  "Rondleiding-donker.dc.html",
+  "Opzetwizard-donker.dc.html",
+  "Uitnodigen-donker.dc.html",
+  "Main-donker.dc.html",
+  "StartOrganisator-donker.dc.html",
+  "Formulier-donker.dc.html",
+  "Voortgang-donker.dc.html",
+  "Overlap-donker.dc.html",
+  "Detail-donker.dc.html",
+  "Accommodaties-donker.dc.html",
+  "Meenemen-donker.dc.html",
+  "Boodschappen-donker.dc.html",
+  "Kookbeurten-donker.dc.html",
+  "KamersCarpool-donker.dc.html",
+  "Programma-donker.dc.html",
+  "Posten-donker.dc.html",
+  "UitgaveToevoegen-donker.dc.html",
+  "Afrekening-donker.dc.html",
+  "Archief-donker.dc.html",
+  "D-StartOrganisator.dc.html",
+  "D-Overlap.dc.html",
+  "D-Detail.dc.html",
+  "D-Formulier.dc.html",
+  "D-Posten.dc.html",
+  "D-Afrekening.dc.html",
+  "D-StartOrganisator-donker.dc.html",
+  "D-Overlap-donker.dc.html",
+  "D-Detail-donker.dc.html",
+  "D-Formulier-donker.dc.html",
+  "D-Posten-donker.dc.html",
+  "D-Afrekening-donker.dc.html",
+  "T-Laden.dc.html",
+  "T-Druk.dc.html",
+  "T-Offline.dc.html",
+  "T-Leeg.dc.html",
+  "T-AlleenLezen.dc.html",
+  "T-Blokkade.dc.html",
+  "T-Gewijzigd.dc.html"
+ ],
+ "notes": {
+  "fundament-r0": {
+   "x": 0,
+   "y": -300,
+   "text": "Tokens, licht en donker",
+   "kind": "title1",
+   "maxW": 2640,
+   "page": "fundament"
+  },
+  "fundament-r1": {
+   "x": 0,
+   "y": 1180,
+   "text": "Componenten, licht en donker",
+   "kind": "title1",
+   "maxW": 2640,
+   "page": "fundament"
+  },
+  "fundament-r2": {
+   "x": 0,
+   "y": 3400,
+   "text": "App-icoon",
+   "kind": "title1",
+   "maxW": 1280,
+   "page": "fundament"
+  },
+  "mobiel-r0": {
+   "x": 0,
+   "y": -300,
+   "text": "Binnenkomen",
+   "kind": "title1",
+   "maxW": 2270,
+   "page": "mobiel"
+  },
+  "mobiel-r1": {
+   "x": 0,
+   "y": 1080,
+   "text": "Invullen en kiezen",
+   "kind": "title1",
+   "maxW": 3210,
+   "page": "mobiel"
+  },
+  "mobiel-r2": {
+   "x": 0,
+   "y": 9100,
+   "text": "Voorbereiden en weekend",
+   "kind": "title1",
+   "maxW": 2270,
+   "page": "mobiel"
+  },
+  "mobiel-r3": {
+   "x": 0,
+   "y": 11500,
+   "text": "Geld en archief",
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "mobiel"
+  },
+  "donker-r0": {
+   "x": 0,
+   "y": -300,
+   "text": "Binnenkomen · donker",
+   "kind": "title1",
+   "maxW": 2270,
+   "page": "donker"
+  },
+  "donker-r1": {
+   "x": 0,
+   "y": 1080,
+   "text": "Invullen en kiezen · donker",
+   "kind": "title1",
+   "maxW": 3210,
+   "page": "donker"
+  },
+  "donker-r2": {
+   "x": 0,
+   "y": 9100,
+   "text": "Voorbereiden en weekend · donker",
+   "kind": "title1",
+   "maxW": 2270,
+   "page": "donker"
+  },
+  "donker-r3": {
+   "x": 0,
+   "y": 11500,
+   "text": "Geld en archief · donker",
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "donker"
+  },
+  "desktop-r0": {
+   "x": 0,
+   "y": -300,
+   "text": "Desktop",
+   "kind": "title1",
+   "maxW": 4000,
+   "page": "desktop"
+  },
+  "desktop-donker-r0": {
+   "x": 0,
+   "y": -300,
+   "text": "Desktop donker",
+   "kind": "title1",
+   "maxW": 4000,
+   "page": "desktop-donker"
+  },
+  "toestanden-r0": {
+   "x": 0,
+   "y": -300,
+   "text": "Toestanden",
+   "kind": "title1",
+   "maxW": 3210,
+   "page": "toestanden"
+  }
+ },
+ "designSystems": []
+}

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>Toestand · leeg</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.ww{--bg-top:#EAF2FA;--bg-bottom:#F5ECDD;--glass-fill:rgba(255,255,255,.55);--glass-border:rgba(255,255,255,.70);--glass-blur:20px;--glass-shadow:0 8px 24px rgba(19,32,45,.08);--glass-rim:inset 0 1px 0 rgba(255,255,255,.85);--glass-fallback:rgba(250,252,254,.90);--surface-solid:rgba(255,255,255,.92);--line:rgba(19,32,45,.10);--line-strong:rgba(19,32,45,.22);--text-primary:#13202D;--text-secondary:#4E5C6A;--accent:#1F6FB8;--accent-soft:rgba(31,111,184,.12);--on-accent:#FFFFFF;--ja:#18766A;--on-ja:#FFFFFF;--mis:#D9A441;--on-mis:#13202D;--nee:#B94A3B;--on-nee:#FFFFFF;--leeg:#7A8591;--ja-soft:rgba(24,118,106,.12);--mis-soft:rgba(217,164,65,.18);--nee-soft:rgba(185,74,59,.12);--h0:#EEF3F1;--h1:#D7EAE6;--h2:#B5DAD3;--h3:#8CC5BB;--h4:#5FAEA2;--h5:#18766A;--h6:#0F5A51;--h-ink-lo:#13202D;--h-ink-hi:#FFFFFF;--focus:#1F6FB8;--scrim:rgba(19,32,45,.18);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;color:var(--text-primary);background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);-webkit-font-smoothing:antialiased;position:relative;overflow:hidden;box-sizing:border-box;font-size:16px;line-height:1.4}
+.ww.dark{--bg-top:#0F1620;--bg-bottom:#1C1A16;--glass-fill:rgba(255,255,255,.08);--glass-border:rgba(255,255,255,.16);--glass-blur:20px;--glass-shadow:0 8px 24px rgba(0,0,0,.30);--glass-rim:inset 0 1px 0 rgba(255,255,255,.10);--glass-fallback:rgba(26,34,44,.94);--surface-solid:rgba(22,30,40,.92);--line:rgba(232,238,245,.10);--line-strong:rgba(232,238,245,.24);--text-primary:#E8EEF5;--text-secondary:#A6B3C1;--accent:#5AA3E6;--accent-soft:rgba(90,163,230,.16);--on-accent:#0F1620;--ja:#3FB3A1;--on-ja:#0F1620;--mis:#E6B95C;--on-mis:#0F1620;--nee:#E57C6B;--on-nee:#0F1620;--leeg:#6B7682;--ja-soft:rgba(63,179,161,.16);--mis-soft:rgba(230,185,92,.16);--nee-soft:rgba(229,124,107,.16);--h0:#18212B;--h1:#1B3433;--h2:#1F4744;--h3:#23665F;--h4:#3FB3A1;--h5:#6FCBBB;--h6:#A3E3D7;--h-ink-lo:#E8EEF5;--h-ink-hi:#0F1620;--focus:#5AA3E6;--scrim:rgba(0,0,0,.40);color-scheme:dark}
+.ww *{box-sizing:border-box}
+.ww a{color:var(--accent);text-decoration:none;font-weight:600}.ww a:hover{text-decoration:underline}
+.glass{background:var(--glass-fill);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(160%);backdrop-filter:blur(var(--glass-blur)) saturate(160%);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow),var(--glass-rim)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass{background:var(--glass-fallback)}}
+.solid{background:var(--surface-solid);border:1px solid var(--line)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.t-title{font-size:28px;line-height:34px;font-weight:700;letter-spacing:-.02em;margin:0}
+.t-display{font-size:44px;line-height:48px;font-weight:700;letter-spacing:-.03em;margin:0}
+.t-h2{font-size:20px;line-height:26px;font-weight:650;letter-spacing:-.01em;margin:0}
+.t-h3{font-size:17px;line-height:22px;font-weight:650;margin:0}
+.t-body{font-size:16px;line-height:22px;margin:0}
+.t-small{font-size:14px;line-height:19px;margin:0}
+.t-cap{font-size:13px;line-height:17px;font-weight:600;letter-spacing:.02em;margin:0;color:var(--text-secondary)}
+.t-sec{color:var(--text-secondary)}
+.t-num{font-variant-numeric:tabular-nums}
+.ww button{font:inherit;color:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 20px;border-radius:16px;border:0;font-weight:650;font-size:16px;text-decoration:none}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-ghost{background:var(--accent-soft);color:var(--accent)}
+.btn-plain{background:transparent;color:var(--accent);padding:0 8px}
+.btn-sm{min-height:44px;padding:0 14px;border-radius:13px;font-size:15px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;border:0;background:transparent;color:var(--text-primary)}
+.ww :focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 10px;border-radius:999px;font-size:13px;font-weight:600;background:var(--accent-soft);color:var(--accent)}
+.chip-n{background:var(--line);color:var(--text-primary)}
+.st{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;font-weight:700;font-size:17px;flex:0 0 auto}
+.st-ja{background:var(--ja);color:var(--on-ja)}
+.st-mis{background:var(--mis);color:var(--on-mis)}
+.st-nee{background:var(--nee);color:var(--on-nee)}
+.st-leeg{border:1.5px dashed var(--leeg);color:var(--text-secondary);background:transparent}
+.st-sm{width:24px;height:24px;border-radius:8px;font-size:13px}
+.field{width:100%;min-height:50px;padding:0 14px;border-radius:14px;border:1px solid var(--line-strong);background:var(--surface-solid);font:inherit;color:var(--text-primary)}
+textarea.field{padding:12px 14px;min-height:96px;resize:none}
+select.field{appearance:none;-webkit-appearance:none}
+.label{display:block;font-size:14px;font-weight:600;margin:0 0 6px}
+.hint{font-size:13px;line-height:18px;color:var(--text-secondary);margin:6px 0 0}
+.card{border-radius:24px;padding:18px}
+.panel{border-radius:20px;padding:16px}
+.list{border-radius:18px;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 14px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.av{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:14px;flex:0 0 auto}
+.av-sm{width:28px;height:28px;font-size:12px}
+.seg{height:6px;border-radius:3px;background:var(--line-strong)}
+.seg.done{background:var(--accent)}
+.seg.now{background:var(--accent);height:10px;margin-top:-2px;box-shadow:0 0 0 3px var(--accent-soft)}
+.vink{display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 14px;border-top:1px solid var(--line);cursor:pointer}
+.vink:first-child{border-top:0}
+.vink input{appearance:none;-webkit-appearance:none;margin:0;width:26px;height:26px;border-radius:8px;border:1.5px solid var(--leeg);background:var(--surface-solid);flex:0 0 auto;display:grid;place-content:center}
+.vink input:checked{background:var(--accent);border-color:var(--accent)}
+.vink input:checked::after{content:"";width:12px;height:7px;border-left:2.5px solid var(--on-accent);border-bottom:2.5px solid var(--on-accent);transform:translateY(-2px) rotate(-45deg)}
+.vink .klaar{text-decoration:line-through;color:var(--text-secondary)}
+.segm{display:flex;padding:4px;border-radius:15px;gap:4px;background:var(--line)}
+.segm button{flex:1 1 0;min-height:42px;border:0;border-radius:11px;background:transparent;font-weight:600;font-size:15px;color:var(--text-primary)}
+.segm button[aria-pressed="true"]{background:var(--surface-solid);box-shadow:0 1px 3px rgba(19,32,45,.12);color:var(--accent)}
+.drie{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.drie button{min-height:50px;border-radius:14px;border:1.5px solid var(--line-strong);background:var(--surface-solid);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600}
+.drie button[aria-pressed="true"].ja{background:var(--ja);border-color:var(--ja);color:var(--on-ja)}
+.drie button[aria-pressed="true"].mis{background:var(--mis);border-color:var(--mis);color:var(--on-mis)}
+.drie button[aria-pressed="true"].nee{background:var(--nee);border-color:var(--nee);color:var(--on-nee)}
+.wk{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 10px 8px 14px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left}
+.wk:first-child{border-top:0}
+.tag{display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:7px;font-size:12px;font-weight:600;background:var(--line);color:var(--text-primary)}
+.tag-acc{background:var(--accent-soft);color:var(--accent)}
+.heat{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;min-height:44px;font-weight:700;font-size:15px}
+.h0{background:var(--h0);color:var(--text-secondary)}.h1{background:var(--h1);color:var(--h-ink-lo)}.h2{background:var(--h2);color:var(--h-ink-lo)}.h3{background:var(--h3);color:var(--h-ink-lo)}
+.h4{background:var(--h4);color:var(--h-ink-hi)}.h5{background:var(--h5);color:var(--h-ink-hi)}.h6{background:var(--h6);color:var(--h-ink-hi)}
+.ww:not(.dark) .h4{color:#13202D}
+.priv{display:inline-flex;align-items:center;gap:6px;font-size:13px;line-height:17px;color:var(--text-secondary);font-weight:500}
+.range{width:100%;accent-color:var(--accent);height:32px;margin:0}
+.toast{display:flex;align-items:center;gap:12px;border-radius:18px;padding:12px 14px}
+.skel{background:var(--line);border-radius:10px;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.ww *{animation:none!important;transition:none!important}}
+.nav-m{position:absolute;left:12px;right:12px;bottom:20px;height:70px;border-radius:26px;display:flex;align-items:stretch;padding:6px;z-index:6}
+.nav-m a{flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:20px;color:var(--text-secondary);font-size:11px;font-weight:600;text-decoration:none}
+.nav-m a[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
+.nav-d a{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:13px;color:var(--text-primary);font-weight:550;font-size:15px;text-decoration:none}
+.nav-d a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.fab{position:absolute;right:20px;bottom:108px;z-index:6;display:inline-flex;align-items:center;gap:8px;min-height:54px;padding:0 20px 0 16px;border-radius:999px;color:var(--accent);font-weight:700;font-size:16px;border:1px solid var(--glass-border)}
+.tl{position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line-strong);border-radius:1px}
+.dot{position:absolute;left:-24px;top:16px;width:14px;height:14px;border-radius:50%;background:var(--surface-solid);border:2.5px solid var(--accent)}
+.dot.now{background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.pin{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.pin input{width:100%;height:58px;border-radius:14px;border:1.5px solid var(--line-strong);background:var(--surface-solid);text-align:center;font-size:24px;font-weight:700;color:var(--text-primary)}
+.pin input.on{border-color:var(--accent)}
+table.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:13px;font-weight:600;color:var(--text-secondary);padding:10px 12px;border-bottom:1px solid var(--line-strong);white-space:nowrap}
+.tbl td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+
+</style>
+</helmet>
+<div class="ww {{mode}}" style="width:390px;height:844px;">
+<div style="position:absolute;top:0;left:0;right:0;padding:50px 12px 0;z-index:5"><nav class="glass" aria-label="Stappen van de editie" style="border-radius:22px;padding:8px 8px 12px 16px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<p class="t-cap" style="margin:0">Studievrienden · Weekendje weg 2027</p>
+<button class="icon-btn" aria-label="Alle stappen tonen" aria-expanded="false" style="width:44px;height:36px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><path d="m6 9.5 6 6 6-6"></path></svg></button>
+</div>
+<ol style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;list-style:none;margin:2px 8px 10px 0;padding:0;align-items:start"><li class="seg done"><span class="sr">Invullen, klaar</span></li><li class="seg done"><span class="sr">Overzicht, klaar</span></li><li class="seg done"><span class="sr">Accommodatie, klaar</span></li><li class="seg done"><span class="sr">Voorbereiding, klaar</span></li><li class="seg now"><span class="sr">Weekend, huidige stap</span></li><li class="seg"><span class="sr">Afrekenen, nog niet</span></li><li class="seg"><span class="sr">Afgerond, nog niet</span></li></ol>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding-right:8px">
+<span class="t-sec" style="display:flex;align-items:center;gap:2px;font-size:13px;flex:1 1 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><path d="m14.5 6-6 6 6 6"></path></svg><span>Voorbereiding</span></span>
+<span style="font-weight:700;font-size:15px;white-space:nowrap">5 · Weekend</span>
+<span class="t-sec" style="display:flex;align-items:center;justify-content:flex-end;gap:2px;font-size:13px;flex:1 1 0"><span>Afrekenen</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><path d="m9.5 6 6 6-6 6"></path></svg></span>
+</div>
+</nav></div>
+<main style="padding:176px 20px 116px;display:flex;flex-direction:column;gap:16px">
+<header style="padding:4px 4px 0"><p class="t-cap">Weekend</p><h1 class="t-title" style="margin-top:2px">Programma</h1></header>
+<section class="glass card" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:36px 24px;margin-top:20px">
+<span style="width:56px;height:56px;border-radius:18px;background:var(--accent-soft);color:var(--accent);display:inline-flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg></span>
+<h2 class="t-h3">Nog geen programma</h2><p class="t-small t-sec" style="max-width:260px">Eva zet hier de punten per dag neer. Je ziet ze vanzelf verschijnen.</p></section>
+</main>
+<nav class="glass nav-m" aria-label="Menu"><a href="#" aria-current="page"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><path d="M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"></path></svg><span>Start</span></a><a href="#"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><rect x="3.5" y="5" width="17" height="15.5" rx="3"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg><span>Plannen</span></a><a href="#"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M21.5 20c-.4-2.2-1.6-3.8-3.3-4.7"></path></svg><span>Samen</span></a><a href="#"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><rect x="3" y="6" width="18" height="14" rx="3"></rect><path d="M3 10h18M16 15h2"></path></svg><span>Geld</span></a><a href="#"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><circle cx="5" cy="12" r="1.3"></circle><circle cx="12" cy="12" r="1.3"></circle><circle cx="19" cy="12" r="1.3"></circle></svg><span>Meer</span></a></nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark": {"editor": "boolean", "default": false, "section": "Thema"}, "$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+
+  renderVals() {
+    const base = { mode: (this.props.dark ?? false) ? 'dark' : 'light' };
+    return this.extra ? Object.assign(base, this.extra()) : base;
+  }
+}
+</script>
+</body>
+</html>
