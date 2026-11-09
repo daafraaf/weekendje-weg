@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.3, 9 november 2026: AAN-38 en AAN-39 (fase 1).
 Versie 0.2, 9 november 2026: AAN-15 bevestigd met het kalenderjaar.
 Versie 0.1, 8 november 2026
 
@@ -17,7 +18,7 @@ die test aan en werk je hier de status bij.
 |---|---|---|---|---|---|---|
 | AAN-01 | Blokkering na foute pincodes | Regel | | 5 pogingen, 15 minuten; na 3 blokkades nieuwe pincode nodig | laag | open |
 | AAN-02 | Duur van een sessie | Regel | | deelnemer 60 dagen, beheer 12 uur | laag | open |
-| AAN-03 | Roulerende organisator | Flow | | Beheerlinks horen bij een lid; elke houder van een beheerlink kan een nieuwe editie aanmaken en beheerlinks voor andere leden maken; het nieuwe lid kiest zijn eigen wachtwoord; de eigenaar kan via het Sheet-menu altijd een beheerlink maken | midden | open |
+| AAN-03 | Roulerende organisator | Flow | `src/server/rechten.js` (`REGELS.editieAanmaken`) | Beheerlinks horen bij een lid; elke houder van een beheerlink kan een nieuwe editie aanmaken en beheerlinks voor andere leden maken; het nieuwe lid kiest zijn eigen wachtwoord; de eigenaar kan via het Sheet-menu altijd een beheerlink maken | midden | open |
 | AAN-04 | Naar Overzicht gaan sluit het invullen | Flow | | ja, ook voor de deadline | midden | open |
 | AAN-05 | Stap terug | Regel | | één stap terug, niet meer terug naar Invullen vanaf Accommodatie | laag | open |
 | AAN-06 | Rangorde voorkeursdatum | Regel | | minste nee, meeste ja, meeste misschien, voorkeursmaand, vroegste | midden | open |
@@ -43,15 +44,17 @@ die test aan en werk je hier de status bij.
 | AAN-26 | Items verwijderen | Regel | | eigen item tot definitief; organisator elk item | laag | open |
 | AAN-27 | Afvinken bij boodschappen | Regel | | iedereen, gedeeld | laag | open |
 | AAN-28 | Setupcode | Regel | | acht tekens, eenmalig, 30 minuten geldig | laag | open |
-| AAN-29 | Na Afgerond | Regel | | editie alleen-lezen | laag | open |
+| AAN-29 | Na Afgerond | Regel | `src/server/rechten.js` (`reden`) | editie alleen-lezen | laag | open |
 | AAN-30 | Wie het archief ziet | Flow | | iedere deelnemer met een geldige link van een editie van de groep | laag | open |
 | AAN-31 | Links per editie | Flow | | nieuwe link en pincode per editie; oude links alleen-lezen na Afgerond | midden | open |
-| AAN-32 | Hashen | Regel | | tokens SHA-256 zonder salt; pincode en wachtwoord iteratieve SHA-256 met salt, aantal iteraties zo dat een login in Apps Script onder 1 seconde blijft (meten in fase 20) | laag | open |
+| AAN-32 | Hashen | Regel | `src/server/crypto.js` (`ITERATIES`) | tokens SHA-256 zonder salt; pincode en wachtwoord iteratieve SHA-256 met salt, aantal iteraties zo dat een login in Apps Script onder 1 seconde blijft (meten in fase 20) | laag | open |
 | AAN-33 | Ingevuld-status | Regel | | minstens één weekend, beide budgetten en reistijd gekozen | laag | open |
 | AAN-34 | Wat koks zien | Flow | | aantallen per eetwens en vrije tekst zonder namen; allergieën met namen alleen voor de organisator (volgt B-28; zonder deze regel kan ieder lid zich kok maken en alle allergieën met namen zien) | midden | open |
 | AAN-35 | Afrekening goed genoeg in plaats van minimaal | Regel | | eerst gelijke bedragen koppelen, daarna grootste schuldenaar naar grootste schuldeiser | laag | open |
-| AAN-36 | Wie de pincode kiest | Regel | | het script kiest willekeurig zes cijfers; de organisator verstuurt hem alleen (F-38 zei "de organisator voegt een wachtwoordje toe") | laag | open |
+| AAN-36 | Wie de pincode kiest | Regel | `src/server/crypto.js` (`maakPincode`) | het script kiest willekeurig zes cijfers; de organisator verstuurt hem alleen (F-38 zei "de organisator voegt een wachtwoordje toe") | laag | open |
 | AAN-37 | Navigatielijst voor vaste externe links | Regel | `scripts/check-bronregels.mjs` (`NAVIGATIELIJST`) | de enige plek in `src/web` waar `wa.me` en `maps.google.com` mogen staan is `src/web/navigatie.js` (spec noemt de lijst, niet de bestandsnaam) | laag | open |
+| AAN-38 | Rechten voor acties die §6 niet letterlijk noemt | Regel | `src/server/rechten.js` (`SCHERMEN`) | eigen antwoorden en de andere schermen lezen mag elk lid van de editie, ook na de deadline; een bestaand item of een bestaande post wijzigen volgt de regel voor verwijderen; `deelnemersBeheren` en `vragenBeheren` vallen onder de rij Editie; `betalingTerugdraaien` volgt "Betaling markeren" | laag | open |
+| AAN-39 | Eigen antwoorden en stem van de organisator | Regel | `src/server/rechten.js` (`eigenAntwoorden`) | de beheersessie werkt voor de deelnemersrij van het eigen lid in die editie; deadline en stap Invullen gelden ook voor de organisator (§7.2.3 "niemand") | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -62,3 +65,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 
 - 2026-11-08: register aangemaakt uit het interview.
 - 2026-11-08: AAN-34 t/m AAN-36 toegevoegd en AAN-03, AAN-07, AAN-21, AAN-32 aangepast na de spec-review.
+- 2026-11-09: AAN-38 en AAN-39 toegevoegd in fase 1 (rechten).

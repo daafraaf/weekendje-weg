@@ -10,7 +10,7 @@
     "bronregels": "node scripts/check-bronregels.mjs",
     "test": "node --test \"test/unit/*.test.mjs\"",
     "e2e": "playwright test",
-    "mock": "node -e \"console.error('Nepbackend komt in een latere fase.');process.exit(1)\"",
+    "mock": "node test/mock-backend/server.mjs",
     "vakanties": "node -e \"console.error('Vakantiescript komt in een latere fase.');process.exit(1)\""
   },
   "devDependencies": {

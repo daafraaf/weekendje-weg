@@ -70,9 +70,18 @@ Fase 0 legt de scripts vast in `package.json`; vul deze lijst aan als er een bij
 
 ## Patronen
 
-Leeg bij de start. Na elke fase hier aanvullen met wat de volgende sessie moet weten en niet
-uit de code haalt. Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn
-gaan naar een skill in `.claude/skills/`.
+Na elke fase hier aanvullen met wat de volgende sessie moet weten en niet uit de code haalt.
+Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar een skill in
+`.claude/skills/`.
+
+- Een actie bouwen: handler `{ schema, context?, uitvoeren }` in `src/server/acties/<groep>.js`
+  en registreren in `STANDAARD` van `src/server/api.js`. `context` levert rijvelden als `eigen`,
+  `nieuw`, `betrokken` voor `reden()` in `rechten.js`; de API doet slot, sessie, editie, Log en flush.
+- Store-tabs en kolomtypen staan in `TABS` van `src/server/store.js`; een nieuwe kolom eerst daar.
+- Tests met data: `maakNepApi({ seed, handlers, nu })` uit `test/mock-backend/server.mjs`;
+  nagebootste GAS-diensten in `test/unit/nep-gas.mjs`.
+- Geen `token = '...'`-letterlijken in tests: de geheimencheck van de bronregels slaat aan;
+  maak tokens met `maakToken(nodeRandom)`.
 
 ## Valkuilen
 
