@@ -2,7 +2,7 @@
 // De organisator heeft zijn eigen bovenkant in start-organisator.js. Alle tekst gaat via textContent (NFR-5).
 import { h } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
-import { STAPNAMEN } from '../components/stappenbalk.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { datumLang } from '../../shared/datums.js';
 import { editieKeuze } from './voortgang.js';
 import { lokaalNu, maakProgrammaVandaag } from './programma.js';
@@ -26,7 +26,7 @@ function startDeelnemer(g, ctx) {
         : kaart('Vul je beschikbaarheid en wensen in', tekst(`${g.voortgang.ingevuld} van ${g.voortgang.aantal} hebben ingevuld.`), knop('Formulier invullen', '#/formulier', 'primary'))];
     }
     case 'overzicht':
-      return [kaart('Overlapoverzicht', tekst('Zie welke weekenden voor de groep werken en wat de voorkeursdatum is.'), knop('Naar het overzicht', '#/overzicht', 'primary'))];
+      return [kaart('Overlapoverzicht', tekst('Zie welke weekenden voor de groep werken en wat de voorkeursdatum is.'), knop(`Naar ${STAPNAMEN.overzicht}`, '#/overzicht', 'primary'))];
     case 'accommodatie':
       return [kaart('Accommodatie', tekst(weekendRegel(g)), tekst(accommodatieRegel(g)), knop('Bekijk de accommodaties', '#/accommodaties', 'primary'))];
     case 'voorbereiding':
@@ -35,16 +35,18 @@ function startDeelnemer(g, ctx) {
       return [programmaVandaag(ctx), knop('Uitgave toevoegen', '#/posten', 'primary')];
     case 'afrekenen': {
       const regel = g.afrekening.open.length ? 'Dit staat er voor jou open.' : 'Voor jou staat er niets open.';
-      return [kaart('Afrekenen', tekst(regel), g.afrekening.open.length ? h('div', { class: 'solid list', role: 'list' }, betalingRijen(g)) : null, knop('Naar de afrekening', '#/afrekening', 'primary'))];
+      return [kaart(STAPNAMEN.afrekenen, tekst(regel), g.afrekening.open.length ? h('div', { class: 'solid list', role: 'list' }, betalingRijen(g)) : null, knop('Naar de afrekening', '#/afrekening', 'primary'))];
     }
     default:
       return [samenvatting(g)];
   }
 }
 
-// sessie: { scriptId, sessie, editieId, soort }. bijStap(stap) meldt de stap aan het menu.
-export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStap = () => {}, fetchFn, nu = lokaalNu }) {
+// sessie: { scriptId, sessie, editieId, soort }. bijStand(editie) geeft de editie door aan de schil (STA-8), alleen zolang
+// er geen eigen editiekeuze is: dan is het dezelfde editie als die van balk en menu.
+export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStand = () => {}, fetchFn, nu = lokaalNu }) {
   let editieId = params.editie || sessie.editieId || '';
+  let gekozen = Boolean(params.editie);
   const wortel = h('section', { class: 'beheer start' });
   const inhoud = h('div', { class: 'beheer' });
   const fout = h('p', { class: 't-small t-sec', hidden: true });
@@ -64,7 +66,7 @@ export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStap
     inhoud.replaceChildren(
       h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN[e.stap]), h('h1', { class: 't-title' }, e.titel),
         e.deadline && e.stap === 'invullen' ? klein(`Deadline ${datumLang(e.deadline.slice(0, 10))}.`) : null),
-      editieKeuze(g.edities, e.id, (id) => { editieId = id; laad(); }, 'start-editie'),
+      editieKeuze(g.edities, e.id, (id) => { editieId = id; gekozen = true; laad(); }, 'start-editie'),
       aftelBlok(g, nu().datum),
       h('div', { class: 'beheer', 'data-boven': e.stap }, boven),
       maakAfgelopen({ sessie, bijVerlopen, fetchFn, open: e.stap === 'afgerond' })); // NAV-4
@@ -74,7 +76,7 @@ export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStap
     const g = await anroep('scherm', { naam: 'start' }, false);
     if (!g) return;
     if (g.editie) editieId = g.editie.id;
-    bijStap(g.editie ? g.editie.stap : null);
+    if (!gekozen) bijStand(g.editie);
     teken(g);
   }
 

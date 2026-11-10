@@ -3,7 +3,7 @@
 import { h, icoon } from '../dom.js';
 import { kopMetHint } from '../components/hint.js';
 import { maakBeheerApi } from '../beheerapi.js';
-import { STAPNAMEN } from '../components/stappenbalk.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { kopieer } from '../delen.js';
 import { boodschappenLijst, kopieerTekst, personenTekst, tellingenBij, voortgang } from '../../shared/boodschappen.js';
 import { editieKeuze, foutMelding } from './voortgang.js';

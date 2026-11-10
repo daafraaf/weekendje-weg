@@ -1,8 +1,12 @@
-// Hoofdmenu (STA-6, NAV-1, AAN-12): vanaf de stap Accommodatie alle onderdelen, daarvoor formulier en voortgang.
+// Hoofdmenu (NAV-1, NAV-9, NAV-10): de zeven items in stapvolgorde; in een beheersessie Beheren apart na een scheidingslijn.
 import { h, icoon } from '../dom.js';
-import { inMenu, BEHEER_SCHERMEN } from '../../shared/start.js';
+import { menuItems } from '../../shared/start.js';
 
-// routes: de lijst uit de router; stap: de stap van de editie of null als die nog niet bekend is.
-export function maakMenuItems({ routes, stap, actief }) {
-  return routes.filter((r) => inMenu(r.naam, stap)).map((r) => h('a', { href: `#/${r.naam}`, 'aria-current': r.naam === actief || (r.naam === 'beheren' && BEHEER_SCHERMEN.includes(actief)) ? 'page' : false }, icoon(r.icoon, 24), h('span', {}, r.titel)));
+// routes: de lijst uit de router voor deze sessie (voor de iconen); actief: de naam van het huidige scherm;
+// stap: de stap uit de stand van de schil (STA-8). Het item van die stap krijgt een stip (`data-stap-nu`).
+export function maakMenuItems({ routes, actief, stap = null }) {
+  const icoonVan = (naam) => (routes.find((r) => r.naam === naam) || {}).icoon || [];
+  const { items, beheer } = menuItems(routes.map((r) => r.naam));
+  const link = (m) => h('a', { href: `#/${m.href}`, 'aria-current': m.routes.includes(actief) ? 'page' : false, 'data-stap-nu': Boolean(stap) && m.stap === stap }, icoon(icoonVan(m.naam), 24), h('span', {}, m.label));
+  return [...items.map(link), ...(beheer ? [h('span', { class: 'menu-scheiding', 'aria-hidden': 'true' }), link(beheer)] : [])];
 }

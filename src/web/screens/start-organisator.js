@@ -2,6 +2,7 @@
 // Bovenaan staat altijd de eerstvolgende actie als knop; daaronder wat bij de stap hoort.
 import { h } from '../dom.js';
 import { eersteActie } from '../../shared/start.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { datumLang } from '../../shared/datums.js';
 import { knop, kaart, tekst, klein, lijst, accommodatieRegel, weekendRegel, voorbereidingRijen, betalingRijen, samenvatting } from '../components/startblokken.js';
 import { maakProgrammaVandaag } from './programma.js';
@@ -23,7 +24,7 @@ export function startOrganisator(g, ctx) {
       break;
     }
     case 'overzicht':
-      onder.push(kaart('Overzicht', tekst(`${g.voortgang.ingevuld} van ${g.voortgang.aantal} hebben ingevuld.`), knop('Overlapoverzicht', '#/overzicht'), knop('Detailoverzicht per persoon', '#/detail')));
+      onder.push(kaart(STAPNAMEN.overzicht, tekst(`${g.voortgang.ingevuld} van ${g.voortgang.aantal} hebben ingevuld.`), knop('Overlapoverzicht', '#/overzicht'), knop('Detailoverzicht per persoon', '#/detail')));
       break;
     case 'accommodatie':
       onder.push(kaart('Accommodatie', tekst(weekendRegel(g)), tekst(accommodatieRegel(g)), knop('Accommodaties beheren', '#/accommodatie-beheer'), knop('Zo zien deelnemers het', '#/accommodaties')));

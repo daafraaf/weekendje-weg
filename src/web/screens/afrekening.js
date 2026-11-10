@@ -4,10 +4,11 @@
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { deelKnoppen } from '../delen.js';
-import { STAPNAMEN } from '../components/stappenbalk.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { euro } from '../../shared/geld.js';
 import { betaalverzoekTekst } from '../../shared/whatsapp.js';
 import { editieKeuze, foutMelding } from './voortgang.js';
+import { maakAfrekenTabs } from '../components/tabs.js';
 
 const VINK = ['m5 12.5 4.5 4.5L19 7.5'];
 const SLOT = ['M7 10.5h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'];
@@ -110,7 +111,8 @@ export function maakAfrekening({ sessie, params = {}, bijVerlopen, fetchFn }) {
         h('div', { role: 'list', 'aria-label': 'Betalingen' }, g.open.map((b) => betalingRij(b, false)), g.betaald.map((b) => betalingRij(b, true))))
       : h('p', { class: 't-body t-sec' }, 'Er valt niets af te rekenen.');
     zet(
-      h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN[g.editie.stap] || ''), h('h1', { class: 't-title' }, 'Afrekening')),
+      h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN.afrekenen), h('h1', { class: 't-title' }, 'Eindafrekening')),
+      maakAfrekenTabs('afrekening', g.edities ? editieId : ''),
       editieKeuze(g.edities, editieId, (id) => { editieId = id; verzoek = null; laad(); }, 'af-editie'),
       melding.el, toast,
       g.alleenLezen ? h('p', { class: 'hint' }, 'De editie is afgerond. Je kunt de afrekening nog lezen.') : null,

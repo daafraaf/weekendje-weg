@@ -1,8 +1,8 @@
-// Stappenbalk (STA-1, STA-2): zeven stappen met verwachte datum; op mobiel compact en uitklapbaar.
-import { STAPPEN, stapIndex } from '../../shared/stappen.js';
+// Stappenbalk (STA-1, STA-2, STA-8): zeven stappen met verwachte datum; op mobiel compact en uitklapbaar.
+// De stap komt altijd van de editie in de Sheet; zonder bekende stap (nog niet geladen of offline) is er geen huidige stap.
+import { STAPPEN, STAPNAMEN, stapIndex } from '../../shared/stappen.js';
 import { h, icoon } from '../dom.js';
 
-export const STAPNAMEN = { invullen: 'Invullen', overzicht: 'Overzicht', accommodatie: 'Accommodatie', voorbereiding: 'Voorbereiding', weekend: 'Weekend', afrekenen: 'Afrekenen', afgerond: 'Afgerond' };
 const MAANDEN = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
 
 // '2026-12-01' wordt '1 dec'; leeg wordt 'volgt'. Invullen toont 'tot 1 dec' (spec §7.2.4).
@@ -37,7 +37,7 @@ export function maakStappenbalk({ stap, stapData = {}, titel = '' }) {
     segmenten,
     h('div', { class: 'sb-rij' },
       h('span', { class: 't-sec sb-buur' }, vorige ? [icoon('m14.5 6-6 6 6 6', 16), h('span', {}, naam(vorige))] : null),
-      h('span', { class: 'sb-nu' }, `${nu + 1} · ${naam(stap)}`),
+      h('span', { class: 'sb-nu' }, nu < 0 ? 'Stap laden…' : `${nu + 1} · ${naam(stap)}`),
       h('span', { class: 't-sec sb-buur sb-rechts' }, volgende ? [h('span', {}, naam(volgende)), icoon('m9.5 6 6 6-6 6', 16)] : null)));
 
   const nav = h('nav', { class: 'glass stappenbalk', 'aria-label': 'Stappen van de editie' }, compact, lijst);

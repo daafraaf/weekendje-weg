@@ -2,9 +2,10 @@
 // Ontwerp: docs/design/Accommodaties.dc.html. Alle tekst, ook de ingevoerde link, gaat via textContent of attributen (NFR-3, NFR-5).
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
-import { STAPNAMEN } from '../components/stappenbalk.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { heleEuro, isHttpsLink } from '../../shared/accommodatie.js';
 import { editieKeuze, foutMelding } from './voortgang.js';
+import { maakKomtIn } from '../components/komtin.js';
 import { weekendLang } from './overzicht.js';
 
 const PIN = ['M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z', 'M14.3 10a2.3 2.3 0 1 1-4.6 0 2.3 2.3 0 0 1 4.6 0'];
@@ -90,7 +91,9 @@ export function maakAccommodaties({ sessie, params = {}, bijVerlopen, fetchFn })
   }
 
   async function laad() {
-    const r = await anroep('scherm', { naam: 'accommodaties' }, false);
+    let dicht = false;
+    const r = await anroep('scherm', { naam: 'accommodaties' }, false, { bijGesloten: () => { dicht = true; } });
+    if (dicht) { zet(kop(), maakKomtIn('accommodatie', 'De accommodaties verschijnen als de organisator deze stap opent.')); return; } // NAV-10
     if (!r) { if (!g) zet(kop(), melding.el); return; }
     g = r;
     if (r.editie) editieId = r.editie.id;

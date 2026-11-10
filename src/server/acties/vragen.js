@@ -12,7 +12,7 @@ const lijst = (max) => v.optioneel(v.lijst(optie(), { max }));
 
 // EDI-2, EDI-3, AAN-55: aanpassen kan tot de stap Overzicht; daarna zijn blokken, lijsten en vragen vast.
 function alleenInvullen(editie) {
-  if (editie.stap !== 'invullen') throw new ApiFout('gesloten', 'Dit kan alleen tot de stap Overzicht.');
+  if (editie.stap !== 'invullen') throw new ApiFout('gesloten', 'Dit kan alleen tot de stap Weekendje prikker.');
 }
 
 // Behoudt de sleutel van een bestaand item (hernoemen) en maakt een nieuwe sleutel voor een nieuw item.

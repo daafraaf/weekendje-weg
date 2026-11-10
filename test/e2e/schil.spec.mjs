@@ -1,5 +1,5 @@
 import { test as basis, expect } from '@playwright/test';
-import { logIn } from './hulp.mjs';
+import { logIn, startNep } from './hulp.mjs';
 
 // De schil staat achter het pinscherm; deze tests starten met een bestaande sessie (fase 3).
 const test = basis.extend({
@@ -8,42 +8,53 @@ const test = basis.extend({
 
 const breedtes = [360, 1440];
 
+// STA-8: de balk leest de stap van de editie uit de (nep)Sheet, niet uit het adres.
+basis.describe('stappenbalk uit de Sheet', () => {
+basis.use({ serviceWorkers: 'block' });
 for (const breedte of breedtes) {
-  test(`STA-1 NFR-9: stappenbalk zichtbaar op ${breedte} pixels`, async ({ page }) => {
-    await page.setViewportSize({ width: breedte, height: 800 });
-    await page.goto('/#/start?stap=voorbereiding');
-    const balk = page.getByRole('navigation', { name: 'Stappen van de editie' });
-    await expect(balk).toBeVisible();
-    if (breedte >= 768) {
-      const stappen = balk.locator('.sb-stap');
-      await expect(stappen).toHaveCount(7);
-      await expect(stappen.nth(3)).toHaveAttribute('aria-current', 'step');
-      await expect(stappen.nth(0)).toContainText('tot 1 dec');
-      await expect(stappen.nth(4)).toContainText('volgt');
-      await expect(stappen.nth(0).locator('svg')).toBeVisible();
-    } else {
-      await expect(balk.locator('.seg')).toHaveCount(7);
-      await expect(balk.locator('.sb-nu')).toHaveText('4 · Voorbereiding');
-    }
-    // NFR-9: geen horizontaal scrollen
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  basis(`STA-1 STA-8 NFR-9: stappenbalk zichtbaar op ${breedte} pixels`, async ({ page, context }) => {
+    const nep = await startNep(context, { stap: 'voorbereiding' });
+    try {
+      await page.setViewportSize({ width: breedte, height: 800 });
+      await page.goto('/#/start?stap=invullen'); // een stap in het adres telt niet meer
+      const balk = page.getByRole('navigation', { name: 'Stappen van de editie' });
+      await expect(balk).toBeVisible();
+      if (breedte >= 768) {
+        const stappen = balk.locator('.sb-stap');
+        await expect(stappen).toHaveCount(7);
+        await expect(stappen.nth(3)).toHaveAttribute('aria-current', 'step');
+        await expect(stappen.nth(3)).toContainText('Meenemen');
+        await expect(stappen.nth(0)).toContainText('tot 1 mrt');
+        await expect(stappen.nth(4)).toContainText('volgt');
+        await expect(stappen.nth(0).locator('svg')).toBeVisible();
+      } else {
+        await expect(balk.locator('.seg')).toHaveCount(7);
+        await expect(balk.locator('.sb-nu')).toHaveText('4 · Meenemen');
+      }
+      // NFR-9: geen horizontaal scrollen
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    } finally { nep.server.close(); }
   });
 }
 
-test('STA-2: op mobiel klapt tikken alle stappen uit', async ({ page }) => {
-  await page.setViewportSize({ width: 360, height: 800 });
-  await page.goto('/#/start?stap=accommodatie');
-  const balk = page.getByRole('navigation', { name: 'Stappen van de editie' });
-  const knop = balk.getByRole('button', { name: 'Alle stappen tonen' });
-  await expect(balk.locator('.sb-buur').first()).toHaveText('Overzicht');
-  await expect(balk.locator('.sb-lijst')).toBeHidden();
-  const doos = await knop.boundingBox();
-  expect(doos.width).toBeGreaterThanOrEqual(44);
-  expect(doos.height).toBeGreaterThanOrEqual(44);
-  await knop.click();
-  await expect(balk.locator('.sb-lijst')).toBeVisible();
-  await expect(balk.locator('.sb-stap')).toHaveCount(7);
-  await expect(balk.getByRole('button', { name: 'Stappen inklappen' })).toHaveAttribute('aria-expanded', 'true');
+basis('STA-2: op mobiel klapt tikken alle stappen uit', async ({ page, context }) => {
+  const nep = await startNep(context, { stap: 'accommodatie' });
+  try {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto('/#/start');
+    const balk = page.getByRole('navigation', { name: 'Stappen van de editie' });
+    const knop = balk.getByRole('button', { name: 'Alle stappen tonen' });
+    await expect(balk.locator('.sb-buur').first()).toHaveText('Weekendje prikker');
+    await expect(balk.locator('.sb-lijst')).toBeHidden();
+    const doos = await knop.boundingBox();
+    expect(doos.width).toBeGreaterThanOrEqual(44);
+    expect(doos.height).toBeGreaterThanOrEqual(44);
+    await knop.click();
+    await expect(balk.locator('.sb-lijst')).toBeVisible();
+    await expect(balk.locator('.sb-stap')).toHaveCount(7);
+    await expect(balk.getByRole('button', { name: 'Stappen inklappen' })).toHaveAttribute('aria-expanded', 'true');
+  } finally { nep.server.close(); }
+});
 });
 
 for (const schema of ['light', 'dark']) {
@@ -93,10 +104,4 @@ test('RON-6: manifest heeft naam, iconen en standalone', async ({ page, request 
   expect(maat('512x512')).toBeTruthy();
   expect(m.icons.some((i) => i.purpose === 'maskable')).toBe(true);
   for (const i of m.icons) expect((await request.get(new URL(i.src, page.url()).href)).ok()).toBe(true);
-});
-
-test('AAN-40: onbekende stap in de link valt terug op Invullen', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 800 });
-  await page.goto('/#/start?stap=bestaatniet');
-  await expect(page.locator('.sb-stap.now .sb-naam')).toHaveText('Invullen');
 });

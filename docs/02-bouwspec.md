@@ -1,5 +1,6 @@
 # Bouwspecificatie Weekendje weg
 
+Versie 0.5, 10 november 2026: stappenbalk met één bron en menu in stapvolgorde, feedbackronde fase 23 (§7.2.1, §7.2.6, §7.14, STA-1, STA-6, STA-8, NAV-1, NAV-9, NAV-10, NAV-11).
 Versie 0.4, 10 november 2026: groep opzetten met één opzetlink uit het Sheet-menu, op verzoek van David (§7.1.9, §7.1.10, §7.18, GRP-1, GRP-6, GRP-7, GRP-8, RON-5).
 Versie 0.3, 9 november 2026: kalendervenster en kalenderweergave bijgewerkt na het ontwerp (AAN-15, §7.3, §9).
 Versie 0.2, 8 november 2026, na review door Opus. Bron: `00-bron.md` en `00-bron-2.md`, interview: `01-interview.md`.
@@ -309,7 +310,9 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
 
 ### 7.2 Stappen van een editie
 1. Volgorde: `invullen` → `overzicht` → `accommodatie` → `voorbereiding` → `weekend` →
-   `afrekenen` → `afgerond`.
+   `afrekenen` → `afgerond`. Dit zijn de waarden in de Sheet. De app toont ze overal met dezelfde
+   namen (`STAPNAMEN` in `src/shared/stappen.js`): Invullen, Weekendje prikker, Accommodatie,
+   Meenemen, Weekend, Afrekening, Afgerond.
 2. Alleen de organisator zet de stap, één stap vooruit of één stap terug. Terug naar
    `invullen` kan niet meer vanaf `accommodatie` (AAN-05).
 3. Naar `overzicht` gaan sluit het invullen, ook voor de deadline (AAN-04). Na de deadline
@@ -321,6 +324,11 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
    ("volgt") tot het weekend is vastgelegd; dan worden ze vrijdag − 14 dagen, de vrijdag en
    de zondag + 1 dag, tenzij de organisator ze al had ingevuld.
 5. Elke stapwijziging maakt een WhatsApp-tekst voor de organisator (§7.12).
+6. De stap heeft één bron: de editie in de Sheet. De schil houdt één stand (stap, titel, verwachte
+   data, vastgelegd weekend) uit het scherm `start` en tekent stappenbalk en menu daaruit, voor elke
+   rol. Ze haalt die stand op bij openen, bij elke navigatie, als de app weer zichtbaar wordt en na
+   een stapwijziging in beheer. Een deelnemer ziet zijn editie, een beheersessie de nieuwste eigen
+   editie (AAN-71). Er is geen stap in het adres en geen voorbeeldeditie meer.
 
 ### 7.3 Kalender
 1. De kalender toont alle weekenden waarvan de vrijdag tussen `periodeVan` en `periodeTot`
@@ -495,15 +503,18 @@ Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig (AAN-16).
 | Stap | Deelnemer ziet bovenaan | Organisator ziet bovenaan |
 |---|---|---|
 | Invullen | Formulier, of "Klaar, wacht op de rest" met voortgang | Voortgang, herinnering, deadline |
-| Overzicht | Overlapoverzicht en voorkeursdatum | Detailoverzicht, knop "Weekend vastleggen" |
+| Weekendje prikker | Overlapoverzicht en voorkeursdatum | Detailoverzicht, knop "Weekend vastleggen" |
 | Accommodatie | Accommodaties in de deelvorm, vastgelegd weekend | Accommodaties beheren, deelvorm |
 | Voorbereiding | Boodschappenlijst, wie neemt wat mee, kookbeurten, carpool, kamer | Status per onderdeel, "Boodschappen definitief" |
 | Weekend | Programma van vandaag, knop "Uitgave toevoegen" | Hetzelfde plus programma beheren |
 | Afrekenen | Wat jij moet betalen of krijgt | Openstaande betalingen van iedereen |
 | Afgerond | Samenvatting en de sectie Afgelopen weekenden (open) | Samenvatting, "Nieuwe editie", sectie Afgelopen weekenden |
 
-Vanaf de stap Accommodatie zijn alle onderdelen bereikbaar via het menu (AAN-12). De
-organisator ziet bovenaan altijd zijn eerstvolgende actie.
+Het menu heeft in elke stap dezelfde zeven items (NAV-10, AAN-12): Start, Invullen, Voortgang,
+Weekendje prikker, Accommodatie, Meenemen, Afrekening. Een scherm dat nog niet aan de beurt is,
+toont zelf "Komt in stap ...". Boodschappen, kookbeurten, programma, kamers en carpool staan niet in
+het menu en blijven bereikbaar via het startscherm. De organisator ziet bovenaan altijd zijn
+eerstvolgende actie.
 
 ### 7.15 Archief
 Per editie van de groep: jaar, vastgelegd weekend, geboekte accommodatie (naam, plaats,
@@ -594,12 +605,13 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **EDI-10** De organisator verlengt de deadline zolang de stap Invullen is.
 
 ### Stappenbalk en startscherm (STA)
-- **STA-1** Bovenaan elk scherm staat de stappenbalk met zeven stappen: afgerond met vinkje, huidige uitgelicht, later grijs, elk met de verwachte datum.
+- **STA-1** Bovenaan elk scherm staat de stappenbalk met zeven stappen met de namen uit §7.2.1: afgerond met vinkje, huidige uitgelicht, later grijs, elk met de verwachte datum.
 - **STA-2** Op mobiel toont de stappenbalk de huidige stap met de vorige en volgende; tikken klapt alle stappen uit.
 - **STA-3** Het startscherm van deelnemer en organisator volgt de tabel in §7.14.
 - **STA-4** Het startscherm van de organisator toont zijn eerstvolgende actie als knop.
 - **STA-5** Zodra het weekend vastligt, toont het startscherm een aftelteller in dagen tot de vrijdag, op de dag zelf "Vandaag!".
-- **STA-6** Het hoofdmenu geeft vanaf de stap Accommodatie toegang tot alle onderdelen; daarvoor alleen tot formulier en voortgang. Archief en Uitleg staan er niet in (NAV-1).
+- **STA-6** Het hoofdmenu hangt niet meer af van de stap: het heeft altijd de items van NAV-10. Archief en Uitleg staan er niet in (NAV-1).
+- **STA-8** De stap van een editie heeft één bron, de editie in de Sheet (§7.2.6). Na een stapwijziging in beheer tonen stappenbalk, menu en startscherm bij elke rol en op elk scherm na verversen dezelfde stap; een test met twee contexten bewijst dit.
 
 ### Kalender (KAL)
 - **KAL-1** De kalender toont alle weekenden in de periode per maand, blanco bij de start.
@@ -703,7 +715,7 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **TAG-10** De opties van een eigen vraag worden taginvoer.
 
 ### Navigatie (NAV)
-- **NAV-1** Het hoofdmenu bevat alleen onderdelen van de lopende editie volgens STA-6, zonder Archief en Uitleg.
+- **NAV-1** Het hoofdmenu bevat de items van NAV-10, zonder Archief en Uitleg.
 - **NAV-2** Een profielknop in de kopregel, rechts, op dezelfde plek op mobiel en desktop, opent een menu met rol, Uitleg, Installeren (alleen als de browser dat toestaat) en Uitloggen.
 - **NAV-3** Het profielmenu sluit met Escape, met een tik buiten het menu en na een keuze; de focus keert terug naar de knop; aanraakdoelen zijn minstens `--tap-min`.
 - **NAV-4** De startpagina heeft een uitklapbare sectie "Afgelopen weekenden" met afgeronde edities: dicht bij een lopende editie, open bij een afgeronde.
@@ -711,7 +723,9 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **NAV-6** De rondleiding van RON-1 blijft ongewijzigd en opent via Uitleg in het profielmenu.
 - **NAV-7** Vraagtekens met hints (hooguit 200 tekens, geen hover) bij Kalender, Budget, de drie tagblokken, Wie neemt wat mee, Boodschappen, Kookbeurten en Uitgaven. De stappenbalk heeft er nog geen.
 - **NAV-8** Uitloggen is vanaf elk scherm bereikbaar via het profielmenu.
-- **NAV-9** In een beheersessie staan de beheerschermen (Leden, Nieuwe editie, Uitnodigen, Lijsten, Vragen, Per persoon, Stappen, Accommodaties beheren) achter één menu-item Beheren met een overzicht; het item is actief op elk beheerscherm.
+- **NAV-9** In een beheersessie staan de beheerschermen (Leden, Nieuwe editie, Uitnodigen, Lijsten, Vragen, Per persoon, Stappen, Accommodaties beheren) achter één menu-item Beheren met een overzicht, los van de zeven items na een scheidingslijn; het item is actief op elk beheerscherm.
+- **NAV-10** Het hoofdmenu toont altijd Start, Invullen, Voortgang, Weekendje prikker, Accommodatie, Meenemen en Afrekening, in die volgorde en met de namen van de stappenbalk; het item van de huidige stap heeft een stip. Een beheersessie heeft geen Invullen. Een scherm dat nog niet aan de beurt is, toont "Komt in stap ...". Route `#/overzicht` blijft werken.
+- **NAV-11** Afrekening heeft twee tabs: Wie betaalt wat (`#/posten`) en Eindafrekening (`#/afrekening`). Het menu-item opent Wie betaalt wat en is actief op beide; de oude adressen blijven werken.
 
 ## 9. Design
 

@@ -126,7 +126,7 @@ test('NFR-11 §11 eindtest: zes personen doorlopen een editie van uitnodiging to
   await alsBeheer();
   await naar(anne, 'voortgang');
   await expect(anne.getByText(/^6 van 6, deadline /)).toBeVisible();
-  await stapNaar('Overzicht');
+  await stapNaar('Weekendje prikker');
   const [, , meiDag] = mei.split('-').map(Number);
   for (const naam of ['Bas', 'Joris']) {
     await naar(pagina[naam], 'overzicht');
@@ -166,7 +166,7 @@ test('NFR-11 §11 eindtest: zes personen doorlopen een editie van uitnodiging to
   await expect(pagina.Eva.locator('article')).toContainText('€ 230 p.p.');
 
   // 6. Voorbereiding: meenemen, een boodschap, koken, een rit, een kamer en de lijst definitief (MEE, KOK, CAR, KMR).
-  await stapNaar('Voorbereiding');
+  await stapNaar('Meenemen');
   await naar(pagina.Bas, 'meenemen');
   await pagina.Bas.getByRole('button', { name: 'Ik neem Pindakaas mee' }).click();
   await expect(pagina.Bas.locator('[data-item]', { hasText: 'Pindakaas' }).locator('.chip')).toHaveText(['jij']);
@@ -224,7 +224,7 @@ test('NFR-11 §11 eindtest: zes personen doorlopen een editie van uitnodiging to
   await expect(pagina.Sanne.getByRole('button', { name: /Kanoverhuur/ })).toContainText('€ 90,00');
 
   // 8. Afrekenen: iedereen die moet betalen markeert zijn betalingen tot er niets meer open staat (GELD-8, GELD-9).
-  await stapNaar('Afrekenen');
+  await stapNaar('Afrekening');
   for (const naam of NAMEN) {
     const p = pagina[naam];
     await naar(p, 'afrekening');

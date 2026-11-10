@@ -1,5 +1,7 @@
 import { test as basis, expect } from '@playwright/test';
-import { startNep, startDemo } from './hulp.mjs';
+import { startNep, startDemo, koppelNep } from './hulp.mjs';
+import { hashToken } from '../../src/server/crypto.js';
+import { nodeSha256 } from '../mock-backend/memorystore.mjs';
 
 const test = basis.extend({});
 test.use({ serviceWorkers: 'block' });
@@ -87,4 +89,89 @@ test('NAV-9: de beheerschermen zitten achter één menu-item Beheren', async ({ 
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await expect(beheren).toHaveAttribute('aria-current', 'page');
   } finally { nep.server.close(); }
+});
+
+const ZEVEN = ['Start', 'Invullen', 'Voortgang', 'Weekendje prikker', 'Accommodatie', 'Meenemen', 'Afrekening'];
+const balkNu = (page) => page.getByRole('navigation', { name: 'Stappen van de editie' }).locator('[aria-current="step"] .sb-naam');
+
+test('NAV-10 AAN-12: het menu toont altijd de zeven items in stapvolgorde; een scherm dat nog niet aan de beurt is zegt dat', async ({ page, context }) => {
+  const nep = await startNep(context, { stap: 'invullen' });
+  try {
+    await page.goto('/#/start');
+    await expect(menu(page).getByRole('link')).toHaveText(ZEVEN);
+    await expect(menu(page).locator('.menu-scheiding')).toHaveCount(0);
+    await menu(page).getByRole('link', { name: 'Weekendje prikker', exact: true }).click();
+    await expect(page.getByRole('status').filter({ hasText: 'Komt in stap Weekendje prikker' })).toBeVisible();
+    await menu(page).getByRole('link', { name: 'Accommodatie', exact: true }).click();
+    await expect(page.getByRole('status').filter({ hasText: 'Komt in stap Accommodatie' })).toBeVisible();
+    await page.goto('/#/kamers'); // niet in het menu, wel bereikbaar via het adres
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  } finally { nep.server.close(); }
+});
+
+test('NAV-10: in een beheersessie staat Beheren apart na een scheidingslijn', async ({ page, context }) => {
+  const { nep } = await startDemo(context, { stap: 'accommodatie', als: 'Anne', beheer: true });
+  try {
+    await page.goto('/#/start');
+    await expect(menu(page).getByRole('link')).toHaveText([...ZEVEN.filter((t) => t !== 'Invullen'), 'Beheren']);
+    await expect(menu(page).locator('.menu-scheiding + a')).toHaveText('Beheren');
+  } finally { nep.server.close(); }
+});
+
+test('NAV-11: Afrekening heeft de tabs Wie betaalt wat en Eindafrekening; de oude adressen werken', async ({ page, context }) => {
+  const { nep } = await startDemo(context, { stap: 'afrekenen', als: 'Bas' });
+  try {
+    await page.goto('/#/start');
+    const item = menu(page).getByRole('link', { name: 'Afrekening', exact: true });
+    await item.click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Uitgaven');
+    const tabs = page.getByRole('navigation', { name: 'Afrekening' });
+    await expect(tabs.getByRole('link', { name: 'Wie betaalt wat' })).toHaveAttribute('aria-current', 'page');
+    await expect(item).toHaveAttribute('aria-current', 'page');
+    await tabs.getByRole('link', { name: 'Eindafrekening' }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Eindafrekening');
+    await expect(item).toHaveAttribute('aria-current', 'page');
+    await page.goto('/#/posten');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Uitgaven');
+  } finally { nep.server.close(); }
+});
+
+test('AAN-71: een beheersessie krijgt de balk van de nieuwste eigen editie', async ({ page, context }) => {
+  const { nep } = await startDemo(context, { stap: 'accommodatie', als: 'Anne', beheer: true });
+  try {
+    await page.goto('/#/leden');
+    await expect(balkNu(page)).toHaveText('Accommodatie'); // 2027; editie 2026 is afgerond
+    await expect(menu(page).locator('a[data-stap-nu]')).toHaveText('Accommodatie');
+  } finally { nep.server.close(); }
+});
+
+// STA-8: de organisator zet de stap in beheer; na verversen tonen balk, menu en start bij elke rol en op elk scherm dezelfde stap.
+test('STA-8: na een stapwijziging in beheer tonen balk, menu en start overal dezelfde stap', async ({ browser, context, page }) => {
+  const { nep, demo } = await startDemo(context, { stap: 'invullen', als: 'Anne', beheer: true });
+  const deelnemer = await browser.newContext({ serviceWorkers: 'block' });
+  try {
+    nep.store.nieuwVerzoek();
+    nep.store.voegToe('Sessies', { tokenHash: hashToken(nodeSha256, 'lokaal'), soort: 'deelnemer', subjectId: demo.deelnemerIds[2027].Bas, verloopt: '2099-01-01T00:00:00.000Z' });
+    nep.store.flush();
+    await koppelNep(deelnemer, nep, { token: 'lokaal' });
+    const bas = await deelnemer.newPage();
+    await bas.goto('/#/voortgang');
+    await expect(balkNu(bas)).toHaveText('Invullen');
+
+    await page.goto('/#/stappen');
+    await expect(balkNu(page)).toHaveText('Invullen');
+    await page.getByRole('button', { name: 'Naar Weekendje prikker' }).click();
+    await expect(balkNu(page)).toHaveText('Weekendje prikker'); // de schil vraagt de stand opnieuw op
+
+    await bas.reload();
+    for (const [p, schermen] of [[bas, ['start', 'formulier', 'voortgang', 'overzicht', 'accommodaties', 'meenemen', 'posten', 'afrekening']], [page, ['start', 'voortgang', 'overzicht', 'leden', 'stappen']]]) {
+      for (const scherm of schermen) {
+        await p.goto(`/#/${scherm}`);
+        await expect(balkNu(p), scherm).toHaveText('Weekendje prikker');
+        await expect(menu(p).locator('a[data-stap-nu]'), scherm).toHaveText('Weekendje prikker');
+      }
+      await p.goto('/#/start');
+      await expect(p.getByRole('main').locator('.wz-kop .t-cap').first()).toHaveText('Weekendje prikker');
+    }
+  } finally { await deelnemer.close(); nep.server.close(); }
 });

@@ -2,7 +2,7 @@
 // Ontwerp: docs/design/KamersCarpool.dc.html. Alle tekst, ook namen, gaat via textContent (NFR-5).
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
-import { STAPNAMEN } from '../components/stappenbalk.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { KAMER_GRENZEN as G, eigenKamerLabel } from '../../shared/kamers.js';
 import { editieKeuze, foutMelding } from './voortgang.js';
 

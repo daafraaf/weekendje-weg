@@ -51,6 +51,12 @@ David samen met Claude Code.
 | 19 | Eindtest | NFR-11 | - | Opus |
 | 20 | Uitrol (met David) | NFR-17 | - | Sonnet |
 | 22 | Groep opzetten met opzetlink | GRP-1, GRP-6, GRP-7, GRP-8, RON-5 | AAN-28, AAN-45, AAN-77, AAN-78, AAN-79 | Sonnet |
+| 23 | Stappenbalk één bron en menu | STA-8, NAV-10, NAV-11 (STA-1, STA-6, NAV-1, NAV-9 aangepast) | AAN-12, AAN-40, AAN-71 | Opus |
+| 24 | Onderdelen uit en invullen vrijer | OND-1, OND-2, OND-3, FRM-11, DDL-1 | AAN-33, AAN-80 | Sonnet |
+| 25 | Weekend vastleggen met uitweg | ACC-6, ACC-7 | AAN-63, AAN-81 | Sonnet |
+| 26 | Synchronisatielaag | SYNC-1 t/m SYNC-8 | AAN-82, AAN-83 | Opus |
+| 27 | Accommodatie verrassing of samen kiezen | ACC-8 t/m ACC-13 | AAN-08, AAN-65, AAN-84 | Opus |
+| 28 | Uitleg van de stappen | UIT-1 t/m UIT-4 | AAN-85 | Sonnet |
 
 ## Fase 0: Opzet
 
@@ -245,6 +251,13 @@ Toegevoegd na de uitrol, bij bouwspec versie 0.4. Fase 21 (taginvoer) staat los 
 - **Klaar als:** `npm run check` groen. Een opzetlink opent de wizard bij stap 1 met URL en setupcode ingevuld en laat alleen `#/opzetten` in de adresbalk staan. Het Sheet-menu "Groep opzetten" toont de opzetlink in een dialoog; een opgezette groep krijgt geen code.
 - **Leest:** spec §3 (Implementaties), §7.1.9, §7.1.10, §7.18, §8 GRP, RON-5, NFR-2, NFR-5
 - **Hangt af van:** fase 21 gecommit
+
+## Fase 23 t/m 28: Feedbackronde
+
+Toegevoegd op 10 november 2026 na Davids doorklikronde. Opdracht in `feedbackronde-opdracht.md`,
+plan en Davids keuzes (K1 t/m K4) in `plan-feedbackronde.md`, per fase een bestand in `fasen/`.
+Volgorde vast: 23, 24, 25, 26, 27, 28; elke fase hangt af van de vorige. Fase 27 stopt na de schets
+tot David akkoord geeft.
 
 ## Opdracht voor de hele run
 

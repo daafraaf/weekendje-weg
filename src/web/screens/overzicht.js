@@ -10,6 +10,8 @@ import { feestdagTabel } from '../../shared/feestdagen.js';
 import { REGIO_LETTER, weekendKenmerken } from '../../shared/vakanties.js';
 import { BUDGET_VERBLIJF, BUDGET_WEEKEND, REISTIJD } from '../../shared/antwoorden.js';
 import { editieKeuze, foutMelding } from './voortgang.js';
+import { maakKomtIn } from '../components/komtin.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 
 const STER = 'm12 4 2.4 4.9 5.3.8-3.9 3.8.9 5.3L12 16.3l-4.7 2.5.9-5.3-3.9-3.8 5.3-.8z';
 const SLOT = ['M5 10.5h14v10H5z', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'];
@@ -137,7 +139,7 @@ export function maakOverzicht({ sessie, params = {}, bijVerlopen, fetchFn }) {
   const wortel = h('section', { class: 'beheer overzicht' });
   const melding = foutMelding();
   const zet = (...k) => wortel.replaceChildren(...k.flat().filter((x) => x != null && x !== false));
-  const kop = (sub) => h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, 'Overzicht'), h('h1', { class: 't-title' }, 'Wanneer kan iedereen?'), sub ? h('p', { class: 't-body t-sec' }, sub) : null);
+  const kop = (sub) => h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN.overzicht), h('h1', { class: 't-title' }, 'Wanneer kan iedereen?'), sub ? h('p', { class: 't-body t-sec' }, sub) : null);
 
   function teken(g) {
     if (!g.editie) { zet(kop('Je hebt nog geen editie.')); return; }
@@ -171,7 +173,7 @@ export function maakOverzicht({ sessie, params = {}, bijVerlopen, fetchFn }) {
       teken(await api.anroep('scherm', { naam: 'overzicht' }));
     } catch (f) {
       if (f.code === 'verlopen' || f.code === 'geen_toegang') { bijVerlopen(); return; }
-      if (f.code === 'gesloten') { zet(kop(), h('div', { class: 'glass panel dl-info', role: 'status' }, h('span', { class: 'ico ico-acc' }, icoon(SLOT, 22)), h('p', { class: 't-body' }, NOG_NIET_VRIJ))); return; } // OVZ-3
+      if (f.code === 'gesloten') { zet(kop(), maakKomtIn('overzicht', `${NOG_NIET_VRIJ}.`)); return; } // OVZ-3, NAV-10
       zet(kop(), melding.el);
       melding.toon(f.message || 'Er ging iets mis. Probeer het later opnieuw.');
     }

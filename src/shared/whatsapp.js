@@ -2,7 +2,7 @@
 // Een tekst bevat nooit een pincode samen met een link (§7.12.3): de uitnodiging heeft de link,
 // de pincodetekst alleen de pincode en de naam van de editie.
 import { datumLang } from './datums.js';
-import { STAPPEN } from './stappen.js';
+import { STAPPEN, STAPNAMEN } from './stappen.js';
 import { euro } from './geld.js';
 
 export function uitnodigingTekst({ voornaam, editieTitel, link }) {
@@ -39,7 +39,6 @@ const STAP_VERWACHT = {
   afrekenen: (t) => `Hoi allemaal! ${t} zit erop. Zet je uitgaven in de app, dan rekenen we af.`,
   afgerond: (t) => `Hoi allemaal! ${t} is afgerond en afgerekend. Bedankt voor het mooie weekend!`,
 };
-const VOLGENDE_NAAM = { overzicht: 'Het overzicht', accommodatie: 'De keuze van de accommodatie', voorbereiding: 'De voorbereiding', weekend: 'Het weekend', afrekenen: 'Het afrekenen', afgerond: 'Het afronden' };
 
 export function stapTekst({ editieTitel, stap, stapData = {}, deadline }) {
   const maak = STAP_VERWACHT[stap];
@@ -48,7 +47,7 @@ export function stapTekst({ editieTitel, stap, stapData = {}, deadline }) {
   const volgende = STAPPEN[STAPPEN.indexOf(stap) + 1];
   if (!volgende) return tekst;
   const datum = datumVan(stapData[volgende]);
-  return `${tekst} ${VOLGENDE_NAAM[volgende]} volgt ${datum ? `rond ${datum}` : 'later, de datum hoor je nog'}.`;
+  return `${tekst} De stap ${STAPNAMEN[volgende]} volgt ${datum ? `rond ${datum}` : 'later, de datum hoor je nog'}.`; // STA-8: namen uit één tabel
 }
 
 // Waakhond voor de regel hierboven: waar of onwaar voor één tekst.

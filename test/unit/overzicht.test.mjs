@@ -213,7 +213,7 @@ test('AAN-58: elke stap heeft een tekst met de verwachte datum van de volgende s
     assert.ok(t.includes('Weekendje weg 2027'));
     assert.ok(!heeftLinkEnPincode(t));
   }
-  assert.match(stapTekst({ editieTitel: 'W', stap: 'invullen', stapData, deadline: '2026-12-01T23:59:00+01:00' }), /tot dinsdag 1 december\. Het overzicht volgt rond donderdag 3 december\.$/);
-  assert.match(stapTekst({ editieTitel: 'W', stap: 'accommodatie', stapData }), /De voorbereiding volgt later, de datum hoor je nog\.$/);
+  assert.match(stapTekst({ editieTitel: 'W', stap: 'invullen', stapData, deadline: '2026-12-01T23:59:00+01:00' }), /tot dinsdag 1 december\. De stap Weekendje prikker volgt rond donderdag 3 december\.$/);
+  assert.match(stapTekst({ editieTitel: 'W', stap: 'accommodatie', stapData }), /De stap Meenemen volgt later, de datum hoor je nog\.$/);
   assert.ok(!/volgt/.test(stapTekst({ editieTitel: 'W', stap: 'afgerond', stapData })));
 });

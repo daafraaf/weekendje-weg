@@ -3,7 +3,7 @@
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { deelKnoppen } from '../delen.js';
-import { STAPNAMEN } from '../components/stappenbalk.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { datumKort, datumLang } from '../../shared/datums.js';
 import { herinneringTekst } from '../../shared/whatsapp.js';
 

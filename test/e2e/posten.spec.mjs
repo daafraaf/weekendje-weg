@@ -33,7 +33,7 @@ async function organisatorPagina(browser, nep) {
 
 test('GELD-1 GELD-2 GELD-3 GELD-4: een deelnemer voert een uitgave met aandelen in', async ({ page, nep }) => {
   await page.goto('/#/start');
-  await menu(page, 'Geld').click();
+  await menu(page, 'Afrekening').click(); // NAV-11: opent Wie betaalt wat
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Uitgaven');
   await page.getByRole('button', { name: 'Uitgave toevoegen' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Uitgave toevoegen');
@@ -82,7 +82,7 @@ test('GELD-5: een deelnemer kan een post van een ander niet wijzigen; de organis
   await expect(page.getByRole('button', { name: 'Verwijderen' })).toHaveCount(0);
 
   const { page: beheer, context } = await organisatorPagina(browser, nep);
-  await menu(beheer, 'Geld').click();
+  await menu(beheer, 'Afrekening').click(); // NAV-11: opent Wie betaalt wat
   await beheer.getByRole('button', { name: /Kanoverhuur/ }).click();
   await expect(beheer.getByRole('heading', { level: 1 })).toHaveText('Post wijzigen');
   await beheer.getByLabel('Omschrijving').fill('Kanoverhuur en peddels');

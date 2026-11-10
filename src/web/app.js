@@ -1,5 +1,4 @@
 // App-schil: binnenkomen met link en pincode (fase 3), beheerlogin en opzetwizard (fase 4), daarna router, stappenbalk, menu, offline-melding en service worker.
-import { STAPPEN } from '../shared/stappen.js';
 import { h, icoon } from './dom.js';
 import { OFFLINE_TEKST, maakApi, bijBezig } from './api.js';
 import { maakBinnenkomen } from './screens/pincode.js';
@@ -36,17 +35,11 @@ import { maakRondleiding, rondleidingGezien } from './screens/rondleiding.js';
 import { luisterNaarInstallatie, kanInstalleren, installeer } from './platform.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 
-// AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
-const VOORBEELD = {
-  titel: 'Studievrienden · Weekendje weg 2027',
-  stapData: { invullen: '2026-12-01', overzicht: '2026-12-03', accommodatie: '2026-12-15' },
-};
-
 registreer('start', {
   titel: 'Start',
   icoon: ['m3 11 9-8 9 8', 'M5 10v10h5v-6h4v6h5V10'],
   render(params) {
-    return maakStart({ sessie: leesSessie(localStorage), params, bijVerlopen: () => { wisSessie(localStorage); kies(); }, uitloggen, bijStap: zetMenuStap });
+    return maakStart({ sessie: leesSessie(localStorage), params, bijVerlopen: () => { wisSessie(localStorage); kies(); }, uitloggen, bijStand: zetStandVanStart });
   },
 });
 
@@ -138,9 +131,9 @@ registreer('voortgang', {
   },
 });
 
-// OVZ-3 t/m OVZ-5: het overlapoverzicht zonder namen.
+// OVZ-3 t/m OVZ-5: het overlapoverzicht zonder namen; in het menu heet het Weekendje prikker (NAV-10).
 registreer('overzicht', {
-  titel: 'Overzicht',
+  titel: 'Weekendje prikker',
   icoon: ['M4 20V10M10 20V4M16 20v-7M22 20H2'],
   render(params) {
     return maakOverzicht({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
@@ -163,13 +156,13 @@ registreer('stappen', {
   soort: 'beheer',
   icoon: ['M4 12h12', 'm12 6 6 6-6 6', 'M20 5v14'],
   render(params) {
-    return maakStappenBeheer({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer });
+    return maakStappenBeheer({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenBeheer, bijStap: haalStand });
   },
 });
 
-// GELD-1 t/m GELD-7: posten, verdeling en saldi; voor deelnemers en de organisator.
+// GELD-1 t/m GELD-7: posten, verdeling en saldi; de eerste tab van Afrekening (NAV-11).
 registreer('posten', {
-  titel: 'Geld',
+  titel: 'Wie betaalt wat',
   icoon: ['M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2', 'M3 10h18M16 15h2'],
   render(params) {
     return maakPosten({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
@@ -318,35 +311,59 @@ document.addEventListener('submit', houdTegen, true);
 
 const soortNu = () => { const s = leesSessie(localStorage); return s ? s.soort : undefined; };
 
-// STA-6: het menu hangt af van de stap van de editie. Het startscherm meldt die stap, de andere schermen laten de schil hem ophalen.
-let menuStap = null;
+// STA-8: de stap heeft één bron, de editie in de Sheet. De schil houdt één stand (stap, titel, verwachte data,
+// vastgelegd weekend) uit het scherm `start` en tekent balk en menu daaruit, voor elke rol en op elk scherm.
+// Ophalen bij openen, bij elke navigatie, als de app weer zichtbaar wordt en na een stapwijziging in beheer.
+// AAN-71: de server kiest de editie: voor een deelnemer de zijne, voor een beheersessie de nieuwste eigen editie.
+let editieStand = null; // { stap, titel, stapData, vastgelegdWeekend } of null
+let standBekend = false; // false: nog niet geladen; true met editieStand null: er is geen editie
+let standVraag = 0; // alleen het antwoord op de laatste vraag telt
 let menuActief = '';
 function toonMenu(actief = menuActief) {
   menuActief = actief;
-  menu.replaceChildren(...maakMenuItems({ routes: routelijst(soortNu()), stap: menuStap, actief }));
+  menu.replaceChildren(...maakMenuItems({ routes: routelijst(soortNu()), actief, stap: editieStand ? editieStand.stap : null }));
 }
 
-function zetMenuStap(stap) {
-  if (stap === menuStap) return;
-  menuStap = stap;
+function toonBalk() {
+  if (standBekend && !editieStand) { balkPlek.replaceChildren(); return; } // zonder editie geen balk
+  const s = editieStand || { stap: null, titel: '', stapData: {} };
+  balkPlek.replaceChildren(maakStappenbalk({ stap: s.stap, stapData: s.stapData, titel: s.titel }));
+}
+
+function zetStand(editie) {
+  const nieuw = editie ? { stap: editie.stap, titel: editie.titel || '', stapData: editie.stapData || {}, vastgelegdWeekend: editie.vastgelegdWeekend || '' } : null;
+  const gelijk = standBekend && JSON.stringify(nieuw) === JSON.stringify(editieStand);
+  standBekend = true;
+  editieStand = nieuw;
+  if (gelijk) return;
+  toonBalk();
   toonMenu();
 }
 
-async function haalMenuStap() {
+function wisStand() {
+  standVraag += 1;
+  editieStand = null;
+  standBekend = false;
+}
+
+// Het startscherm vraagt hetzelfde scherm al op; zonder eigen editiekeuze geeft het zijn antwoord door.
+function zetStandVanStart(editie) {
+  standVraag += 1;
+  zetStand(editie);
+}
+
+async function haalStand() {
   const sessie = leesSessie(localStorage);
   if (!sessie) return;
+  const nr = ++standVraag;
   try {
     const api = maakApi({ basisUrl: scriptUrl(sessie.scriptId), sessie: () => sessie.sessie, editieId: () => sessie.editieId || '' });
     const g = await api.anroep('scherm', { naam: 'start' }, { schrijft: false });
-    if (leesSessie(localStorage)) zetMenuStap(g.editie ? g.editie.stap : null);
-  } catch { /* zonder verbinding blijft het menu zoals het was */ }
+    if (nr === standVraag && leesSessie(localStorage)) zetStand(g.editie);
+  } catch { /* zonder verbinding blijft de laatste stand staan */ }
 }
 
-function toonBalk(params) {
-  if (soortNu() === 'beheer') { balkPlek.replaceChildren(); return; } // beheren hoort bij de groep, niet bij een editie
-  const stap = STAPPEN.includes(params.stap) ? params.stap : 'invullen';
-  balkPlek.replaceChildren(maakStappenbalk({ stap, stapData: VOORBEELD.stapData, titel: VOORBEELD.titel }));
-}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !schil.hidden) haalStand(); });
 
 // NFR-12: zonder verbinding blijft de schil staan, de melding verschijnt en opslaan wordt geblokkeerd.
 function zetVerbinding() {
@@ -370,7 +387,7 @@ function kies() {
     if (sleutel !== laatsteSessie) kopregel.replaceChildren(maakProfielmenu({ soort: sessie.soort, kanInstalleren, installeer, uitloggen }));
     // RON-1, AAN-73: een deelnemer zonder gezien-vlag op dit apparaat begint met de rondleiding.
     if (sessie.soort === 'deelnemer' && !rondleidingGezien(localStorage) && !location.hash.startsWith('#/uitleg')) history.replaceState(null, '', `${location.pathname}${location.search}#/uitleg`);
-    if (!schilGestart) { schilGestart = true; start(inhoud, (naam, params) => { toonMenu(naam); toonBalk(params); if (naam !== 'start') haalMenuStap(); }, soortNu); } else if (sleutel !== laatsteSessie) ververs();
+    if (!schilGestart) { schilGestart = true; toonBalk(); start(inhoud, (naam, params) => { toonMenu(naam); if (naam !== 'start' || params.editie) haalStand(); }, soortNu); } else if (sleutel !== laatsteSessie) { toonBalk(); ververs(); }
     laatsteSessie = sleutel;
     return;
   }
@@ -398,7 +415,7 @@ function bijAnder() {
 function bijIngelogd(sessie, link = null) {
   geplakteBeheerlink = null;
   onthoudenLink = link && link.soort === 'deelnemer' ? persoonlijkeLinkVan(`${location.origin}${location.pathname}`, link.scriptId, link.token) : null;
-  menuStap = null; // een nieuwe sessie begint zonder stap
+  wisStand(); // een nieuwe sessie begint zonder stand
   bewaarSessie(localStorage, sessie);
   history.replaceState(null, '', `${location.pathname}${location.search}#/${sessie.soort === 'beheer' ? 'leden' : 'start'}`); // de link blijft niet in de adresbalk staan
   kies();
@@ -414,7 +431,7 @@ async function uitloggen() {
   }
   wisSessie(localStorage);
   onthoudenLink = null;
-  menuStap = null;
+  wisStand();
   history.replaceState(null, '', `${location.pathname}${location.search}`);
   kies();
 }

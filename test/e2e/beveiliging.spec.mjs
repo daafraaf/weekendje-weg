@@ -206,7 +206,7 @@ for (const beheer of [false, true]) {
     }
     // De tekst staat er wel, als tekst.
     await page.goto('/#/programma');
-    await expect(page.getByText(AANVAL, { exact: false }).first()).toBeVisible();
+    await expect(page.getByRole('main').getByText(AANVAL, { exact: false }).first()).toBeVisible();
     // Invoeren via een formulier werkt net zo: de boodschap komt als tekst op de lijst.
     if (!beheer) {
       await page.goto('/#/posten');

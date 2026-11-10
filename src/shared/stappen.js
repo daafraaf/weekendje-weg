@@ -17,3 +17,18 @@ export function stapMogelijk(van, naar) {
 
 export const volgendeStap = (stap) => STAPPEN[stapIndex(stap) + 1] || null;
 export const vorigeStap = (stap) => (stapMogelijk(stap, STAPPEN[stapIndex(stap) - 1]) ? STAPPEN[stapIndex(stap) - 1] : null);
+
+// STA-8: de namen van de stappen, één tabel voor stappenbalk, menu, stappenbeheer en WhatsApp-teksten. De waarden
+// in de Sheet blijven `invullen` … `afgerond`; alleen de labels zijn nieuw (Overzicht heet Weekendje prikker).
+export const STAPNAMEN = {
+  invullen: 'Invullen',
+  overzicht: 'Weekendje prikker',
+  accommodatie: 'Accommodatie',
+  voorbereiding: 'Meenemen',
+  weekend: 'Weekend',
+  afrekenen: 'Afrekening',
+  afgerond: 'Afgerond',
+};
+
+// Een scherm dat nog niet aan de beurt is, zegt dat rustig (NAV-10).
+export const komtInStap = (stap) => `Komt in stap ${STAPNAMEN[stap]}`;

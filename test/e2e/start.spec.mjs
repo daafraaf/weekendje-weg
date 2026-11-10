@@ -12,7 +12,7 @@ const vanaf = (stap, eerste) => STAPPEN.indexOf(stap) >= STAPPEN.indexOf(eerste)
 // Wat een deelnemer (Anna) en de organisator (Eva) bovenaan zien (spec §7.14), per stap.
 const DEELNEMER = {
   invullen: ['Vul je beschikbaarheid en wensen in', 'Formulier invullen'],
-  overzicht: ['Overlapoverzicht', 'Naar het overzicht'],
+  overzicht: ['Overlapoverzicht', 'Naar Weekendje prikker'],
   accommodatie: ['Accommodatie', 'Bekijk de accommodaties'],
   voorbereiding: ['Boodschappenlijst', 'Wie neemt wat mee', 'Kookbeurten', 'Carpool', 'Kamer'],
   weekend: ['Uitgave toevoegen'],
@@ -66,7 +66,7 @@ async function startOrganisator(context, page, opties) {
 }
 
 for (const stap of STAPPEN) {
-  test(`STA-3 STA-6: deelnemer ziet in de stap ${stap} het juiste bovenaan en het juiste menu`, async ({ page, context }) => {
+  test(`STA-3 NAV-10: deelnemer ziet in de stap ${stap} het juiste bovenaan en het juiste menu`, async ({ page, context }) => {
     const nep = await startNep(context, { stap, afrekening: vanaf(stap, 'afrekenen') });
     try {
       await page.goto('/#/start');
@@ -75,12 +75,9 @@ for (const stap of STAPPEN) {
       for (const t of DEELNEMER[stap]) await expect(boven).toContainText(t);
       // Een deelnemer heeft geen eerstvolgende actie van de organisator.
       await expect(page.getByRole('region', { name: 'Eerstvolgende actie' })).toHaveCount(0);
-      // STA-6: vanaf Accommodatie alles in het menu, daarvoor alleen formulier, voortgang en archief.
-      for (const naam of ['Invullen', 'Voortgang']) await expect(menu(page).getByRole('link', { name: naam, exact: true })).toHaveCount(1);
-      for (const naam of ['Kamers', 'Carpool', 'Geld', 'Afrekening', 'Accommodatie', 'Meenemen']) {
-        await expect(menu(page).getByRole('link', { name: naam, exact: true })).toHaveCount(vanaf(stap, 'accommodatie') ? 1 : 0);
-      }
-      await expect(menu(page).getByRole('link', { name: 'Overzicht', exact: true })).toHaveCount(vanaf(stap, 'overzicht') ? 1 : 0);
+      // NAV-10: in elke stap dezelfde zeven items; STA-8: de stip staat bij de stap van de editie.
+      await expect(menu(page).getByRole('link')).toHaveText(['Start', 'Invullen', 'Voortgang', 'Weekendje prikker', 'Accommodatie', 'Meenemen', 'Afrekening']);
+      await expect(menu(page).locator('a[data-stap-nu]')).toHaveCount(['weekend', 'afgerond'].includes(stap) ? 0 : 1);
     } finally { nep.server.close(); }
   });
 
@@ -94,7 +91,7 @@ for (const stap of STAPPEN) {
       const actie = page.getByRole('region', { name: 'Eerstvolgende actie' });
       await expect(actie.getByRole('link', { name: ORGANISATOR[stap] })).toBeVisible();
       await expect(boven.locator(':scope > :first-child')).toHaveAttribute('aria-label', 'Eerstvolgende actie');
-      await expect(menu(page).getByRole('link', { name: 'Kamers', exact: true })).toHaveCount(vanaf(stap, 'accommodatie') ? 1 : 0);
+      await expect(menu(page).getByRole('link', { name: 'Kamers', exact: true })).toHaveCount(0);
       await expect(menu(page).getByRole('link', { name: 'Beheren', exact: true })).toHaveCount(1);
     } finally { nep.server.close(); }
   });

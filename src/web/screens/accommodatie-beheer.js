@@ -2,7 +2,7 @@
 // verwijderen, de deelvorm kiezen en één accommodatie op geboekt zetten. Alle tekst gaat via textContent (NFR-5).
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
-import { STAPNAMEN } from '../components/stappenbalk.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { DEELVORMEN, DEELVORM_NAMEN, ACC_GRENZEN, isHttpsLink } from '../../shared/accommodatie.js';
 import { invoerTekst, leesBedrag } from '../../shared/geld.js';
 import { editieKeuze, foutMelding } from './voortgang.js';

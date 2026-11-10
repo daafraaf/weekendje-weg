@@ -46,7 +46,7 @@ test('OVZ-1 OVZ-2: iedereen ziet wie heeft ingevuld, de organisator maakt de her
   await context.close();
 });
 
-test('OVZ-3 OVZ-4 OVZ-5 EDI-7: de organisator zet de stap naar Overzicht, daarna ziet de deelnemer de heatmap met de voorkeursdatum', async ({ page, browser, nep }) => {
+test('OVZ-3 OVZ-4 OVZ-5 EDI-7: de organisator zet de stap naar Weekendje prikker, daarna ziet de deelnemer de heatmap met de voorkeursdatum', async ({ page, browser, nep }) => {
   await page.goto('/#/overzicht');
   await expect(page.getByText('Het overzicht verschijnt als de organisator het vrijgeeft')).toBeVisible();
 
@@ -55,8 +55,8 @@ test('OVZ-3 OVZ-4 OVZ-5 EDI-7: de organisator zet de stap naar Overzicht, daarna
   await expect(beheer.getByRole('heading', { level: 1 })).toHaveText('Stappen');
   const balk = beheer.getByRole('navigation', { name: 'Stappen van de editie' });
   await expect(balk.locator('[aria-current="step"]')).toContainText('Invullen');
-  await beheer.getByRole('button', { name: 'Naar Overzicht' }).click();
-  await expect(balk.locator('[aria-current="step"]')).toContainText('Overzicht');
+  await beheer.getByRole('button', { name: 'Naar Weekendje prikker' }).click();
+  await expect(balk.locator('[aria-current="step"]')).toContainText('Weekendje prikker');
   await expect(beheer.getByText(/^Hoi allemaal! Het invullen voor Weekendje weg 2027 is gesloten\./)).toBeVisible();
   await expect(beheer.getByRole('button', { name: 'Stapbericht voor de groep delen' })).toBeVisible();
   nep.store.nieuwVerzoek();
@@ -105,7 +105,7 @@ test('EDI-8 EDI-10: verwachte datum aanpassen en de deadline verlengen', async (
   nep.store.flush();
   const { page: beheer, context } = await organisatorPagina(browser, nep);
   await beheerNaar(beheer, 'Stappen');
-  await beheer.getByLabel('Voorbereiding').fill('2027-05-28');
+  await beheer.getByLabel('Meenemen', { exact: true }).fill('2027-05-28');
   await beheer.getByRole('button', { name: 'Data opslaan' }).click();
   await expect(beheer.getByText('De verwachte data zijn opgeslagen.')).toBeVisible();
   await expect(beheer.getByRole('navigation', { name: 'Stappen van de editie' })).toContainText('28 mei');

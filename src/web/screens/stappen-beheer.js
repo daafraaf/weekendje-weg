@@ -1,10 +1,10 @@
 // Stappen van een editie beheren (EDI-7, EDI-8, EDI-10): stap vooruit of terug met daarna de WhatsApp-tekst
 // van de nieuwe stap, verwachte data per stap en de deadline verlengen. Alle tekst gaat via textContent (NFR-5).
+// STA-8: de stappenbalk staat in de schil en leest de editie uit de Sheet; na een stapwijziging vraagt bijStap hem opnieuw op.
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { deelKnoppen } from '../delen.js';
-import { maakStappenbalk, STAPNAMEN } from '../components/stappenbalk.js';
-import { STAPPEN, volgendeStap, vorigeStap } from '../../shared/stappen.js';
+import { STAPPEN, STAPNAMEN, volgendeStap, vorigeStap } from '../../shared/stappen.js';
 import { datumLang } from '../../shared/datums.js';
 import { deadlineIso } from '../../shared/editie.js';
 import { stapTekst } from '../../shared/whatsapp.js';
@@ -13,7 +13,7 @@ import { editieKeuze, foutMelding } from './voortgang.js';
 const VOORUIT = 'm9.5 6 6 6-6 6';
 const TERUG = 'm14.5 6-6 6 6 6';
 
-export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, fetchFn }) {
+export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = () => {}, fetchFn }) {
   let gegevens = null;
   let editieId = params.editie || '';
   let gedeeld = null; // { stap, tekst } na een stapwijziging
@@ -40,6 +40,7 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, fetchFn })
     if (!r) return;
     gedeeld = { stap: r.editie.stap, tekst: stapTekst({ editieTitel: r.editie.titel, stap: r.editie.stap, stapData: r.editie.stapData, deadline: r.editie.deadline }) };
     bericht = '';
+    bijStap();
     await laad();
   }
 
@@ -48,6 +49,7 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, fetchFn })
     const r = await anroep('editieBijwerken', data, true);
     if (!r) return;
     bericht = klaar;
+    bijStap(); // verwachte data staan ook in de balk
     await laad();
   }
 
@@ -57,7 +59,7 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, fetchFn })
     const terug = vorigeStap(e.stap);
     return h('div', { class: 'beheer-blok' },
       verder ? h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, onclick: () => zetStap(verder) }, `Naar ${STAPNAMEN[verder]}`, icoon(VOORUIT)) : null,
-      verder === 'overzicht' ? h('p', { class: 'hint' }, 'Naar Overzicht sluit het invullen, ook als de deadline nog niet voorbij is.') : null,
+      verder === 'overzicht' ? h('p', { class: 'hint' }, `Naar ${STAPNAMEN.overzicht} sluit het invullen, ook als de deadline nog niet voorbij is.`) : null,
       terug ? h('button', { class: 'btn btn-ghost', type: 'button', 'data-schrijft': true, onclick: () => zetStap(terug) }, icoon(TERUG), `Terug naar ${STAPNAMEN[terug]}`) : null,
       e.stap === 'accommodatie' ? h('p', { class: 'hint' }, 'Terug naar Invullen kan vanaf hier niet meer.') : null);
   }
@@ -105,7 +107,6 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, fetchFn })
     zet(
       kop,
       editieKeuze(gegevens.edities, editieId, (id) => { editieId = id; gedeeld = null; bericht = ''; teken(); }, 'st-editie'),
-      maakStappenbalk({ stap: e.stap, stapData: e.stapData || {}, titel: e.titel }),
       melding.el,
       bericht ? h('p', { class: 't-small t-sec', role: 'status' }, bericht) : null,
       tekstKaart,

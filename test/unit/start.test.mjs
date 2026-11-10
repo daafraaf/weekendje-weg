@@ -2,8 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { API_VERSIE } from '../../src/server/api.js';
 import { hashToken } from '../../src/server/crypto.js';
-import { inMenu, BEHEER_SCHERMEN, aftelTekst, eersteActie } from '../../src/shared/start.js';
-import { STAPPEN } from '../../src/shared/stappen.js';
+import { inMenu, menuItems, MENU, BEHEER_SCHERMEN, aftelTekst, eersteActie } from '../../src/shared/start.js';
+import { STAPPEN, STAPNAMEN, komtInStap } from '../../src/shared/stappen.js';
+import { stapTekst } from '../../src/shared/whatsapp.js';
 import { maakNepApi } from '../mock-backend/server.mjs';
 import { maakDemo, DEMO_EDITIE_ID } from '../mock-backend/demo.mjs';
 import { nodeSha256 } from '../mock-backend/memorystore.mjs';
@@ -25,24 +26,43 @@ function opzet(opties = {}) {
   return { demo, nep, vraag, beheer, zetStap, wijzig, scherm, anna: (naam) => scherm('anna', naam), org: (naam) => scherm(beheer, naam, DEMO_EDITIE_ID) };
 }
 
-test('NAV-1: Archief en Uitleg staan in geen enkele stap in het hoofdmenu', () => {
-  for (const stap of [null, ...STAPPEN]) for (const naam of ['archief', 'uitleg']) assert.equal(inMenu(naam, stap), false, `${naam} bij ${stap}`);
+test('NAV-1: Archief en Uitleg staan niet in het hoofdmenu', () => {
+  for (const naam of ['archief', 'uitleg']) assert.equal(inMenu(naam), false, naam);
 });
 
 test('NAV-9: de beheerschermen staan niet los in het hoofdmenu, alleen achter Beheren', () => {
-  for (const stap of [null, ...STAPPEN]) for (const naam of BEHEER_SCHERMEN) assert.equal(inMenu(naam, stap), false, `${naam} bij ${stap}`);
+  for (const naam of BEHEER_SCHERMEN) assert.equal(inMenu(naam), false, naam);
+  const { beheer } = menuItems(['start', 'beheren', ...BEHEER_SCHERMEN]);
+  assert.deepEqual(beheer.routes, ['beheren', ...BEHEER_SCHERMEN]);
 });
 
-test('STA-6 AAN-12: voor Accommodatie staan alleen formulier en voortgang in het menu, daarna alles', () => {
-  const altijd = ['start', 'formulier', 'voortgang', 'beheren'];
-  const onderdelen = ['accommodaties', 'meenemen', 'boodschappen', 'kookbeurten', 'programma', 'kamers', 'carpool', 'posten', 'afrekening'];
-  for (const stap of [null, 'invullen', 'overzicht']) {
-    for (const naam of altijd) assert.equal(inMenu(naam, stap), true, `${naam} bij ${stap}`);
-    for (const naam of onderdelen) assert.equal(inMenu(naam, stap), false, `${naam} bij ${stap}`);
-  }
-  assert.equal(inMenu('overzicht', 'invullen'), false);
-  assert.equal(inMenu('overzicht', 'overzicht'), true);
-  for (const stap of STAPPEN.slice(2)) for (const naam of [...altijd, ...onderdelen]) assert.equal(inMenu(naam, stap), true, `${naam} bij ${stap}`);
+const ALLE_ROUTES = ['start', 'archief', 'beheren', 'formulier', 'leden', 'voortgang', 'overzicht', 'detail', 'stappen', 'posten', 'afrekening',
+  'accommodaties', 'accommodatie-beheer', 'meenemen', 'boodschappen', 'kookbeurten', 'programma', 'kamers', 'carpool', 'uitleg'];
+
+test('NAV-10 AAN-12: het menu heeft altijd zeven items in stapvolgorde, onafhankelijk van de stap', () => {
+  const deelnemer = menuItems(ALLE_ROUTES.filter((r) => r !== 'beheren' && !BEHEER_SCHERMEN.includes(r)));
+  assert.deepEqual(deelnemer.items.map((m) => m.label), ['Start', 'Invullen', 'Voortgang', 'Weekendje prikker', 'Accommodatie', 'Meenemen', 'Afrekening']);
+  assert.equal(deelnemer.beheer, null);
+  for (const naam of ['boodschappen', 'kookbeurten', 'programma', 'kamers', 'carpool', 'posten']) assert.equal(inMenu(naam), false, naam);
+  // Een beheersessie heeft geen eigen antwoorden en dus geen Invullen; Beheren staat apart.
+  const beheer = menuItems(ALLE_ROUTES.filter((r) => r !== 'formulier'));
+  assert.deepEqual(beheer.items.map((m) => m.naam), ['start', 'voortgang', 'overzicht', 'accommodaties', 'meenemen', 'afrekening']);
+  assert.equal(beheer.beheer.label, 'Beheren');
+});
+
+test('NAV-11: Afrekening opent Wie betaalt wat en is actief op posten en eindafrekening', () => {
+  const afr = menuItems(ALLE_ROUTES).items.find((m) => m.naam === 'afrekening');
+  assert.equal(afr.href, 'posten');
+  assert.deepEqual(afr.routes, ['posten', 'afrekening']);
+});
+
+test('STA-8: balk, menu, stappenbeheer en WhatsApp gebruiken dezelfde stapnamen', () => {
+  assert.deepEqual(Object.keys(STAPNAMEN), STAPPEN);
+  assert.deepEqual(Object.values(STAPNAMEN), ['Invullen', 'Weekendje prikker', 'Accommodatie', 'Meenemen', 'Weekend', 'Afrekening', 'Afgerond']);
+  for (const m of MENU.filter((x) => x.stap)) assert.equal(m.label, STAPNAMEN[m.stap], m.naam);
+  assert.equal(komtInStap('overzicht'), 'Komt in stap Weekendje prikker');
+  assert.match(stapTekst({ editieTitel: 'W', stap: 'overzicht', stapData: {} }), /De stap Accommodatie volgt later/);
+  assert.equal(eersteActie({ editie: { id: 'e1', stap: 'invullen' }, voortgang: { aantal: 2, ingevuld: 2 } }).tekst, 'Zet de stap op Weekendje prikker');
 });
 
 test('STA-5: de aftelteller telt dagen tot de vrijdag en zegt op de dag zelf Vandaag!', () => {

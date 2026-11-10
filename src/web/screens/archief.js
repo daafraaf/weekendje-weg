@@ -2,7 +2,7 @@
 // Alle tekst gaat via textContent; de link van een accommodatie alleen als hij met https:// begint (NFR-3).
 import { h } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
-import { STAPNAMEN } from '../components/stappenbalk.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { weekendLang } from './overzicht.js';
 
 const veiligeLink = (l) => /^https:\/\//.test(l || '');

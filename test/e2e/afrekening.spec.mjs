@@ -27,7 +27,7 @@ async function organisatorPagina(browser, nep) {
   await page.getByRole('button', { name: 'Inloggen' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
   await page.goto('/#/afrekening');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Afrekening');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Eindafrekening');
   return { page, context };
 }
 
@@ -35,7 +35,7 @@ const betalingen = (page) => page.getByRole('list', { name: 'Betalingen' });
 
 test('GELD-8 GELD-9: de demo markeert één betaling, de afrekening herberekent en terugdraaien zet hem weer open', async ({ page, nep }) => {
   await page.goto('/#/afrekening');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Afrekening');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Eindafrekening');
   const kaart = page.getByRole('region', { name: 'Jij betaalt Eva' });
   await expect(kaart).toContainText('€ 166,60');
   await expect(page.getByText('Alle betalingen · 1 van 3 betaald')).toBeVisible();

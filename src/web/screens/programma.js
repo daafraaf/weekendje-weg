@@ -2,7 +2,7 @@
 // Ontwerp: docs/design/Programma.dc.html. Alle tekst, ook adressen en notities, gaat via textContent (NFR-5).
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
-import { STAPNAMEN } from '../components/stappenbalk.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { kaartLink } from '../navigatie.js';
 import { isHttpsLink } from '../../shared/accommodatie.js';
 import { datumLang, dagVan } from '../../shared/datums.js';

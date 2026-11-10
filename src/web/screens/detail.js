@@ -103,7 +103,7 @@ export function maakDetail({ sessie, params = {}, bijVerlopen, fetchFn }) {
   const melding = foutMelding();
   const anroep = maakBeheerApi({ sessie, editieId: () => editieId, bijVerlopen, toonMelding: melding.toon, fetchFn });
   const zet = (...k) => wortel.replaceChildren(...k.flat(2).filter((x) => x != null && x !== false));
-  const kop = h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, 'Overzicht · organisator'), h('h1', { class: 't-title' }, 'Per persoon'));
+  const kop = h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, 'Weekendje prikker · organisator'), h('h1', { class: 't-title' }, 'Per persoon'));
 
   function teken(g) {
     if (!g.editie || !g.detail) { zet(kop, melding.el, h('p', { class: 't-body t-sec' }, 'Je hebt nog geen editie.')); return; }

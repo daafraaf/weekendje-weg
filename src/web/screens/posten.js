@@ -3,11 +3,12 @@
 import { h, icoon } from '../dom.js';
 import { kopMetHint } from '../components/hint.js';
 import { maakBeheerApi } from '../beheerapi.js';
-import { STAPNAMEN } from '../components/stappenbalk.js';
+import { STAPNAMEN } from '../../shared/stappen.js';
 import { euro, categorieLabel } from '../../shared/geld.js';
 import { datumKort } from '../../shared/datums.js';
 import { editieKeuze, foutMelding } from './voortgang.js';
 import { maakPostBewerken } from './post-bewerken.js';
+import { maakAfrekenTabs } from '../components/tabs.js';
 
 const PLUS = ['M12 5v14M5 12h14'];
 const POTLOOD = ['M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4'];
@@ -59,7 +60,8 @@ export function maakPosten({ sessie, params = {}, bijVerlopen, fetchFn }) {
     const toevoegen = g.alleenLezen || !g.ik ? null
       : h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, onclick: () => bewerk(null) }, icoon(PLUS, 22), 'Uitgave toevoegen');
     zet(
-      h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN[g.editie.stap] || ''), kopMetHint(h('h1', { class: 't-title' }, 'Uitgaven'), 'verdeling')),
+      h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN.afrekenen), kopMetHint(h('h1', { class: 't-title' }, 'Uitgaven'), 'verdeling')),
+      maakAfrekenTabs('posten', g.edities ? editieId : ''),
       editieKeuze(g.edities, editieId, (id) => { editieId = id; laad(); }, 'po-editie'),
       melding.el, toast,
       h('section', { class: 'glass card post-totaal' },
