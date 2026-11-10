@@ -119,8 +119,7 @@ test('NFR-11 §11 eindtest: zes personen doorlopen een editie van uitnodiging to
     await p.locator('#bv').fill(String(1 + (i % 3)));
     await p.locator('#bw').fill(String(1 + (i % 4)));
     await p.locator('#rt').fill(String(1 + (i % 3)));
-    await p.getByRole('button', { name: 'Opslaan' }).click();
-    await expect(p.getByText('Opgeslagen', { exact: true })).toBeVisible();
+    await expect(p.getByText('Opgeslagen', { exact: true })).toBeVisible(); // K4: zonder knop Opslaan
     await expect(p.locator('.form-status')).toHaveText('Ingevuld');
   }
 
@@ -172,6 +171,7 @@ test('NFR-11 §11 eindtest: zes personen doorlopen een editie van uitnodiging to
   await naar(pagina.Bas, 'meenemen');
   await pagina.Bas.getByRole('button', { name: 'Ik neem Pindakaas mee' }).click();
   await expect(pagina.Bas.locator('[data-item]', { hasText: 'Pindakaas' }).locator('.chip')).toHaveText(['jij']);
+  await expect(pagina.Bas.locator('.sync')).toHaveText('Opgeslagen'); // SYNC-2: de claim gaat na de debounce naar de Sheet
   await naar(pagina.Daan, 'meenemen');
   await pagina.Daan.getByRole('button', { name: 'Ik neem Speaker mee' }).click();
   await expect(pagina.Daan.locator('[data-item]', { hasText: 'Pindakaas' })).toContainText('Bas');

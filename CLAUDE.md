@@ -109,6 +109,9 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 - Weekend vastleggen: één per editie; wijzigen alleen via `weekendLosmaken` (stap overzicht of accommodatie). Unit-tests die opnieuw vastleggen moeten eerst losmaken, in een latere stap via `store.werkBij` op de stap.
 - `npx playwright test` los gebruikt de oude bundel; draai eerst `npm run build` of gebruik `npm run check`.
 
+- Kleine handeling (SYNC): actie in `BUNDEL_ACTIES` (`src/shared/synchronisatie.js`), idempotent en laatste wint; op het scherm `maakStand({ wachtrij, toepassen, hoort, levend, bijWijziging })` uit `web/stand.js`, `stand.zetBevestigd(r)` na elke leesactie en `stand.zet(actie, data, { sleutel, editieId })` bij een klik; geen `data-schrijft`. Grote acties houden `data-schrijft` en wachten.
+- e2e met de wachtrij: wacht op `page.locator('.sync')` met "Opgeslagen" voordat een andere context of de Store het ziet; `nep.aanroepen(actie)` en `nep.zetStoring([...])` uit `startServer`; wachttijden overslaan met `page.clock.install()` en `fastForward`.
+
 ## Valkuilen
 
 Leeg bij de start. Elke fout die twee keer gebeurt, komt hier.

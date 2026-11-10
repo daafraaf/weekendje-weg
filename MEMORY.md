@@ -1,6 +1,6 @@
 # MEMORY.md — Weekendje weg
 
-Laatst bijgewerkt: 2026-11-10 (fase 25: één vastgelegd weekend met uitweg)
+Laatst bijgewerkt: 2026-11-10 (fase 26: synchronisatielaag met wachtrij)
 
 ## Status
 
@@ -13,15 +13,13 @@ zodra fase 0 `package.json` heeft neergezet.
 
 ## Open punten
 
-- Feedbackronde: fase 25 af, volgende is fase 26; fase 23 t/m 28 (`docs/plan-feedbackronde.md`). Keuzes K1 t/m K4 bevestigd (alle a), zie plan.
+- Feedbackronde: fase 26 af, volgende is fase 27; fase 23 t/m 28 (`docs/plan-feedbackronde.md`). Keuzes K1 t/m K4 bevestigd (alle a), zie plan.
 
 ## Sessielog
 
 Nieuwste bovenaan. Houd hier de laatste drie fasen; oudere regels naar
 `docs/sessielog-archief.md`.
 
+- 2026-11-10 fase 26: synchronisatielaag: wachtrij met debounce, localStorage en terugdraaien, actie `bundel`, `antwoordZetten` per veld, formulier zonder Opslaan (K4), indicator in de kopregel (SYNC-1 t/m SYNC-8, AAN-82, AAN-83); check groen; zie `docs/overdracht/fase-26.md`.
 - 2026-11-10 fase 25: één vastgelegd weekend (tweede vastlegging `gesloten`), `weekendLosmaken` met bevestiging, boeking blijft (K3) (ACC-6, ACC-7, AAN-81, AAN-63 aangepast); check groen; zie `docs/overdracht/fase-25.md`.
 - 2026-11-10 fase 24: vijf onderdelen uit met vlaggen (AAN-80), invullen vraagt alleen beschikbaarheid, deadline informatief en geen stapData meer (OND-1, OND-2, OND-3, FRM-11, DDL-1); check groen; zie `docs/overdracht/fase-24.md`.
-- 2026-11-10 fase 23: stappenbalk één bron (één stand in de schil, ook voor beheer), menu altijd zeven items in stapvolgorde met Beheren apart, Afrekening met tabs (STA-8, NAV-10, NAV-11); AAN-40 vervallen, AAN-12 en AAN-71 herschreven; check groen; zie `docs/overdracht/fase-23.md`.
-- 2026-11-10 feedbackronde voorbereid: opdracht, plan en fasebestanden 23 t/m 28 in `docs/`; nog geen code gewijzigd.
-- 2026-11-10 na fase 22: lader en blokkade tegen dubbel opslaan in de schil (`bijBezig` in `web/api.js`); Nieuwe editie met jaarlijst, uitleg per veld en een organisator die niet de maker is (AAN-46 aangepast, `zonderMaker`); check groen.

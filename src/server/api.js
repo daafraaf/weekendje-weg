@@ -4,6 +4,7 @@ import { ApiFout, foutAntwoord } from './fouten.js';
 import { reden, rolReden, ALLE_SCHERMEN } from './rechten.js';
 import { valideer, v } from './validatie.js';
 import { hashToken } from './crypto.js';
+import { bundelSchema, voerBundelUit } from './acties/bundel.js';
 
 export const API_VERSIE = 1;
 export const SLOT_WACHTTIJD_MS = 10000;
@@ -22,7 +23,8 @@ export const ACTIES = {
   ledenBeheren: SG,
   editieAanmaken: SG, editieBijwerken: S, deelnemersBeheren: S, linksMaken: S, linkVernieuwen: S,
   pincodeVernieuwen: S, beheerlinkMaken: SG, stapZetten: S, afhakenMarkeren: S, vragenBeheren: S,
-  antwoordenOpslaan: S,
+  antwoordenOpslaan: S, antwoordZetten: S,
+  bundel: S, // SYNC-2: kleine handelingen uit de wachtrij, elk met eigen rechten, validatie en Log
   weekendVastleggen: S, weekendLosmaken: S, accommodatieOpslaan: S, accommodatieVerwijderen: S, deelvormZetten: S, stemmen: S,
   itemOpslaan: S, itemVerwijderen: S, claimen: S, claimIntrekken: S, afvinken: S,
   boodschappenDefinitief: S, maaltijdOpslaan: S, kokWorden: S, kokStoppen: S, programmaOpslaan: S,
@@ -47,6 +49,10 @@ const STANDAARD = {
       const groep = store.lees('Groep')[0];
       return { apiVersie: API_VERSIE, opgezet: Boolean(groep && groep.opgezet) };
     },
+  },
+  bundel: {
+    schema: bundelSchema,
+    uitvoeren: (h) => voerBundelUit(h.data.acties, h.voerUit, h.deps.logFout),
   },
 };
 
@@ -117,28 +123,36 @@ export function maakApi(deps) {
       }
     }
 
-    const impl = handlers[verzoek.actie];
-    const ruweData = verzoek.data || {};
-    if (verzoek.actie === 'scherm') {
-      if (!ALLE_SCHERMEN.includes(ruweData.naam)) throw new ApiFout('ongeldig', 'Veld data.naam: onbekend scherm.');
-      ctx.scherm = ruweData.naam;
-    }
-    const rol = rolReden(sessie.rol, verzoek.actie, ctx);
-    if (rol) throw new ApiFout(rol);
-    const data = impl && impl.schema ? valideer(impl.schema, ruweData) : ruweData;
-    const h = { store, sessie, editie, editieId, data, ctx, deps };
-    if (impl && impl.context) Object.assign(ctx, impl.context(h));
+    const basis = { ...ctx };
+    // Eén actie: rol, validatie, rijcontext, rechten, uitvoeren en Log. Een bundel roept dit per actie aan
+    // met een eigen kopie van de context, onder hetzelfde slot (SYNC-7).
+    function voerUit(actie, ruweData) {
+      const c = { ...basis };
+      const impl = handlers[actie];
+      if (actie === 'scherm') {
+        if (!ALLE_SCHERMEN.includes(ruweData.naam)) throw new ApiFout('ongeldig', 'Veld data.naam: onbekend scherm.');
+        c.scherm = ruweData.naam;
+      }
+      const rol = rolReden(sessie.rol, actie, c);
+      if (rol) throw new ApiFout(rol);
+      const data = impl && impl.schema ? valideer(impl.schema, ruweData) : ruweData;
+      const h = { store, sessie, editie, editieId, data, ctx: c, deps, voerUit };
+      if (impl && impl.context) Object.assign(c, impl.context(h));
 
-    const r = reden(sessie.rol, verzoek.actie, ctx);
-    if (r) throw new ApiFout(r);
-    if (!impl) throw new ApiFout('ongeldig', 'Deze actie bestaat nog niet.');
+      const r = reden(sessie.rol, actie, c);
+      if (r) throw new ApiFout(r);
+      if (!impl) throw new ApiFout('ongeldig', 'Deze actie bestaat nog niet.');
 
-    const uit = impl.uitvoeren(h);
-    if (def.schrijft) {
-      // NFR-16: alleen actie, wie en editie; geen vrije tekst of geheimen.
-      store.voegToe('Log', { tijd: nu().toISOString(), actie: verzoek.actie, wie: sessie.subjectId || 'gast', editieId: editieId || '', detail: '' });
-      store.flush();
+      const uit = impl.uitvoeren(h);
+      if (ACTIES[actie].schrijft && actie !== 'bundel') {
+        // NFR-16: alleen actie, wie en editie; geen vrije tekst of geheimen.
+        store.voegToe('Log', { tijd: nu().toISOString(), actie, wie: sessie.subjectId || 'gast', editieId: editieId || '', detail: '' });
+      }
+      return uit;
     }
+
+    const uit = voerUit(verzoek.actie, verzoek.data || {});
+    if (def.schrijft) store.flush(); // één flush, ook voor een bundel
     return { ok: true, data: uit === undefined ? {} : uit };
   }
 

@@ -2,6 +2,9 @@
 
 Oudere regels uit het sessielog van MEMORY.md.
 
+- 2026-11-10 fase 23: stappenbalk één bron (één stand in de schil, ook voor beheer), menu altijd zeven items in stapvolgorde met Beheren apart, Afrekening met tabs (STA-8, NAV-10, NAV-11); AAN-40 vervallen, AAN-12 en AAN-71 herschreven; check groen; zie `docs/overdracht/fase-23.md`.
+- 2026-11-10 feedbackronde voorbereid: opdracht, plan en fasebestanden 23 t/m 28 in `docs/`; nog geen code gewijzigd.
+- 2026-11-10 na fase 22: lader en blokkade tegen dubbel opslaan in de schil (`bijBezig` in `web/api.js`); Nieuwe editie met jaarlijst, uitleg per veld en een organisator die niet de maker is (AAN-46 aangepast, `zonderMaker`); check groen.
 - 2026-11-10 fase 21/22: taginvoer (TAG-1 t/m 9) en navigatie (NAV-1 t/m 8) af, check groen, AAN-74 t/m 76 toegevoegd; TAG-10 en NAV-9 (Beheren) erna gebouwd; zie `docs/overdracht/fase-21.md`.
 - 2026-11-09 fase 19: eindtest af (NFR-11): scenario met zes contexten, toegankelijkheid, beveiligingsronde, demo volgens §11, aannamecheck in npm run check; check groen, geen nieuwe aannames; zie `docs/overdracht/fase-19.md`.
 - 2026-11-09 fase 18: rondleiding en installatie af (RON-1 t/m 4), check groen, AAN-72 en AAN-73 toegevoegd; zie `docs/overdracht/fase-18.md`.

@@ -32,6 +32,10 @@ export function maakNepApi({ seed = {}, handlers = ALLE_HANDLERS, nu = () => new
 
 export function startServer({ port = 8787, host = '127.0.0.1', ...opties } = {}) {
   const nep = maakNepApi(opties);
+  // SYNC-2: de tests tellen de aanroepen per actie; SYNC-5: zetStoring(['bundel']) verbreekt die aanroepen
+  // (netwerkfout), zetStoring([]) herstelt.
+  const aanroepen = {};
+  let storing = new Set();
   const server = http.createServer((req, res) => {
     const stuur = (antwoord) => {
       res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' });
@@ -45,10 +49,16 @@ export function startServer({ port = 8787, host = '127.0.0.1', ...opties } = {})
       body += stuk;
       if (body.length > MAX_BODY) req.destroy();
     });
-    req.on('end', () => stuur(nep.api.verwerk(body)));
+    req.on('end', () => {
+      let actie = '';
+      try { actie = JSON.parse(body).actie || ''; } catch { /* de API meldt zelf ongeldig */ }
+      aanroepen[actie] = (aanroepen[actie] || 0) + 1;
+      if (storing.has(actie)) { req.socket.destroy(); return; }
+      stuur(nep.api.verwerk(body));
+    });
   });
   return new Promise((resolve) => {
-    server.listen(port, host, () => resolve({ ...nep, server, url: `http://${host}:${server.address().port}` }));
+    server.listen(port, host, () => resolve({ ...nep, server, aanroepen: (actie) => aanroepen[actie] || 0, zetStoring: (acties) => { storing = new Set(acties); }, url: `http://${host}:${server.address().port}` }));
   });
 }
 

@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.25, 10 november 2026: fase 26: AAN-82 en AAN-83 toegevoegd (synchronisatielaag).
 Versie 0.24, 10 november 2026: fase 25: AAN-63 aangepast (één vastgelegd weekend), AAN-81 toegevoegd.
 Versie 0.23, 10 november 2026: fase 23: AAN-40 vervallen, AAN-12 en AAN-71 herschreven.
 Versie 0.22, 10 november 2026: AAN-46 aangepast: de maker hoeft geen organisator te zijn.
@@ -120,6 +121,8 @@ die test aan en werk je hier de status bij.
 | AAN-79 | Webapp-ID in het menu | Flow | `src/server/gas/menu.js` (`webappId`) | eerst `getUrl()` als die op `/exec` eindigt, dan de eigenschap `webappId`, dan één keer vragen; reden: het is niet zeker wat `getUrl()` in de nieuwe Apps Script-editor teruggeeft | midden | open |
 | AAN-81 | Weekend losmaken | Regel | `src/server/acties/accommodatie.js` (`weekendLosmaken`) | losmaken kan alleen in de stappen Weekendje prikker en Accommodatie (anders `gesloten`, na Afgerond ook) en alleen als er een weekend vastligt; het wist alleen `vastgelegdWeekend`: de aftelteller en de datums bij maaltijden en programma verdwijnen, een geboekte accommodatie, maaltijden en stemmen blijven staan (besluit K3); de bevestiging in de UI zegt dat de boeking bij de oude datum hoort | laag | open |
 | AAN-80 | Onderdelen uit | Instelling | `src/shared/onderdelen.js` (`ONDERDELEN`) | boodschappen, kookbeurten, programma, kamers en carpool staan uit met één vlag per onderdeel; uit betekent weg uit route, menu, start, eersteActie en status (geen grijs item); acties en tabs blijven bestaan | midden | open |
+| AAN-82 | Wachtrij: tijden en grootte | Instelling | `src/shared/synchronisatie.js` (`DEBOUNCE_MS`, `WACHTTIJDEN_MS`, `BUNDEL_MAX`) | de wachtrij verstuurt 1 seconde na de laatste kleine handeling; bij een netwerkfout of `druk` opnieuw na 2, 4, 8, 16 en 30 seconden, daarna terugdraaien met melding en Opnieuw; zonder verbinding wacht ze op `online` zonder pogingen te tellen; hooguit 25 acties per `bundel`, de rest gaat in de volgende; een bundel gaat naar één editie | laag | open |
+| AAN-83 | Welke handelingen optimistisch zijn | Regel | `src/shared/synchronisatie.js` (`BUNDEL_ACTIES`) | optimistisch en in de wachtrij: claimen, claim intrekken, afvinken en formuliervelden met tags (`antwoordZetten`, één veld per actie), vanaf fase 27 de top 3; de laatste schrijfactie wint zonder versiecheck, per item, claim of veld; alle andere acties wachten op de Sheet; een weigering van het script (`gesloten`, `ongeldig`, `geen_toegang`) draait meteen terug; een verlopen sessie bewaart de wachtrij tot opnieuw inloggen | midden | open |
 
 ## Volgorde voor het gesprek
 
@@ -153,5 +156,6 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-10: AAN-77 t/m AAN-79 toegevoegd in fase 22 (groep opzetten met een opzetlink); AAN-45 bijgewerkt: met `APP_ADRES` toont het menu de volledige beheerlink.
 - 2026-11-10: AAN-46 aangepast op verzoek van David: de maker van een editie kan de organisatie aan een ander lid geven.
 - 2026-11-10: fase 25 (één vastgelegd weekend): AAN-63 aangepast, AAN-81 toegevoegd.
+- 2026-11-10: fase 26 (synchronisatielaag met wachtrij): AAN-82 en AAN-83 toegevoegd.
 - 2026-11-10: fase 24 (onderdelen uit, invullen vrijer): AAN-80 toegevoegd; AAN-04, AAN-33, AAN-39 en AAN-57 aangepast.
 - 2026-11-10: fase 23 (stappenbalk één bron, menu in stapvolgorde): AAN-40 vervallen; AAN-12 en AAN-71 herschreven.

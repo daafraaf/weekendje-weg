@@ -1,6 +1,6 @@
 // Antwoorden van een deelnemer opslaan en het formulier lezen (spec §5.2, §7.4, FRM-1 t/m FRM-4, FRM-8 t/m FRM-10).
 import { ApiFout } from '../fouten.js';
-import { v } from '../validatie.js';
+import { v, valideer } from '../validatie.js';
 import { vrijdagen } from '../../shared/datums.js';
 import { vragenVan, schoonEigenVragen } from './vragen.js';
 import { lijstenVan, blokkenVan } from '../../shared/lijsten.js';
@@ -64,12 +64,51 @@ export const antwoordenOpslaan = {
     } else {
       rij = store.werkBij('Antwoorden', bestaand.id, { data: nieuw }, data.versie);
     }
-    // FRM-8: de status ingevuld volgt uit de opgeslagen antwoorden.
-    const mist = ontbreekt(nieuw);
-    const deelnemer = store.vind('Deelnemers', sessie.deelnemerId);
-    const ingevuld = mist.length === 0;
-    if (deelnemer.ingevuld !== ingevuld) store.werkBij('Deelnemers', deelnemer.id, { ingevuld, ingevuldOp: ingevuld ? deps.nu().toISOString() : '' });
-    return { versie: rij.versie, bijgewerkt: rij.bijgewerkt, ingevuld, ontbreekt: mist };
+    return { versie: rij.versie, bijgewerkt: rij.bijgewerkt, ...zetIngevuld(store, sessie, deps, nieuw) };
+  },
+};
+
+// FRM-8: de status ingevuld volgt uit de opgeslagen antwoorden.
+function zetIngevuld(store, sessie, deps, data) {
+  const mist = ontbreekt(data);
+  const deelnemer = store.vind('Deelnemers', sessie.deelnemerId);
+  const ingevuld = mist.length === 0;
+  if (deelnemer.ingevuld !== ingevuld) store.werkBij('Deelnemers', deelnemer.id, { ingevuld, ingevuldOp: ingevuld ? deps.nu().toISOString() : '' });
+  return { ingevuld, ontbreekt: mist };
+}
+
+export const ANTWOORD_VELDEN = Object.keys(dataSchema.velden);
+
+// K4, SYNC-7: het formulier slaat elk veld apart op via de wachtrij. Eén veld van `Antwoorden.data` wordt gezet
+// (of met `waarde: null` weggehaald); de andere velden blijven zoals ze in de Sheet staan. Zonder
+// versiecheck, de laatste schrijfactie wint per veld.
+// NFR-6: het schema van `waarde` hangt af van het veld; null haalt het veld weg.
+function leesVeld(ruw) {
+  if (!ruw || typeof ruw !== 'object' || Array.isArray(ruw)) throw new ApiFout('ongeldig', 'Veld data: object verwacht.');
+  const veld = valideer(v.keuze(ANTWOORD_VELDEN), ruw.veld, 'data.veld');
+  const waarde = ruw.waarde === null ? { soort: 'keuze', waarden: [null] } : { ...dataSchema.velden[veld], optioneel: false };
+  return valideer(v.object({ veld: v.keuze([veld]), waarde }), ruw);
+}
+
+export const antwoordZetten = {
+  uitvoeren({ store, sessie, editie, editieId, data: ruw, deps }) {
+    if (!sessie.deelnemerId) throw new ApiFout('geen_toegang');
+    const data = leesVeld(ruw);
+    const bestaand = eigenRij(store, editieId, sessie.deelnemerId);
+    const nieuw = { ...(bestaand ? bestaand.data || {} : {}) };
+    if (data.waarde === null) {
+      delete nieuw[data.veld];
+    } else {
+      let w = data.waarde;
+      controleer({ [data.veld]: w }, editie);
+      if (data.veld === 'eigenVragen') w = schoonEigenVragen(store, editieId, w); // FRM-7
+      if (data.veld === 'woonplaats') w = w.trim();
+      nieuw[data.veld] = w;
+    }
+    const rij = bestaand
+      ? store.werkBij('Antwoorden', bestaand.id, { data: nieuw }, bestaand.versie)
+      : store.voegToe('Antwoorden', { editieId, deelnemerId: sessie.deelnemerId, data: nieuw });
+    return { veld: data.veld, versie: rij.versie, ...zetIngevuld(store, sessie, deps, nieuw) };
   },
 };
 
@@ -94,4 +133,4 @@ export function formulierScherm({ store, sessie, editie, editieId, ctx }) {
   };
 }
 
-export const antwoordenHandlers = { antwoordenOpslaan };
+export const antwoordenHandlers = { antwoordenOpslaan, antwoordZetten };

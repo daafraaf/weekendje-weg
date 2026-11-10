@@ -1,5 +1,6 @@
 # Bouwspecificatie Weekendje weg
 
+Versie 0.8, 10 november 2026: synchronisatielaag met wachtrij, feedbackronde fase 26 (§5.3, §7.4.8, §7.4.9, §7.16.5, SYNC-1 t/m SYNC-8, FRM-8, FRM-10, NFR-8, NFR-12).
 Versie 0.7, 10 november 2026: één vastgelegd weekend met uitweg, feedbackronde fase 25 (§5.3, ACC-6, ACC-7).
 Versie 0.6, 10 november 2026: onderdelen uit en invullen vrijer, feedbackronde fase 24 (§7.2.3, §7.2.4, §7.2.6, §7.4.8, OND-1, OND-2, OND-3, FRM-8, FRM-9, FRM-11, DDL-1, OVZ-1, STA-1, EDI-7, EDI-8, EDI-10).
 Versie 0.5, 10 november 2026: stappenbalk met één bron en menu in stapvolgorde, feedbackronde fase 23 (§7.2.1, §7.2.6, §7.14, STA-1, STA-6, STA-8, NAV-1, NAV-9, NAV-10, NAV-11).
@@ -217,7 +218,8 @@ opnieuw proberen zinvol), `api_versie`, `fout` (onverwacht).
 | Opzet | `status` (zonder sessie: alleen `apiVersie` en `opgezet`), `groepOpzetten` (setupcode, groepsnaam, leden, lid van de eigenaar, beheerwachtwoord) |
 | Leden | `ledenBeheren` (toevoegen, woonplaats wijzigen, inactief) |
 | Editie | `editieAanmaken`, `editieBijwerken`, `deelnemersBeheren`, `linksMaken` (geeft eenmalig links en pincodes terug), `linkVernieuwen`, `pincodeVernieuwen`, `beheerlinkMaken` (voor een lid), `stapZetten`, `afhakenMarkeren`, `vragenBeheren` |
-| Invullen | `antwoordenOpslaan` (met versie) |
+| Invullen | `antwoordenOpslaan` (met versie), `antwoordZetten` (één veld van `Antwoorden.data`, `waarde: null` haalt het weg, zonder versie, AAN-83) |
+| Wachtrij | `bundel` (lijst van hooguit 25 `{ actie, data }` uit `claimen`, `claimIntrekken`, `afvinken`, `antwoordZetten`; antwoord `{ uitslagen: [{ ok, data } of { ok: false, fout, melding }] }`, §7.16.5) |
 | Accommodatie | `weekendVastleggen`, `weekendLosmaken`, `accommodatieOpslaan`, `accommodatieVerwijderen`, `deelvormZetten`, `stemmen` |
 | Voorbereiding | `itemOpslaan`, `itemVerwijderen`, `claimen`, `claimIntrekken` (eigen, of als organisator die van een ander), `afvinken`, `boodschappenDefinitief`, `maaltijdOpslaan`, `kokWorden`, `kokStoppen`, `programmaOpslaan`, `programmaVerwijderen`, `kamersOpslaan`, `kamerIndelen`, `ritOpslaan`, `meerijden`, `meerijdenStoppen` |
 | Geld | `postOpslaan`, `postVerwijderen`, `betalingMarkeren`, `betalingTerugdraaien` |
@@ -373,13 +375,14 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
 7. Eigen vragen van het type tekst: maximaal 500 tekens. De drie velden `...Eigen` zijn taginvoer
    (TAG-1 t/m TAG-10): een lijst van hooguit 20 tags van hooguit 40 tekens, dubbel op kleine letters,
    zonder accenten, spaties en leestekens (AAN-74). Oude tekst wordt bij lezen gesplitst (AAN-76).
-8. "Opslaan" bewaart alles, ook een half formulier (FRM-11); een deelnemer telt als **ingevuld** zodra
+8. Elk veld slaat zichzelf op via de wachtrij (`antwoordZetten`, besluit K4); er is geen knop Opslaan. Zo wordt ook een half formulier bewaard (FRM-11); een deelnemer telt als **ingevuld** zodra
    minstens één weekend een waarde heeft (AAN-33). Alleen de kalender is verplicht; Budget, Reistijd
    en Verblijf zijn optioneel en dragen "(optioneel)" in de kop. Het formulier toont wat nog ontbreekt.
    De voorkeuren voor eten en doen (vinkjes uit de editielijsten plus tags, alles optioneel) blijven
    bij Invullen en komen terug bij de organisator in Weekendje prikker (OND-3).
-9. Opslaan geeft `gewijzigd` als de versie niet overeenkomt (bijvoorbeeld een tweede apparaat
-   van dezelfde persoon); de app laadt dan de nieuwste versie en meldt dat.
+9. Per veld wint de laatste schrijfactie, zonder versiecheck (AAN-83). Een tweede apparaat van dezelfde
+   persoon overschrijft alleen de velden die het zelf wijzigt; bij terugkeren naar het tabblad laadt het
+   formulier de nieuwste antwoorden. `antwoordenOpslaan` met versie blijft bestaan voor het API-contract.
 
 ### 7.5 Overzicht en voorkeursdatum
 1. Per weekend telt het overzicht ja, misschien, nee en niet ingevuld, over deelnemers die
@@ -534,7 +537,19 @@ van een editie van die groep (AAN-30).
    `gewijzigd`. Leesacties draaien zonder slot; elke schrijfactie is onder het slot atomair.
 3. Claims, stemmen, koks, meerijders en betalingen zijn eigen rijen en hebben geen versie.
 4. De voorkant haalt de gegevens van het open scherm opnieuw op bij openen van de app, bij
-   terugkeren naar het tabblad (`visibilitychange`) en na elke eigen schrijfactie.
+   terugkeren naar het tabblad (`visibilitychange`) en na elke eigen grote actie. Na een kleine handeling
+   uit de wachtrij volgt geen herlaadronde.
+5. **Wachtrij.** Kleine handelingen (claimen, claim intrekken, afvinken, formuliervelden en tags; vanaf
+   fase 27 ook de top 3) staan direct in beeld en gaan via een wachtrij naar het script (AAN-83). Na
+   1 seconde stilte stuurt de voorkant één `bundel`; een nieuwere handeling op hetzelfde item of veld
+   vervangt de vorige die nog niet onderweg is. De wachtrij staat per sessie-eigenaar
+   (`<scriptId>:<soort>:<editieId>`, zonder geheimen) in localStorage, altijd in try/catch, en gaat bij
+   het volgende openen alsnog. Het script voert de bundel uit onder één slot met één flush; elke actie
+   loopt door haar eigen rechten, validatie en Log en krijgt een eigen uitslag. Bij een netwerkfout
+   probeert de voorkant het opnieuw na 2, 4, 8, 16 en 30 seconden (AAN-82); lukt het dan niet, of weigert
+   het script een actie, dan gaat de wijziging terug in beeld met een melding en de knop Opnieuw. Grote
+   acties (weekend vastleggen of losmaken, boeken, onthullen, deelvorm, stap zetten, item toevoegen of
+   verwijderen, post opslaan, betaling markeren en alle beheeracties) gaan niet via de wachtrij.
 
 ### 7.17 Versie van het script
 De voorkant stuurt `apiVersie` mee. Wijkt die af van het script, dan antwoordt het script met
@@ -633,9 +648,9 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **FRM-5** Activiteiten, programma en sfeer en eten en drinken zijn vinkjeslijsten uit de editielijsten, elk met een taginvoer voor wat de lijst niet noemt.
 - **FRM-6** Het blok Samenwerken op vrijdag verschijnt alleen als de organisator het aanzet.
 - **FRM-7** Eigen vragen worden getoond met het invoerelement dat bij hun type hoort.
-- **FRM-8** Opslaan bewaart alles, ook een half formulier, toont "Opgeslagen" en de status ingevuld volgens §7.4.8.
+- **FRM-8** Elk veld slaat zichzelf op via de wachtrij (K4), ook in een half formulier; de indicator toont "Opgeslagen" en het formulier de status ingevuld volgens §7.4.8.
 - **FRM-9** Vanaf de stap Overzicht is het formulier alleen-lezen met de reden erbij; de deadline sluit het niet (DDL-1).
-- **FRM-10** Een versieconflict laadt de nieuwste antwoorden en meldt dat.
+- **FRM-10** Per veld wint de laatste schrijfactie (AAN-83); twee apparaten die verschillende velden wijzigen, houden allebei hun wijziging, en terug op het tabblad laadt het formulier de nieuwste antwoorden.
 - **FRM-11** Gedeeltelijk opslaan: alleen de kalender is verplicht, budgetten, reistijd en verblijf zijn optioneel met "(optioneel)" in de kop; een deelnemer met alleen beschikbaarheid telt als ingevuld.
 
 ### Onderdelen en deadline (OND, DDL)
@@ -726,6 +741,16 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **TAG-9** Organisator-detail en koks tonen de losse tags; KOK-4 blijft anoniem.
 - **TAG-10** De opties van een eigen vraag worden taginvoer.
 
+### Synchronisatie (SYNC)
+- **SYNC-1** Een kleine handeling (§7.16.5) staat direct in beeld en in de lokale stand van het scherm, zonder blokkerende lader en zonder uitgeschakelde knoppen.
+- **SYNC-2** Na 1 seconde zonder nieuwe handeling gaan alle wachtende handelingen in één aanroep `bundel` naar het script; tien snelle klikken leveren hooguit drie aanroepen.
+- **SYNC-3** De wachtrij staat in localStorage (altijd in try/catch) en wordt bij het volgende openen van de app alsnog verstuurd.
+- **SYNC-4** Eén indicator op een vaste plek in de kopregel toont "Opslaan…", "Opgeslagen" of "Niet opgeslagen, opnieuw proberen"; er is geen melding per klik.
+- **SYNC-5** Bij een fout probeert de voorkant het opnieuw met oplopende wachttijd (AAN-82); lukt het definitief niet, of weigert het script de actie, dan gaat de wijziging terug in beeld met een korte melding en de knop Opnieuw.
+- **SYNC-6** Zolang er handelingen in de wachtrij staan, waarschuwt de browser bij het verlaten van de pagina.
+- **SYNC-7** Elke kleine handeling schrijft één rij of één veld, is idempotent en de laatste schrijfactie wint (AAN-83); de bundel draait onder het slot van §7.16.1, zodat twee mensen die tegelijk verschillende items wijzigen allebei hun wijziging houden.
+- **SYNC-8** Grote acties wachten op de Sheet: de knop waarmee ze begonnen krijgt een bezig-status (`aria-busy`), de schil toont "Opslaan…" en andere schrijfknoppen doen tot het antwoord niets.
+
 ### Navigatie (NAV)
 - **NAV-1** Het hoofdmenu bevat de items van NAV-10, zonder Archief en Uitleg.
 - **NAV-2** Een profielknop in de kopregel, rechts, op dezelfde plek op mobiel en desktop, opent een menu met rol, Uitleg, Installeren (alleen als de browser dat toestaat) en Uitloggen.
@@ -757,11 +782,11 @@ glaspaneel, stappenbalk, kaart, knop, invoerveld, schuif, vinkje, drieknop
 - **NFR-5 Uitvoer.** Alle gebruikerstekst wordt met `textContent` of veilige DOM-functies getoond; een XSS-test voert `<img src=x onerror=alert(1)>` in elk tekstveld in.
 - **NFR-6 Validatie.** Het script valideert elk veld (type, lengte, bereik, enum) en weigert onbekende velden.
 - **NFR-7 Minimale gegevens.** Geen e-mail, telefoon, adres of rekeningnummer van deelnemers.
-- **NFR-8 Prestaties.** De app-schil is zichtbaar binnen 1 seconde uit de cache (Playwright). Elk scherm doet bij openen precies één leesactie (`scherm`) en toont tot het antwoord een laadtoestand. Streefwaarde voor gegevens van het echte script: binnen 4 seconden bij een koude start, gemeten in fase 20, geen harde eis.
+- **NFR-8 Prestaties.** De app-schil is zichtbaar binnen 1 seconde uit de cache (Playwright). Elk scherm doet bij openen precies één leesactie (`scherm`) en toont tot het antwoord een laadtoestand; kleine handelingen tonen geen lader (SYNC-1). Streefwaarde voor gegevens van het echte script: binnen 4 seconden bij een koude start, gemeten in fase 20, geen harde eis.
 - **NFR-9 Mobiel en desktop.** Bruikbaar van 360 tot 1440 pixels breed; tikdoelen minimaal 44 × 44 pixels.
 - **NFR-10 Thema.** Licht en donker volgen `prefers-color-scheme` en wisselen live mee.
 - **NFR-11 Toegankelijkheid.** WCAG 2.1 AA: contrast, focusstijl, toetsenbord voor alle bediening, labels, kleur nooit als enige drager.
-- **NFR-12 Offline.** Zonder verbinding toont de app de schil met "Geen verbinding, je gegevens zijn veilig opgeslagen in de Sheet" en blokkeert opslaan.
+- **NFR-12 Offline.** Zonder verbinding toont de app de schil met "Geen verbinding, je gegevens zijn veilig opgeslagen in de Sheet" en blokkeert grote acties; kleine handelingen gaan de wachtrij in en worden verstuurd zodra de verbinding terug is (SYNC-3).
 - **NFR-13 Tests.** `npm run check` draait bronregels, unittests, build en Playwright tegen de nepbackend en eindigt met één groene of rode regel.
 - **NFR-14 Gelijktijdigheid.** §7.16, getest met parallelle verzoeken op de nepbackend met hetzelfde slotgedrag.
 - **NFR-15 Quotas.** Een verzoek leest alleen de tabs die de actie nodig heeft, elk hooguit één keer, met `getDataRange().getValues()`, en cachet ze in het geheugen voor de rest van het verzoek.

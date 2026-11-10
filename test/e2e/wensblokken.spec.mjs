@@ -77,8 +77,7 @@ test('FRM-5 FRM-6 FRM-7 EDI-2 EDI-3 AAN-75: organisator voegt activiteit en keuz
   await page.getByRole('group', { name: 'Samenwerken op vrijdag' }).getByRole('button', { name: /Misschien/ }).click(); // FRM-6
   await page.getByRole('checkbox', { name: 'Catan' }).check(); // FRM-7
   await page.getByRole('checkbox', { name: 'Poker' }).check();
-  await page.getByRole('button', { name: 'Opslaan' }).click();
-  await expect(page.getByText('Opgeslagen', { exact: true })).toBeVisible();
+  await expect(page.getByText('Opgeslagen', { exact: true })).toBeVisible(); // K4: elk veld slaat zichzelf op
 
   nep.store.nieuwVerzoek();
   const data = nep.store.lees('Antwoorden')[0].data;
@@ -114,8 +113,7 @@ test('FRM-7: een schaalvraag en een ja/nee-vraag hebben hun eigen invoer', async
   await page.getByRole('group', { name: 'Zin in een wandeling?' }).getByRole('button', { name: '4' }).click();
   await page.getByRole('group', { name: 'Kom je met de auto?' }).getByRole('button', { name: /Nee/ }).click();
   await page.getByLabel('Nog een idee?').fill('Picknick');
-  await page.getByRole('button', { name: 'Opslaan' }).click();
-  await expect(page.getByText('Opgeslagen', { exact: true })).toBeVisible();
+  await expect(page.getByText('Opgeslagen', { exact: true })).toBeVisible(); // K4: elk veld slaat zichzelf op
   nep.store.nieuwVerzoek();
   expect(Object.values(nep.store.lees('Antwoorden')[0].data.eigenVragen)).toEqual(['4', 'nee', 'Picknick']);
 });

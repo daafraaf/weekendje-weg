@@ -43,6 +43,7 @@ test('MEE-5 MEE-7 MEE-8 MEE-9: lijst op supermarktvolgorde, tellingen, afvinken 
   await expect(page.getByText('1 van 11 afgevinkt')).toBeVisible();
   await expect(page.locator('[data-item]', { hasText: 'Koffie' }).locator('.klaar')).toHaveCount(1);
   await expect(page.getByRole('list', { name: 'Ontbijt en beleg' }).locator('[data-item]').last()).toContainText('Koffie');
+  await expect(page.locator('.sync')).toHaveText('Opgeslagen'); // SYNC-2: het vinkje gaat na de debounce naar de Sheet
   const tweede = await browser.newContext({ baseURL: new URL(page.url()).origin, serviceWorkers: 'block' });
   await koppelNep(tweede, nep);
   const pagina2 = await tweede.newPage();
@@ -50,6 +51,7 @@ test('MEE-5 MEE-7 MEE-8 MEE-9: lijst op supermarktvolgorde, tellingen, afvinken 
   await expect(pagina2.getByRole('checkbox', { name: 'Koffie' })).toBeChecked();
   await pagina2.getByRole('checkbox', { name: 'Koffie' }).uncheck();
   await expect(pagina2.getByText('0 van 11 afgevinkt')).toBeVisible();
+  await expect(pagina2.locator('.sync')).toHaveText('Opgeslagen');
   await tweede.close();
   await page.reload();
   await expect(page.getByRole('checkbox', { name: 'Koffie' })).not.toBeChecked();

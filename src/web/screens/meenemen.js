@@ -7,6 +7,7 @@ import { STAPNAMEN } from '../../shared/stappen.js';
 import { stelCategorieVoor } from '../../shared/categorieen.js';
 import { onderdeelAan } from '../../shared/onderdelen.js';
 import { editieKeuze, foutMelding } from './voortgang.js';
+import { maakStand, pasItemsToe, ITEM_ACTIES } from '../stand.js';
 
 const PLUS = ['M12 5v14M5 12h14'];
 const SLOT = ['M7 10.5h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'];
@@ -24,7 +25,7 @@ const sectiesVan = (vlaggen) => (onderdeelAan('boodschappen', vlaggen) ? [
 ]);
 const SECTIES = sectiesVan();
 
-export function maakMeenemen({ sessie, params = {}, bijVerlopen, fetchFn }) {
+export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetchFn }) {
   let editieId = params.editie || sessie.editieId || '';
   let g = null;
   let bericht = '';
@@ -36,12 +37,24 @@ export function maakMeenemen({ sessie, params = {}, bijVerlopen, fetchFn }) {
   const kop = (sub) => h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, g && g.editie ? STAPNAMEN[g.editie.stap] || 'Voorbereiding' : 'Voorbereiding'),
     kopMetHint(h('h1', { class: 't-title' }, 'Wie neemt wat mee'), 'meenemen'), sub ? h('p', { class: 't-body t-sec' }, sub) : null);
 
+  // Grote acties (item toevoegen of verwijderen) wachten op de Sheet met de bezig-status op de knop (SYNC-8).
   async function schrijf(actie, data, tekst) {
     melding.toon('');
     const r = await anroep(actie, data, true);
     if (r) bericht = tekst;
     bevestig = '';
     await laad();
+  }
+
+  // SYNC-1: claimen en intrekken staan direct in beeld en gaan via de wachtrij; geen lader, geen melding per klik.
+  const stand = maakStand({
+    wachtrij, toepassen: pasItemsToe, hoort: (a) => a.editieId === editieId && ITEM_ACTIES.includes(a.actie),
+    levend: () => wortel.isConnected,
+    bijWijziging: (zicht) => { if (zicht) { g = zicht; teken(); } },
+  });
+  function klein(actie, data) {
+    const wie = data.deelnemerId || 'ik';
+    stand.zet(actie, data, { sleutel: `claim:${data.itemId}:${wie}`, editieId });
   }
 
   // Na definitief kan niemand meer claimen of intrekken op boodschap- en keuken-items (§7.8.5).
@@ -53,18 +66,18 @@ export function maakMeenemen({ sessie, params = {}, bijVerlopen, fetchFn }) {
       ? i.claims.map((c) => h('span', { class: 'mee-claim' },
         h('span', { class: `chip ${c.ik ? '' : 'chip-n'}`.trim() }, c.ik ? 'jij' : c.naam),
         g.organisator && !c.ik && !dicht(i)
-          ? h('button', { class: 'btn btn-plain mee-weg', type: 'button', 'data-schrijft': true, 'aria-label': `Haal ${c.naam} bij ${i.naam} weg`,
-            onclick: () => schrijf('claimIntrekken', { itemId: i.id, deelnemerId: c.deelnemerId }, `${c.naam} neemt ${i.naam} niet meer mee.`) }, '×')
+          ? h('button', { class: 'btn btn-plain mee-weg', type: 'button', 'aria-label': `Haal ${c.naam} bij ${i.naam} weg`,
+            onclick: () => klein('claimIntrekken', { itemId: i.id, deelnemerId: c.deelnemerId }) }, '×')
           : null))
       : [h('span', { class: 't-small t-sec' }, 'nog niemand')];
     const mag = !dicht(i) && g.ik;
     const knoppen = [];
     if (mag) {
       knoppen.push(mijn
-        ? h('button', { class: 'btn btn-plain btn-sm', type: 'button', 'data-schrijft': true, 'aria-label': `Claim op ${i.naam} intrekken`,
-          onclick: () => schrijf('claimIntrekken', { itemId: i.id }, `Je neemt ${i.naam} niet meer mee.`) }, 'Intrekken')
-        : h('button', { class: 'btn btn-ghost btn-sm', type: 'button', 'data-schrijft': true, 'aria-label': `Ik neem ${i.naam} mee`,
-          onclick: () => schrijf('claimen', { itemId: i.id }, `Je neemt ${i.naam} mee.`) }, 'Ik neem mee'));
+        ? h('button', { class: 'btn btn-plain btn-sm', type: 'button', 'aria-label': `Claim op ${i.naam} intrekken`,
+          onclick: () => klein('claimIntrekken', { itemId: i.id }) }, 'Intrekken')
+        : h('button', { class: 'btn btn-ghost btn-sm', type: 'button', 'aria-label': `Ik neem ${i.naam} mee`,
+          onclick: () => klein('claimen', { itemId: i.id }) }, 'Ik neem mee'));
     }
     // AAN-26: een eigen item tot definitief, de organisator elk item.
     if ((i.eigen || g.organisator) && !g.definitief && !g.alleenLezen) {
@@ -111,6 +124,9 @@ export function maakMeenemen({ sessie, params = {}, bijVerlopen, fetchFn }) {
   function teken() {
     if (!g) return;
     if (!g.editie) { zet(kop('Je hebt nog geen editie.')); return; }
+    // Na opnieuw tekenen blijft de focus in dezelfde rij, zodat het toetsenbord niet terug naar boven springt.
+    const actief = document.activeElement && wortel.contains(document.activeElement) ? document.activeElement.closest('[data-item]') : null;
+    const focusItem = actief ? actief.getAttribute('data-item') : '';
     const toast = bericht ? h('p', { class: 'form-toast t-small', role: 'status' }, bericht) : null;
     bericht = '';
     zet(
@@ -120,15 +136,24 @@ export function maakMeenemen({ sessie, params = {}, bijVerlopen, fetchFn }) {
       g.alleenLezen ? h('p', { class: 'hint' }, 'De editie is afgerond. Je kunt de lijst nog lezen.') : null,
       !g.ik ? h('p', { class: 'hint' }, 'Je bent geen deelnemer van deze editie, dus je kunt niets claimen.') : null,
       SECTIES.map(sectie));
+    if (focusItem) {
+      const knop = [...wortel.querySelectorAll('[data-item]')].find((x) => x.getAttribute('data-item') === focusItem);
+      const doel = knop && knop.querySelector('.mee-knoppen button');
+      if (doel) doel.focus();
+    }
   }
 
   async function laad() {
     const r = await anroep('scherm', { naam: 'meenemen' }, false);
     if (!r) { if (!g) zet(kop(), melding.el); return; }
-    g = r;
     if (r.editie) editieId = r.editie.id;
+    g = stand.zetBevestigd(r);
     teken();
   }
+
+  // §7.16.4: terug op het tabblad haalt het scherm de lijst opnieuw op; wat nog onderweg is, blijft erop staan.
+  const bijZicht = () => { if (!wortel.isConnected && g) { document.removeEventListener('visibilitychange', bijZicht); return; } if (document.visibilityState === 'visible' && g) laad(); };
+  document.addEventListener('visibilitychange', bijZicht);
 
   zet(h('p', { class: 't-body t-sec' }, 'Laden…'), melding.el);
   laad();

@@ -18,7 +18,7 @@ async function kies(page, id, index) {
   await page.locator(`#${id}`).fill(String(index));
 }
 
-test('FRM-1 FRM-2 FRM-3 FRM-4 FRM-8 KAL-1: de vier vaste blokken invullen, opslaan en ingevuld zien', async ({ page, nep }) => {
+test('FRM-1 FRM-2 FRM-3 FRM-4 FRM-8 KAL-1 K4: de vier vaste blokken invullen; elk veld slaat zichzelf op', async ({ page, nep }) => {
   await page.goto('/#/formulier');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Wanneer kun je?');
   for (const blok of ['Kalender', 'Budget (optioneel)', 'Reistijd (optioneel)', 'Verblijf (optioneel)']) await expect(page.getByRole('heading', { level: 2, name: blok, exact: true })).toBeVisible();
@@ -44,8 +44,8 @@ test('FRM-1 FRM-2 FRM-3 FRM-4 FRM-8 KAL-1: de vier vaste blokken invullen, opsla
   await expect(page.getByRole('group', { name: 'Bubbelbad' }).getByRole('button', { name: /Liever wel/ })).toHaveCount(0);
   await expect(status(page)).toContainText('genoeg om als ingevuld te tellen');
 
-  await page.getByRole('button', { name: 'Opslaan' }).click(); // FRM-8
-  await opgeslagen(page);
+  await expect(page.getByRole('button', { name: 'Opslaan' })).toHaveCount(0); // K4: geen knop Opslaan
+  await opgeslagen(page); // FRM-8
   await expect(status(page)).toHaveText('Ingevuld');
   const rij = antwoorden(nep);
   expect(rij).toHaveLength(1);
@@ -57,34 +57,32 @@ test('FRM-1 FRM-2 FRM-3 FRM-4 FRM-8 KAL-1: de vier vaste blokken invullen, opsla
   await expect(weekend(page, '9 apr')).toHaveAttribute('aria-label', /: ja/);
   await expect(page.getByLabel('Vertrek vanuit')).toHaveValue('Utrecht');
   await expect(page.locator('#bv')).toHaveValue('2');
-  await expect(status(page)).toHaveText('Dit is genoeg om als ingevuld te tellen. Vergeet niet op te slaan.');
+  await expect(status(page)).toHaveText('Ingevuld');
 });
 
-test('FRM-10: een oude versie geeft de conflictmelding en de nieuwste antwoorden', async ({ page, nep, browser }) => {
+test('FRM-10 AAN-83: twee apparaten wijzigen verschillende velden en houden allebei hun wijziging', async ({ page, nep, browser }) => {
   await page.goto('/#/formulier');
   await expect(weekend(page, '9 apr')).toBeVisible();
 
-  // Een tweede context (ander apparaat) slaat eerst op.
+  // Een tweede context (ander apparaat) van dezelfde deelnemer.
   const context2 = await browser.newContext({ serviceWorkers: 'block' });
   await koppelNep(context2, nep);
   const page2 = await context2.newPage();
   await page2.goto('/#/formulier');
   await weekend(page2, '16 apr').click();
   await kies(page2, 'bv', 4);
-  await kies(page2, 'bw', 1);
-  await kies(page2, 'rt', 5);
-  await page2.getByRole('button', { name: 'Opslaan' }).click();
   await opgeslagen(page2);
 
-  // De eerste pagina kent nog versie 0.
-  await weekend(page, '9 apr').click();
-  await page.getByRole('button', { name: 'Opslaan' }).click();
-  await expect(page.getByRole('alert')).toContainText('Je antwoorden zijn ergens anders gewijzigd');
-  await expect(weekend(page, '16 apr')).toHaveAttribute('aria-label', /: ja/); // de nieuwste versie is geladen
-  await expect(weekend(page, '9 apr')).toHaveAttribute('aria-label', /: niet ingevuld/);
-  await page.getByRole('button', { name: 'Opslaan' }).click(); // nu met de juiste versie
+  // De eerste pagina weet nog niets van het tweede apparaat en zet een ander veld.
+  await kies(page, 'rt', 5);
   await opgeslagen(page);
-  expect(antwoorden(nep)[0].versie).toBe(2);
+  const data = antwoorden(nep)[0].data;
+  expect(data.beschikbaarheid).toEqual({ '2027-04-16': 'ja' });
+  expect(data).toMatchObject({ budgetVerblijf: 25000, maxReistijdUur: 6, woonplaats: 'Zwolle' });
+  // Terug op het tabblad laadt het formulier de nieuwste antwoorden (§7.16.4).
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await expect(weekend(page, '16 apr')).toHaveAttribute('aria-label', /: ja/);
+  await expect(page.locator('#bv')).toHaveValue('4');
   await context2.close();
 });
 
@@ -96,7 +94,6 @@ test('FRM-11 DDL-1: alleen beschikbaarheid opslaan lukt, ook na de deadline, en 
   await expect(page.getByText('Graag ingevuld vóór woensdag 1 januari')).toBeVisible();
   await expect(weekend(page, '9 apr')).toBeEnabled();
   await weekend(page, '9 apr').click();
-  await page.getByRole('button', { name: 'Opslaan' }).click();
   await opgeslagen(page);
   const rij = antwoorden(nep);
   expect(rij[0].data.budgetVerblijf).toBeUndefined();

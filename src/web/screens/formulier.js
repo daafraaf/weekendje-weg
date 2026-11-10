@@ -1,11 +1,12 @@
 // Invulformulier met de vier vaste blokken: Kalender, Budget, Reistijd en Verblijf
-// (FRM-1 t/m FRM-4, FRM-8, FRM-9, FRM-10, FRM-11, DDL-1, KAL-1). Ontwerp: docs/design/Formulier.dc.html, T-Gewijzigd, T-AlleenLezen.
+// (FRM-1 t/m FRM-4, FRM-8, FRM-9, FRM-10, FRM-11, DDL-1, KAL-1). K4: elk veld gaat apart via de wachtrij, zonder knop Opslaan. Ontwerp: docs/design/Formulier.dc.html, T-Gewijzigd, T-AlleenLezen.
 // Alle tekst gaat via textContent (NFR-5).
 import { tagsUitTekst } from '../../shared/tags.js';
 import { kopMetHint } from '../components/hint.js';
 import { h, icoon } from '../dom.js';
 import { maakApi } from '../api.js';
 import { scriptUrl } from '../sessie.js';
+import { maakStand, pasAntwoordToe } from '../stand.js';
 import { maakKalender } from '../components/kalender.js';
 import { maakSchuif } from '../components/schuif.js';
 import { maakDrieknop } from '../components/drieknop.js';
@@ -17,23 +18,32 @@ import { BUDGET_VERBLIJF, BUDGET_WEEKEND, REISTIJD, WOONPLAATS, VERBLIJF_WENSEN,
 
 const WAARSCHUWING = ['M12 4 2.8 19.5h18.4z', 'M12 10v4M12 17h.01'];
 const SLOT = ['M5 10.5h14v10H5z', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'];
-const GEWIJZIGD = 'Je antwoorden zijn ergens anders gewijzigd, bijvoorbeeld op een ander apparaat. De nieuwste versie is geladen. Controleer ze en sla zo nodig opnieuw op.';
 const WENS_KLEUR = { ja: ['ja', '✓'], lieverWel: ['mis', '~'], nee: ['nee', '✕'], maaktNietUit: ['neutraal', '·'] };
 
 // sessie: { scriptId, sessie, editieId }. bijVerlopen() sluit de sessie af.
-export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
+export function maakFormulier({ sessie, wachtrij, bijVerlopen, fetchFn }) {
   const api = maakApi({ basisUrl: scriptUrl(sessie.scriptId), sessie: () => sessie.sessie, editieId: () => sessie.editieId || '', ...(fetchFn ? { fetchFn } : {}) });
   let g = null; // antwoord van scherm `formulier`
   let huidig = {}; // antwoorden zoals ze nu in het formulier staan
-  let versie = 0;
-  let opgeslagen = false; // er is in deze weergave opgeslagen en sindsdien niets gewijzigd
+  let standaardPlaats = false; // de woonplaats komt uit het lid en staat nog niet in de Sheet
   let melding = '';
   let meldingSoort = 'fout';
 
   const wortel = h('section', { class: 'formulier' });
   const statusTekst = h('p', { class: 'form-status t-small', 'aria-live': 'polite' });
   const toast = h('p', { class: 'form-toast t-small', role: 'status' });
-  const opslaanKnop = h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, onclick: () => opslaan() }, 'Opslaan');
+
+  // FRM-10: per veld wint de laatste schrijfactie. Een veld dat de wachtrij terugdraait, gaat terug in beeld.
+  const stand = maakStand({
+    wachtrij, toepassen: pasAntwoordToe,
+    hoort: (a) => a.actie === 'antwoordZetten' && (!g || a.editieId === g.editie.id),
+    levend: () => wortel.isConnected,
+    bijWijziging: (zicht, e) => {
+      if (!zicht) return;
+      g = zicht;
+      if (e.soort === 'teruggedraaid' || e.soort === 'opnieuw') { neemOver(zicht); teken(); } else toonStatus();
+    },
+  });
 
   async function anroep(actie, data, schrijft) {
     try {
@@ -46,17 +56,42 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
 
   function toonStatus() {
     const mist = ontbreekt(huidig);
+    const opgeslagen = !stand.open().length;
     if (mist.length) statusTekst.textContent = `Nog nodig: ${mist.join(', ')}.`;
-    else statusTekst.textContent = opgeslagen ? 'Ingevuld' : 'Dit is genoeg om als ingevuld te tellen. Vergeet niet op te slaan.'; // FRM-11
+    else statusTekst.textContent = opgeslagen ? 'Ingevuld' : 'Dit is genoeg om als ingevuld te tellen.'; // FRM-11
     statusTekst.className = `form-status t-small${!mist.length && opgeslagen ? ' klaar' : ''}`;
   }
 
+  // K4, FRM-8: elk gewijzigd veld gaat apart de wachtrij in; de vorige waarde van hetzelfde veld vervalt.
+  function bewaarVeld(k) {
+    let w = huidig[k] === undefined ? null : huidig[k];
+    if (k === 'woonplaats' && w !== null) {
+      const plaats = w.trim();
+      if (!plaats) w = null;
+      else if (plaats.length < WOONPLAATS.min) { toast.textContent = `Vul een woonplaats in van ${WOONPLAATS.min} tot ${WOONPLAATS.max} tekens, of laat hem leeg.`; return; }
+    }
+    if (k === 'woonplaats') toast.textContent = '';
+    stand.zet('antwoordZetten', { veld: k, waarde: w }, { sleutel: `veld:${k}`, editieId: g.editie.id });
+  }
+
   function wijzig(velden) {
+    const oud = huidig;
     huidig = { ...huidig, ...velden };
     for (const [k, w] of Object.entries(huidig)) if (w === null || w === undefined) delete huidig[k];
-    opgeslagen = false;
-    toast.textContent = '';
+    const anders = Object.keys(velden).filter((k) => JSON.stringify(oud[k]) !== JSON.stringify(huidig[k]));
+    // §7.4.4: de voorgestelde woonplaats gaat mee met de eerste wijziging, zoals vroeger bij Opslaan.
+    if (anders.length && standaardPlaats && !anders.includes('woonplaats')) anders.push('woonplaats');
+    if (anders.length) standaardPlaats = false;
+    for (const k of anders) bewaarVeld(k);
     toonStatus();
+  }
+
+  // Wat in beeld staat: de antwoorden uit de Sheet met de velden die nog onderweg zijn.
+  function neemOver(zicht) {
+    huidig = { ...(zicht.antwoorden.data || {}) };
+    for (const k of ['activiteitenEigen', 'programmaEigen', 'etenDrinkenEigen']) if (huidig[k] !== undefined) huidig[k] = tagsUitTekst(huidig[k]); // AAN-76
+    standaardPlaats = huidig.woonplaats === undefined && Boolean(zicht.standaardWoonplaats);
+    if (standaardPlaats) huidig.woonplaats = zicht.standaardWoonplaats; // §7.4.4
   }
 
   function redenTekst() {
@@ -67,38 +102,11 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
     let r;
     try { r = await anroep('scherm', { naam: 'formulier' }, false); } catch (f) { melding = f.message; meldingSoort = 'fout'; teken(); return; }
     if (!r) return;
-    g = r;
-    huidig = { ...(r.antwoorden.data || {}) };
-    for (const k of ['activiteitenEigen', 'programmaEigen', 'etenDrinkenEigen']) if (huidig[k] !== undefined) huidig[k] = tagsUitTekst(huidig[k]); // AAN-76
-    if (huidig.woonplaats === undefined && r.standaardWoonplaats) huidig.woonplaats = r.standaardWoonplaats; // §7.4.4
-    versie = r.antwoorden.versie;
-    opgeslagen = false;
+    g = stand.zetBevestigd(r);
+    neemOver(g);
     melding = nieuweMelding;
     meldingSoort = 'fout';
     teken();
-  }
-
-  async function opslaan() {
-    toast.textContent = '';
-    const plaats = (huidig.woonplaats || '').trim();
-    if (huidig.woonplaats !== undefined && plaats.length < WOONPLAATS.min) { melding = `Vul een woonplaats in van ${WOONPLAATS.min} tot ${WOONPLAATS.max} tekens, of laat hem leeg.`; meldingSoort = 'fout'; teken(); return; }
-    let r;
-    try {
-      r = await anroep('antwoordenOpslaan', { versie, data: huidig }, true);
-    } catch (f) {
-      if (f.code === 'gewijzigd') { await laad(GEWIJZIGD); return; } // FRM-10
-      if (f.code === 'gesloten') { await laad('Opslaan kan niet meer.'); return; }
-      melding = f.message || 'Opslaan lukte niet. Probeer het opnieuw.';
-      meldingSoort = 'fout';
-      teken();
-      return;
-    }
-    if (!r) return;
-    versie = r.versie;
-    opgeslagen = true;
-    if (melding) { melding = ''; teken(); }
-    toast.textContent = 'Opgeslagen';
-    toonStatus();
   }
 
   function kaart(titel, ...inhoud) {
@@ -180,17 +188,21 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
   }
 
   function teken() {
-    // DDL-1: de deadline is informatief; Opslaan lukt ook erna.
+    // DDL-1: de deadline is informatief; opslaan lukt ook erna.
     const deadline = g.editie.deadline && !g.alleenLezen ? h('p', { class: 't-small t-sec', 'data-deadline': true }, `Graag ingevuld vóór ${datumLang(g.editie.deadline.slice(0, 10))}`) : null;
     const kop = h('div', { class: 'wz-kop' }, h('p', { class: 't-cap' }, g.editie.titel), h('h1', { class: 't-title' }, 'Wanneer kun je?'), deadline);
     const fout = melding ? h('div', { class: 'melding-fout', role: 'alert' }, h('span', { class: 'ico' }, icoon(WAARSCHUWING, 22)), h('p', { class: 't-small' }, melding)) : null;
     const slot = g.alleenLezen ? h('div', { class: 'glass panel dl-info', role: 'status' }, h('span', { class: 'ico', style: 'color:var(--accent)' }, icoon(SLOT, 22)), h('p', { class: 't-small' }, redenTekst())) : null;
     zet(kop, slot, fout, ...blokken(),
-      g.alleenLezen ? null : h('div', { class: 'glass panel form-onder' }, h('div', { class: 'form-tekst' }, statusTekst, toast), opslaanKnop));
+      g.alleenLezen ? null : h('div', { class: 'glass panel form-onder' }, h('div', { class: 'form-tekst' }, statusTekst, toast)));
     toonStatus();
   }
 
   const zet = (...k) => wortel.replaceChildren(...k.flat().filter((x) => x != null && x !== false));
+  // §7.16.4: terug op het tabblad laadt het formulier de nieuwste antwoorden, bijvoorbeeld van een ander apparaat.
+  const bijZicht = () => { if (!wortel.isConnected && g) { document.removeEventListener('visibilitychange', bijZicht); return; } if (document.visibilityState === 'visible' && g) laad(); };
+  document.addEventListener('visibilitychange', bijZicht);
+
   wortel.append(h('p', { class: 't-body t-sec' }, 'Laden…'));
   laad();
   return wortel;

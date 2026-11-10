@@ -22,11 +22,13 @@ function tel(d, schrijft) {
 
 export function maakApi({ basisUrl, sessie = () => '', editieId = () => '', fetchFn = (...a) => fetch(...a), online = () => navigator.onLine }) {
   return {
-    // NFR-12: zonder verbinding wordt opslaan geblokkeerd; lezen mag het toch proberen.
-    async anroep(actie, data = {}, { schrijft = false } = {}) {
+    // NFR-12: zonder verbinding wordt een grote actie geblokkeerd; lezen mag het toch proberen. Kleine
+    // handelingen wachten in de wachtrij tot de verbinding terug is.
+    // SYNC-1: `stil` (de wachtrij) telt niet mee voor de lader en de blokkade van de schrijfknoppen.
+    async anroep(actie, data = {}, { schrijft = false, stil = false } = {}) {
       if (schrijft && !online()) throw new ApiFoutKlient('offline', OFFLINE_TEKST);
       let antwoord;
-      tel(1, schrijft);
+      if (!stil) tel(1, schrijft);
       try {
         const r = await fetchFn(basisUrl, {
           method: 'POST',
@@ -37,7 +39,7 @@ export function maakApi({ basisUrl, sessie = () => '', editieId = () => '', fetc
       } catch {
         throw new ApiFoutKlient('offline', OFFLINE_TEKST);
       } finally {
-        tel(-1, schrijft);
+        if (!stil) tel(-1, schrijft);
       }
       if (!antwoord.ok) throw new ApiFoutKlient(antwoord.fout, antwoord.fout === 'api_versie' ? VEROUDERD_TEKST : antwoord.melding, antwoord.data);
       return antwoord.data;

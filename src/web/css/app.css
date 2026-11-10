@@ -100,8 +100,25 @@ a:hover { text-decoration: underline; }
 .lader-draai { width: 16px; height: 16px; border-radius: 50%; border: 2.5px solid var(--accent-soft); border-top-color: var(--accent); animation: lader-draai .8s linear infinite; }
 @keyframes lader-draai { to { transform: rotate(360deg); } }
 
+/* Grote actie bezig: de knop zelf draait (SYNC-8). */
+[data-schrijft][aria-busy="true"] { opacity: 1; position: relative; }
+[data-schrijft][aria-busy="true"]::after { content: ""; display: inline-block; width: 14px; height: 14px; margin-left: 8px; vertical-align: -2px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: lader-draai .8s linear infinite; }
+
+/* Synchronisatie: één rustige indicator in de kopregel (SYNC-4) en de melding na terugdraaien (SYNC-5). */
+.sync { display: inline-flex; align-items: center; gap: 8px; margin: 0 12px 0 0; min-height: var(--tap-min); color: var(--text-secondary); font-weight: 550; }
+.sync[hidden] { display: none; }
+.sync-stip { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); }
+.sync[data-status="opgeslagen"] .sync-stip { background: var(--ja); }
+.sync[data-status="fout"] { color: var(--nee); }
+.sync[data-status="fout"] .sync-stip { background: var(--nee); }
+.sync-terug { position: fixed; left: 12px; right: 12px; bottom: calc(104px + env(safe-area-inset-bottom)); z-index: 8; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.sync-terug[hidden] { display: none; }
+.sync-terug p { margin: 0; flex: 1 1 200px; }
+.sync-knoppen { display: flex; gap: 8px; }
+.sync-knoppen .btn { width: auto; min-height: var(--tap-min); padding: 0 16px; }
+
 /* Kopregel en profielmenu (NAV-2, NAV-3) */
-.kopregel { display: flex; justify-content: flex-end; }
+.kopregel { display: flex; justify-content: flex-end; align-items: center; }
 .profiel { position: relative; }
 .profiel-knop { width: var(--tap-min); height: var(--tap-min); border-radius: 50%; border: 0; background: var(--accent-soft); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; }
 .profiel-menu { position: absolute; right: 0; top: calc(100% + 8px); min-width: 220px; padding: 8px; border-radius: 20px; z-index: 8; display: flex; flex-direction: column; gap: 2px; }

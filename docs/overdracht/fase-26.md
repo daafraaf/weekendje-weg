@@ -1,0 +1,12 @@
+# Overdracht fase 26 (synchronisatielaag met wachtrij)
+
+Af: SYNC-1 t/m SYNC-8 nieuw; FRM-8, FRM-10, NFR-8, NFR-12, §5.3, §7.4.8, §7.4.9, §7.16.4 aangepast, §7.16.5 nieuw; AAN-82, AAN-83 nieuw; spec 0.8, aannames 0.25.
+Server: actie `bundel` (`acties/bundel.js`, `STANDAARD` in `api.js`): hooguit 25 `{ actie, data }` uit `BUNDEL_ACTIES` (`shared/synchronisatie.js`), onder één slot en één flush; `api.js` heeft nu `voerUit(actie, data)` per actie (rol, validatie, context, rechten, Log), de bundel roept die per actie aan en vangt fouten per actie. Nieuw `antwoordZetten` (één veld, `waarde: null` haalt weg, laatste wint). `claimen`, `claimIntrekken`, `afvinken` waren al idempotent.
+Voorkant: `web/wachtrij.js` (pure, opslag/timers/verstuur meegegeven; sleutel `ww-wachtrij:<scriptId>:<soort>:<editieId>`; samenvoegen op `sleutel`, bv. `claim:<itemId>:ik`, `vink:<itemId>`, `veld:<naam>`), `web/stand.js` (`maakStand` met `toepassen`, `hoort`, `levend`; `pasItemsToe`, `pasAntwoordToe`), `components/sync.js` (indicator `.sync` in de kopregel, melding `.sync-terug` met Opnieuw).
+`app.js`: één wachtrij, `start()` in `kies()`, `beforeunload`, `online`, versturen bij `visibilitychange` hidden; `api.anroep(..., { stil: true })` telt niet voor lader en `data-schrijft`. SYNC-8: de laatst geklikte `[data-schrijft]` krijgt `aria-busy` zolang er een grote actie loopt.
+Schermen: Meenemen (claimen en intrekken, ook de organisator met ×), Boodschappen (afvinken) en Formulier (elk veld, knop Opslaan weg; voorgestelde woonplaats gaat mee met de eerste wijziging) gebruiken de stand en laden opnieuw bij `visibilitychange`.
+Nepbackend: `nep.aanroepen(actie)` telt, `nep.zetStoring(['bundel'])` verbreekt de verbinding.
+Tests: unit `synchronisatie.test.mjs` (bundel, gelijktijdig aanvinken, antwoordZetten, wachtrij met nepklok en nepopslag, stand); e2e `synchronisatie.spec.mjs` (direct in beeld, ≤3 aanroepen, verversen, netwerkfout en herstel, terugdraaien via `page.clock`, localStorage en beforeunload, bezig-status, boodschappen). Formulier-, boodschappen-, scenario- en wensblokkentests wachten nu op "Opgeslagen".
+Fase 27: zet de top 3 in `BUNDEL_ACTIES`, een handler met rechtenregel, een `toepassen` en `stand.zet` in het accommodatiescherm.
+Niet gedaan: GRP-5 noemt het fasebestand als "aangepast (lader)", maar GRP-5 gaat over leden; de lader staat nu in SYNC-8 en NFR-8. Een echte beforeunload-dialoog is niet per browser getest (alleen `defaultPrevented`).
+Laatste regel `npm run check`: `CHECK GROEN: bronregels, aannames, unittests, build, playwright`

@@ -86,6 +86,9 @@ export const REGELS = {
   pincodeVernieuwen: alleenOrganisator,
   afhakenMarkeren: alleenOrganisator,
   antwoordenOpslaan: { deelnemer: eigenAntwoorden, organisator: eigenAntwoorden },
+  antwoordZetten: { deelnemer: eigenAntwoorden, organisator: eigenAntwoorden },
+  // SYNC-2: de bundel zelf mag elk lid van de editie; elke actie erin krijgt haar eigen regel.
+  bundel: iedereen,
   overzichtDetail: alleenOrganisator,
   weekendVastleggen: alleenOrganisator,
   // AAN-81: losmaken kan alleen in de stappen Weekendje prikker en Accommodatie.

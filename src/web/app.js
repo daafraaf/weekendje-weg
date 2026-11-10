@@ -35,6 +35,26 @@ import { maakRondleiding, rondleidingGezien } from './screens/rondleiding.js';
 import { luisterNaarInstallatie, kanInstalleren, installeer } from './platform.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 import { onderdeelAan } from '../shared/onderdelen.js';
+import { maakWachtrij } from './wachtrij.js';
+import { maakSyncIndicator } from './components/sync.js';
+
+// SYNC-1 t/m SYNC-7: één wachtrij voor alle kleine handelingen, per sessie-eigenaar bewaard (zonder geheimen).
+const wachtrij = maakWachtrij({
+  opslag: localStorage,
+  eigenaar: () => { const s = leesSessie(localStorage); return s ? `${s.scriptId}:${s.soort}:${s.editieId || ''}` : ''; },
+  online: () => navigator.onLine,
+  async verstuur(acties, editieId) {
+    const s = leesSessie(localStorage);
+    if (!s) throw Object.assign(new Error(''), { code: 'verlopen' });
+    const api = maakApi({ basisUrl: scriptUrl(s.scriptId), sessie: () => s.sessie, editieId: () => editieId || s.editieId || '' });
+    try {
+      return await api.anroep('bundel', { acties }, { schrijft: true, stil: true });
+    } catch (f) {
+      if (f.code === 'verlopen') { wisSessie(localStorage); kies(); }
+      throw f;
+    }
+  },
+});
 
 // OND-1, OND-2: een onderdeel dat uitstaat wordt niet geregistreerd, dus geen route, geen menu-item en geen scherm op zijn adres.
 const registreerOnderdeel = (naam, def) => { if (onderdeelAan(naam)) registreer(naam, def); };
@@ -72,7 +92,7 @@ registreer('formulier', {
   soort: 'deelnemer',
   icoon: ['M5 6h14v14H5z', 'M5 10h14', 'M9 3v4M15 3v4'],
   render() {
-    return maakFormulier({ sessie: leesSessie(localStorage), bijVerlopen: () => { wisSessie(localStorage); kies(); } });
+    return maakFormulier({ sessie: leesSessie(localStorage), wachtrij, bijVerlopen: () => { wisSessie(localStorage); kies(); } });
   },
 });
 
@@ -206,7 +226,7 @@ registreer('meenemen', {
   titel: 'Meenemen',
   icoon: ['M5 8h14l-1.2 11a1 1 0 0 1-1 .9H7.2a1 1 0 0 1-1-.9z', 'M9 8V6.5a3 3 0 0 1 6 0V8'],
   render(params) {
-    return maakMeenemen({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+    return maakMeenemen({ sessie: leesSessie(localStorage), params, wachtrij, bijVerlopen: bijVerlopenSessie });
   },
 });
 
@@ -215,7 +235,7 @@ registreerOnderdeel('boodschappen', {
   titel: 'Boodschappen',
   icoon: ['M4 5h2l2 10h9l2-7H7', 'M10 19.5h.01M17 19.5h.01'],
   render(params) {
-    return maakBoodschappen({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+    return maakBoodschappen({ sessie: leesSessie(localStorage), params, wachtrij, bijVerlopen: bijVerlopenSessie });
   },
 });
 
@@ -282,9 +302,11 @@ let laatsteSessie = '';
 // AAN-72: de persoonlijke link blijft alleen in het geheugen, voor de knop "Kopieer mijn link" direct na het inloggen.
 let onthoudenLink = null;
 let geplakteBeheerlink = null; // TOE-11: een beheerlink uit het plakveld leidt naar de beheerlogin
-root.append(schil, melding);
+const sync = maakSyncIndicator(wachtrij); // SYNC-4: vaste plek in de kopregel, naast het profielmenu
+root.append(schil, melding, sync.terugmelding);
 
-// Lader: het script antwoordt soms pas na een paar seconden. Tijdens opslaan staat er meteen "Opslaan…" en doen
+// Lader: het script antwoordt soms pas na een paar seconden. Dit geldt alleen voor laden en grote acties (SYNC-8);
+// kleine handelingen staan direct in beeld en gaan via de wachtrij. Tijdens een grote actie staat er meteen "Opslaan…" en doen
 // de schrijfknoppen niets, zodat een tweede klik of Enter geen dubbele invoer geeft. Laden toont de melding pas
 // na een korte wachttijd, zodat een snel antwoord niet flikkert.
 const LADER_WACHT_MS = 400;
@@ -293,9 +315,14 @@ const lader = h('div', { class: 'glass lader', role: 'status', hidden: true }, h
 root.append(lader);
 let schrijftNu = false;
 let laderTimer = null;
+// SYNC-8: een grote actie wacht op de Sheet met de bezig-status op de knop waarmee ze begon.
+// Kleine handelingen gaan via de wachtrij en komen hier niet langs (`stil` in api.js).
+let bezigKnop = null;
 bijBezig(({ alle, schrijft }) => {
   schrijftNu = schrijft > 0;
   document.documentElement.classList.toggle('is-bezig', schrijftNu);
+  if (schrijftNu && bezigKnop && bezigKnop.isConnected) bezigKnop.setAttribute('aria-busy', 'true');
+  if (!schrijftNu && bezigKnop) { bezigKnop.removeAttribute('aria-busy'); bezigKnop = null; }
   clearTimeout(laderTimer);
   laderTimer = null;
   if (!alle) { lader.hidden = true; laderTekst.textContent = ''; return; }
@@ -306,9 +333,11 @@ bijBezig(({ alle, schrijft }) => {
 });
 // Een klik op een schrijfknop of het verzenden van zijn formulier wordt genegeerd zolang er iets wordt opgeslagen.
 function houdTegen(e) {
-  if (!schrijftNu || !(e.target instanceof Element)) return;
+  if (!(e.target instanceof Element)) return;
   const raakt = e.type === 'submit' ? e.target.querySelector('[data-schrijft]') : e.target.closest('[data-schrijft]');
-  if (raakt) { e.preventDefault(); e.stopPropagation(); }
+  if (!raakt) return;
+  if (!schrijftNu) { if (bezigKnop) bezigKnop.removeAttribute('aria-busy'); bezigKnop = raakt; return; }
+  e.preventDefault(); e.stopPropagation();
 }
 document.addEventListener('click', houdTegen, true);
 document.addEventListener('submit', houdTegen, true);
@@ -367,7 +396,18 @@ async function haalStand() {
   } catch { /* zonder verbinding blijft de laatste stand staan */ }
 }
 
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !schil.hidden) haalStand(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && !schil.hidden) haalStand();
+  if (document.visibilityState === 'hidden' && wachtrij.aantal()) wachtrij.nu(); // niet wachten tot de debounce om is
+});
+
+// SYNC-6: waarschuwen bij verlaten zolang er nog iets onderweg is; NFR-12: terug online, dan meteen versturen.
+addEventListener('beforeunload', (e) => {
+  if (!wachtrij.aantal()) return;
+  e.preventDefault();
+  e.returnValue = '';
+});
+addEventListener('online', () => { if (wachtrij.aantal()) wachtrij.nu(); });
 
 // NFR-12: zonder verbinding blijft de schil staan, de melding verschijnt en opslaan wordt geblokkeerd.
 function zetVerbinding() {
@@ -388,7 +428,8 @@ function kies() {
   schil.hidden = !sessie;
   if (sessie) {
     const sleutel = sessie.sessie;
-    if (sleutel !== laatsteSessie) kopregel.replaceChildren(maakProfielmenu({ soort: sessie.soort, kanInstalleren, installeer, uitloggen }));
+    if (sleutel !== laatsteSessie) kopregel.replaceChildren(sync.indicator, maakProfielmenu({ soort: sessie.soort, kanInstalleren, installeer, uitloggen }));
+    wachtrij.start(); // SYNC-3: wat bij een vorige keer bleef staan, gaat alsnog
     // RON-1, AAN-73: een deelnemer zonder gezien-vlag op dit apparaat begint met de rondleiding.
     if (sessie.soort === 'deelnemer' && !rondleidingGezien(localStorage) && !location.hash.startsWith('#/uitleg')) history.replaceState(null, '', `${location.pathname}${location.search}#/uitleg`);
     if (!schilGestart) { schilGestart = true; toonBalk(); start(inhoud, (naam, params) => { toonMenu(naam); if (naam !== 'start' || params.editie) haalStand(); }, soortNu); } else if (sleutel !== laatsteSessie) { toonBalk(); ververs(); }
