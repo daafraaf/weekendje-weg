@@ -5,7 +5,7 @@ import { SETUPCODE_GELDIG_MS, SETUPCODE_LENGTE, beheerlinkVoorLid, wachtwoordRes
 import { SESSIE_BEHEER_MS } from '../../src/server/acties/beheertoegang.js';
 import { MAX_FOUT, BLOKKADE_MS } from '../../src/server/acties/toegang.js';
 import { hashToken } from '../../src/server/crypto.js';
-import { leesScriptUrl, beheerlinkVan, leesLink } from '../../src/web/sessie.js';
+import { leesScriptUrl, beheerlinkVan, leesLink, leesOpzetlink, isOpzetPad, OPZETLINK_FOUT } from '../../src/web/sessie.js';
 import { maakNepApi } from '../mock-backend/server.mjs';
 import { maakDemo } from '../mock-backend/demo.mjs';
 import { nodeSha256 } from '../mock-backend/memorystore.mjs';
@@ -254,4 +254,31 @@ test('GRP-4: de beheerlink die de wizard toont wordt door de voorkant als beheer
   const link = beheerlinkVan('https://dwiering.github.io/weekendje-weg/', id, 'B'.repeat(22));
   assert.equal(link, `https://dwiering.github.io/weekendje-weg/#b=${id}&beheer=${'B'.repeat(22)}`);
   assert.deepEqual(leesLink(link), { scriptId: id, soort: 'beheer', token: 'B'.repeat(22) });
+});
+
+test('AAN-78 GRP-7: leesOpzetlink leest b en code uit #/opzetten?b=...&code=...', () => {
+  const id = 'AKfycbx1234567890abcdefghij';
+  assert.deepEqual(leesOpzetlink(`#/opzetten?b=${id}&code=ABCD2345`), { scriptId: id, code: 'ABCD2345' });
+  assert.deepEqual(leesOpzetlink(`#/opzetten?code=abcd2345&b=${id}`), { scriptId: id, code: 'ABCD2345' });
+  // Een gewoon #/opzetten of een ander scherm is geen opzetlink.
+  for (const hash of ['#/opzetten', '#/opzetten?', '', '#/start', `#b=${id}&code=ABCD2345`, '#/opzettenx?b=1', null, undefined]) assert.equal(leesOpzetlink(hash), null, String(hash));
+  // Een fout ID of een code die geen acht tekens heeft, geeft de melding uit GRP-7.
+  for (const hash of ['#/opzetten?b=kort&code=ABCD2345', `#/opzetten?b=${id}&code=ABCD234`, `#/opzetten?b=${id}&code=ABCD23456`, `#/opzetten?b=${id}`, '#/opzetten?code=ABCD2345', `#/opzetten?b=${id}&code=ABCD 234`, `#/opzetten?b=${id}/../x&code=ABCD2345`, '#/opzetten?x=1']) {
+    assert.deepEqual(leesOpzetlink(hash), { fout: OPZETLINK_FOUT }, hash);
+  }
+  assert.match(OPZETLINK_FOUT, /^Deze opzetlink klopt niet. Kies in de Sheet opnieuw Weekendje weg en Groep opzetten.$/);
+  assert.ok(isOpzetPad('#/opzetten') && isOpzetPad('#/opzetten?b=x') && !isOpzetPad('#/opzettenx') && !isOpzetPad('#/start'));
+});
+
+test('AAN-78 §7.18.3: leesLink herkent een opzetlink nooit als persoonlijke link of beheerlink', () => {
+  const id = 'AKfycbx1234567890abcdefghij';
+  const sleutel = 'A'.repeat(22);
+  for (const link of [
+    `#/opzetten?b=${id}&code=ABCD2345`,
+    `https://voorbeeld.github.io/app/#/opzetten?b=${id}&code=ABCD2345`,
+    `#/opzetten?x=1&b=${id}&t=${sleutel}`,
+    `#/opzetten?x=1&b=${id}&beheer=${sleutel}`,
+    `#/opzetten&b=${id}&t=${sleutel}`,
+  ]) assert.equal(leesLink(link), null, link);
+  assert.equal(leesLink(`#b=${id}&t=${sleutel}`).soort, 'deelnemer');
 });

@@ -31,7 +31,7 @@ Fase 0 legt de scripts vast in `package.json`; vul deze lijst aan als er een bij
 - `npm run mock`: nepbackend met de demo uit spec §11 (`test/fixtures/demo.json`) op localhost;
   toont de demolinks van 2027 en 2026 in de console, pincode `123456`; `-- --stap=overzicht` zet
   editie 2027 in een andere stap
-- `npm run mock -- --leeg`: nepbackend met lege Sheet en een setupcode in de console, voor de opzetwizard
+- `npm run mock -- --leeg`: nepbackend met lege Sheet, een setupcode en een opzetlink in de console, voor de opzetwizard
 - `npm run vakanties`: haalt de schoolvakanties op en schrijft `data/vakanties.json` (AAN-13)
 - `clasp deploy -i <id>`: alleen in fase 20, samen met David. Altijd een nieuwe versie op de
   bestaande implementatie, nooit een nieuwe implementatie (spec §3)
@@ -99,6 +99,7 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 
 - Taginvoer: `src/shared/tags.js` (`tagSleutel`, `voegToe`, `tagsUitTekst`, `tagsFout`) en `components/tagveld.js`; de server accepteert alleen lijsten, `tagsUitTekst` leest oude tekst bij lezen. Een invoerveld met `list=` heet in Playwright een `combobox`.
 - Navigatie: Archief en Uitleg staan in `NIET_IN_MENU` (`shared/start.js`); het profielmenu (`components/profielmenu.js`) en de sectie `maakAfgelopen` (`screens/archief.js`) vervangen ze. Beheerschermen staan in `BEHEER_SCHERMEN` en komen via het scherm `beheren` in het menu; tests gaan er via `beheerNaar` in `test/e2e/hulp.mjs` heen. Hints: tekst in `web/hints.js`, `kopMetHint` in `components/hint.js`.
+- Opzetlink en uitrol: `APP_ADRES` en `SJABLOON_KOPIE` in `src/shared/uitrol.js`; linkfuncties die menu en voorkant delen in `src/shared/links.js` (`sessie.js` exporteert ze opnieuw). De dialoog-HTML van het Sheet-menu is een pure functie in `src/server/gas/dialoog.js`; de bundeltest (`gasOmgeving({ url, prompts })`) speelt `getUrl()`, `ui.prompt` en `showModalDialog` na.
 
 ## Valkuilen
 

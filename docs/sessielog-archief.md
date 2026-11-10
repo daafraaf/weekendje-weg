@@ -2,6 +2,8 @@
 
 Oudere regels uit het sessielog van MEMORY.md.
 
+- 2026-11-09 fase 18: rondleiding en installatie af (RON-1 t/m 4), check groen, AAN-72 en AAN-73 toegevoegd; zie `docs/overdracht/fase-18.md`.
+- 2026-11-09 fase 17: startschermen per stap en archief af (STA-3 t/m 6, ARC-1, ARC-2), check groen, AAN-71 toegevoegd, AAN-12, 29, 30 hebben hun codeplek; zie `docs/overdracht/fase-17.md`.
 - 2026-11-09 fase 16: kamers en carpool af (KMR-1, CAR-1, CAR-2), check groen, AAN-70 toegevoegd, AAN-23 en AAN-24 hebben hun codeplek; zie `docs/overdracht/fase-16.md`.
 - 2026-11-09 fase 1: fundament doorgeefluik af (TOE-6, TOE-7, NFR-1, 6, 7, 14, 15, 16, 19, 20), check groen, AAN-38 en AAN-39 toegevoegd; zie `docs/overdracht/fase-01.md`.
 - 2026-11-09 fase 2: schil af (STA-1, STA-2, RON-6, NFR-8, 9, 10, 12), check groen, AAN-40 toegevoegd; zie `docs/overdracht/fase-02.md`.

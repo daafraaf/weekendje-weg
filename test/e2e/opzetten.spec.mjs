@@ -2,6 +2,7 @@ import { test as basis, expect } from '@playwright/test';
 import { startServer } from '../mock-backend/server.mjs';
 import { maakDemo } from '../mock-backend/demo.mjs';
 import { OPSLAG_SLEUTEL } from '../../src/web/sessie.js';
+import { SJABLOON_KOPIE } from '../../src/shared/uitrol.js';
 
 const SCRIPT_ID = 'demo-weekendje-weg-0001';
 const WACHTWOORD = 'duinpan-kraanvogel';
@@ -38,7 +39,7 @@ const opslag = (page) => page.evaluate((k) => localStorage.getItem(k), OPSLAG_SL
 async function verbind(page, code) {
   await page.goto('about:blank'); // een tweede keer dezelfde URL zou anders geen nieuwe pagina laden
   await page.goto('/#/opzetten');
-  await page.getByRole('button', { name: 'Ik heb de URL en de setupcode' }).click();
+  await page.getByRole('button', { name: 'Ik heb de URL en de setupcode al' }).click();
   await page.getByLabel('Script-URL').fill(`https://script.google.com/macros/s/${SCRIPT_ID}/exec`);
   await page.getByLabel('Setupcode').fill(code);
   await page.getByLabel('Groepsnaam').fill('Studievrienden');
@@ -58,8 +59,18 @@ test('GRP-2 GRP-4 RON-5 TOE-5 [leeg]: de wizard zet de groep op met de setupcode
   await page.goto('/#/opzetten');
   // RON-5: de wizard begint met de rondleiding voor de eigenaar.
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Groep opzetten');
-  for (const woord of ['sjabloon-Sheet', 'Implementeren', 'webapp-URL', 'Setupcode tonen']) await expect(page.getByRole('listitem').filter({ hasText: woord })).toBeVisible();
-  await page.getByRole('button', { name: 'Ik heb de URL en de setupcode' }).click();
+  await expect(page.getByRole('listitem')).toHaveCount(3);
+  for (const woord of ['sjabloon-Sheet', 'Implementeren', 'Google heeft deze app niet geverifieerd', 'Geavanceerd', 'Groep opzetten en klik op de link']) await expect(page.getByRole('listitem').filter({ hasText: woord })).toBeVisible();
+  // De knop Kopie maken is een gewone link naar de sjabloon en staat er alleen als SJABLOON_KOPIE is ingevuld.
+  const kopie = page.getByRole('link', { name: 'Kopie maken' });
+  if (SJABLOON_KOPIE) {
+    await expect(kopie).toHaveAttribute('href', SJABLOON_KOPIE);
+    await expect(kopie).toHaveAttribute('target', '_blank');
+    await expect(kopie).toHaveAttribute('rel', 'noopener noreferrer');
+  } else {
+    await expect(kopie).toHaveCount(0);
+  }
+  await page.getByRole('button', { name: 'Ik heb de URL en de setupcode al' }).click();
 
   // Stap 1: een /dev-URL wordt geweigerd met uitleg (GRP-2).
   await page.getByLabel('Script-URL').fill(`https://script.google.com/macros/s/${SCRIPT_ID}/dev`);
@@ -238,4 +249,56 @@ test('GRP-5 TOE-7: een deelnemerssessie ziet het ledenscherm niet', async ({ pag
   await expect(page.getByRole('navigation', { name: 'Menu' }).getByText('Leden')).toHaveCount(0);
   await page.goto('/#/leden');
   await expect(page.getByText('Je bent ingelogd')).toBeVisible();
+});
+
+test('GRP-7 AAN-78 [leeg]: een opzetlink opent stap 1 met URL en code ingevuld, verdwijnt uit de adresbalk en zet de groep op', async ({ page, nep }) => {
+  const code = nep.setupcode();
+  await page.goto(`/#/opzetten?b=${SCRIPT_ID}&code=${code}`);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Verbind je Sheet');
+  await expect(page.getByText('Je Sheet is gekoppeld. Geef de groep een naam.')).toBeVisible();
+  await expect(page.getByLabel('Script-URL')).toHaveValue(`https://script.google.com/macros/s/${SCRIPT_ID}/exec`);
+  await expect(page.getByLabel('Setupcode')).toHaveValue(code);
+  await expect(page.getByLabel('Groepsnaam')).toBeFocused();
+  // In de adresbalk en de geschiedenis staat alleen #/opzetten.
+  expect(new URL(page.url()).hash).toBe('#/opzetten');
+  // De velden blijven te wijzigen.
+  await expect(page.getByLabel('Script-URL')).toBeEditable();
+  await expect(page.getByLabel('Setupcode')).toBeEditable();
+
+  await page.getByLabel('Groepsnaam').fill('Studievrienden');
+  await page.getByRole('button', { name: 'Volgende: leden' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Wie gaan er mee?');
+  await voegLedenToe(page);
+  await page.getByRole('button', { name: 'Eva: kies als eigenaar' }).click();
+  await page.getByRole('button', { name: 'Volgende: wachtwoord' }).click();
+  await page.getByLabel('Nieuw wachtwoord').fill(WACHTWOORD);
+  await page.getByLabel('Herhaal wachtwoord').fill(WACHTWOORD);
+  await page.getByRole('button', { name: 'Groep opzetten' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Je groep is opgezet');
+  nep.store.nieuwVerzoek();
+  expect(nep.store.lees('Groep')[0].opgezet).toBe(true);
+  expect(nep.store.lees('Leden')).toHaveLength(3);
+  await page.getByRole('button', { name: 'Naar beheren' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+});
+
+test('GRP-7 [leeg]: een opzetlink met een fout ID of een code van zeven tekens toont stap 0 met de melding', async ({ page, nep }) => {
+  const code = nep.setupcode();
+  for (const query of [`b=kort&code=${code}`, `b=${SCRIPT_ID}&code=${code.slice(0, 7)}`]) {
+    await page.goto('about:blank');
+    await page.goto(`/#/opzetten?${query}`);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Groep opzetten');
+    await expect(page.getByRole('alert')).toHaveText('Deze opzetlink klopt niet. Kies in de Sheet opnieuw Weekendje weg en Groep opzetten.');
+    expect(new URL(page.url()).hash).toBe('#/opzetten');
+    // Ook in de geschiedenis staat de opzetlink niet meer: terug en weer vooruit geeft alleen #/opzetten.
+    await page.goBack();
+    expect(page.url()).toBe('about:blank');
+    await page.goForward();
+    expect(new URL(page.url()).hash).toBe('#/opzetten');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Groep opzetten');
+    // De handmatige route blijft open, zonder ingevulde velden.
+    await page.getByRole('button', { name: 'Ik heb de URL en de setupcode al' }).click();
+    await expect(page.getByLabel('Script-URL')).toHaveValue('');
+    await expect(page.getByLabel('Setupcode')).toHaveValue('');
+  }
 });

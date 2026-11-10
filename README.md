@@ -45,10 +45,36 @@ Eenmalig:
 6. In Apps Script: Implementeren, Nieuwe implementatie, type Web-app, uitvoeren als "Ik",
    toegang "Iedereen". Noteer het implementatie-ID. Dit is de enige keer dat je een nieuwe
    implementatie maakt.
-7. Maak in Drive de kopieerlink van de sjabloon-Sheet (de URL met `/copy` in plaats van `/edit`)
-   en geef die aan de groep.
+7. Maak in Drive de kopieerlink van de sjabloon-Sheet (de URL met `/copy` in plaats van `/edit`).
+8. Vul `APP_ADRES` (het adres van de app op Pages, eindigt op `/`) en `SJABLOON_KOPIE` (de
+   kopieerlink) in `src/shared/uitrol.js` in, commit, push, en doe `npm run build` en `clasp push`.
+   Het zijn geen geheimen. `npm run check` faalt als een waarde de verkeerde vorm heeft.
+
+De sjabloon moet leeg blijven (geen leden, geen edities) en gedeeld zijn als "Iedereen met de
+link: lezer". Anders werkt de kopieerlink niet voor anderen, of krijgt een nieuwe groep de
+gegevens van een andere mee.
 
 Google Workspace-accounts kunnen toegang "Iedereen" blokkeren. Gebruik dan een gewoon Google-account.
+
+### Een nieuwe groep opzetten
+
+Voor de eigenaar van een groep. De app laat dezelfde drie stappen zien op `#/opzetten`.
+
+1. Maak een kopie van de sjabloon-Sheet: open de app, kies Groep opzetten en dan Kopie maken.
+   De kopie staat in je eigen Google Drive en is van jou.
+2. Open in je kopie Extensies, Apps Script. Kies Implementeren, Nieuwe implementatie, type
+   Web-app, uitvoeren als "Ik", toegang "Iedereen", en geef toestemming. Meldt Google "Google
+   heeft deze app niet geverifieerd", kies dan Geavanceerd en ga verder: het script is je eigen
+   kopie en raakt alleen deze Sheet.
+3. Ga terug naar de Sheet, laad hem opnieuw, kies Weekendje weg en Groep opzetten en klik op
+   de link. De app opent met de Sheet al gekoppeld; je geeft de groep een naam, voegt de leden
+   toe en kiest een beheerwachtwoord. De link werkt één keer en 30 minuten.
+
+Vraagt het menu om de webapp-URL, plak dan de URL uit Implementeren, Implementaties beheren
+(eindigt op `/exec`, niet op `/dev`). Dat is één keer nodig.
+
+Valkuil: een Google Workspace-account (werk of school) kan toegang "Iedereen" blokkeren. De
+app bereikt het script dan niet. Maak de kopie met een gewoon Google-account.
 
 ### 3. Script bijwerken
 
@@ -63,6 +89,8 @@ ongeldig.
    (zie de opzetwizard). Meldt de app "verouderd" (`api_versie`), dan werkt de eigenaar van die
    groep het script bij met de nieuwste code en zet hij een nieuwe versie op de bestaande
    implementatie. Hoe de nieuwe code bij de groepen komt, is nog niet uitgewerkt.
+4. De sjabloon bijwerken (`clasp push`) verandert niets aan bestaande kopieën: elke kopie heeft
+   zijn eigen script. Alleen groepen die daarna een kopie maken, krijgen de nieuwe code.
 
 ## Beveiliging van de repo (NFR-17)
 

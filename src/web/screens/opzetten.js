@@ -3,6 +3,7 @@
 import { h, icoon } from '../dom.js';
 import { maakApi, API_VERSIE, VEROUDERD_TEKST } from '../api.js';
 import { leesScriptUrl, scriptUrl, beheerlinkVan } from '../sessie.js';
+import { SJABLOON_KOPIE } from '../../shared/uitrol.js';
 
 // AAN-20: 2 tot en met 20 leden. TOE-5: een wachtwoord van minimaal 10 tekens.
 export const MIN_LEDEN = 2;
@@ -17,15 +18,18 @@ const WEG = ['M5 7h14', 'M10 7V5h4v2', 'M7 7l1 12h8l1-12'];
 const KOPIE = ['M9 9h10v11H9z', 'M5 15V4h10'];
 
 const normaliseer = (t) => String(t ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+// RON-5: drie stappen voor de eigenaar.
 const RONDLEIDING = [
-  'Kopieer de sjabloon-Sheet naar je eigen Google Drive.',
-  'Open in die Sheet Extensies en Apps Script. Kies Implementeren en Nieuwe implementatie, type Webapp, uitvoeren als jezelf en toegang voor iedereen.',
-  'Kopieer de webapp-URL. Hij eindigt op /exec.',
-  'Ga terug naar de Sheet, laad hem opnieuw en kies in het menu Weekendje weg de optie Setupcode tonen. Kopieer de code.',
+  'Maak een kopie van de sjabloon-Sheet in je eigen Google Drive.',
+  'Open in je kopie Extensies en Apps Script. Kies Implementeren en Nieuwe implementatie, type Webapp, uitvoeren als jezelf en toegang voor iedereen. Geef toestemming. Zie je "Google heeft deze app niet geverifieerd", kies dan Geavanceerd en ga verder.',
+  'Ga terug naar de Sheet en laad hem opnieuw. Kies in het menu Weekendje weg de optie Groep opzetten en klik op de link.',
 ];
 
-export function maakOpzetten({ bijIngelogd, appAdres = () => `${location.origin}${location.pathname}`, fetchFn }) {
-  const s = { stap: 0, url: '', code: '', naam: '', leden: [], eigenaar: -1, pw1: '', pw2: '', scriptId: '', resultaat: null, bezig: false };
+// vooraf komt uit een opzetlink (GRP-7): { scriptId, code } of { fout }.
+export function maakOpzetten({ bijIngelogd, appAdres = () => `${location.origin}${location.pathname}`, fetchFn, vooraf = null, sjabloonKopie = SJABLOON_KOPIE }) {
+  const s = { stap: 0, url: '', code: '', naam: '', leden: [], eigenaar: -1, pw1: '', pw2: '', scriptId: '', resultaat: null, bezig: false, gekoppeld: false, focusNaam: false, linkFout: '' };
+  if (vooraf && vooraf.scriptId) Object.assign(s, { stap: 1, url: scriptUrl(vooraf.scriptId), code: vooraf.code, gekoppeld: true, focusNaam: true });
+  else if (vooraf && vooraf.fout) s.linkFout = vooraf.fout;
   const wortel = h('main', { class: 'binnen wz' });
 
   const api = () => maakApi({ basisUrl: scriptUrl(s.scriptId), ...(fetchFn ? { fetchFn } : {}) });
@@ -54,9 +58,11 @@ export function maakOpzetten({ bijIngelogd, appAdres = () => `${location.origin}
       h('div', { class: 'binnen-kop' },
         h('img', { src: 'icons/icon-192.png', width: 72, height: 72, alt: 'App-icoon Weekendje weg' }),
         h('h1', { class: 't-title' }, 'Groep opzetten'),
-        h('p', { class: 't-body t-sec' }, 'Jij zet de groep één keer op. Daarna regelt de app de rest. Je hebt vier dingen te doen.')),
-      h('ol', { class: 'glass card wz-lijst' }, RONDLEIDING.map((t, i) => h('li', {}, h('span', { class: 'av' }, String(i + 1)), h('span', { class: 't-body' }, t)))),
-      h('button', { class: 'btn btn-primary', type: 'button', onclick: () => ga(1) }, 'Ik heb de URL en de setupcode'),
+        h('p', { class: 't-body t-sec' }, 'Jij zet de groep één keer op. Daarna regelt de app de rest. Je hebt drie dingen te doen.')),
+      s.linkFout ? meldingBlok(s.linkFout) : null,
+      h('ol', { class: 'glass card wz-lijst' }, RONDLEIDING.map((t, i) => h('li', {}, h('span', { class: 'av' }, String(i + 1)), h('span', { class: 'wz-stap' }, h('span', { class: 't-body' }, t),
+        i === 0 && sjabloonKopie ? h('a', { class: 'btn btn-primary', href: sjabloonKopie, target: '_blank', rel: 'noopener noreferrer' }, 'Kopie maken') : null)))),
+      h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => ga(1) }, 'Ik heb de URL en de setupcode al'),
       h('p', { class: 'priv' }, icoon(['M12 11v5M12 8h.01', 'M3.5 12a8.5 8.5 0 1 0 17 0 8.5 8.5 0 0 0-17 0'], 16), h('span', {}, 'Op iPhone zet je de app eerst op het beginscherm en plak je de links daarna in de app.')),
     ];
   }
@@ -69,6 +75,7 @@ export function maakOpzetten({ bijIngelogd, appAdres = () => `${location.origin}
     const algemeen = h('div', { hidden: true });
     const verder = h('button', { class: 'btn btn-primary', type: 'submit', 'data-schrijft': true }, 'Volgende: leden');
     const formulier = h('form', { class: 'glass card binnen-kaart', novalidate: true }, url.blok, code.blok, naam.blok, algemeen, verder);
+    if (s.focusNaam) { s.focusNaam = false; requestAnimationFrame(() => naam.el.focus()); }
     if (s.fouten) {
       toonFout(url, s.fouten.url); toonFout(code, s.fouten.code); toonFout(naam, s.fouten.naam);
       if (s.fouten.algemeen) { algemeen.hidden = false; algemeen.replaceChildren(meldingBlok(s.fouten.algemeen)); }
@@ -79,7 +86,7 @@ export function maakOpzetten({ bijIngelogd, appAdres = () => `${location.origin}
       const f = {};
       const r = leesScriptUrl(s.url);
       if (r.fout) f.url = r.fout;
-      if (normaliseer(s.code).length !== SETUPCODE_LENGTE) f.code = `De setupcode heeft ${SETUPCODE_LENGTE} tekens. Kies in de Sheet Weekendje weg en Setupcode tonen.`;
+      if (normaliseer(s.code).length !== SETUPCODE_LENGTE) f.code = `De setupcode heeft ${SETUPCODE_LENGTE} tekens. Kies in de Sheet Weekendje weg en Groep opzetten.`;
       if (!s.naam.trim()) f.naam = 'Geef de groep een naam.';
       if (Object.keys(f).length) { s.fouten = f; teken(); return; }
       s.bezig = true;
@@ -96,7 +103,7 @@ export function maakOpzetten({ bijIngelogd, appAdres = () => `${location.origin}
       s.bezig = false;
       teken();
     });
-    return [kop(1, 'Verbind je Sheet', 'Plak de webapp-URL en de setupcode uit het menu Weekendje weg.'), formulier];
+    return [kop(1, 'Verbind je Sheet', s.gekoppeld ? 'Je Sheet is gekoppeld. Geef de groep een naam.' : 'Plak de webapp-URL en de setupcode uit het menu Weekendje weg, Groep opzetten.'), formulier];
   }
 
   // Stap 2: leden en eigenaar (GRP-2).
@@ -173,7 +180,7 @@ export function maakOpzetten({ bijIngelogd, appAdres = () => `${location.origin}
         s.stap = 4;
       } catch (err) {
         if (err.code === 'geen_toegang') {
-          s.fouten = { code: 'De setupcode klopt niet of is verlopen. Kies in de Sheet Weekendje weg en Setupcode tonen voor een nieuwe.' };
+          s.fouten = { code: 'De setupcode klopt niet of is verlopen. Kies in de Sheet Weekendje weg en Groep opzetten voor een nieuwe.' };
           s.stap = 1;
         } else {
           s.fouten = { algemeen: err.message || 'Er ging iets mis. Probeer het later opnieuw.' };
@@ -215,7 +222,7 @@ export function maakOpzetten({ bijIngelogd, appAdres = () => `${location.origin}
     ];
   }
 
-  function ga(stap) { s.stap = stap; s.fouten = null; teken(); }
+  function ga(stap) { s.stap = stap; s.fouten = null; s.linkFout = ''; teken(); }
 
   function teken() {
     const delen = [rondleiding, verbinden, leden, wachtwoord, klaar][s.stap]();

@@ -18,7 +18,7 @@ export function maakNepApi({ seed = {}, handlers = ALLE_HANDLERS, nu = () => new
   const eigenschappen = maakMemoryEigenschappen();
   const deps = { store, lock, sha256: nodeSha256, random: nodeRandom, nu, handlers, eigenschappen, logFout: (e) => console.error(e) };
   const api = maakApi(deps);
-  // Het Sheet-menu "Setupcode tonen" van de nepbackend: geeft een verse setupcode.
+  // Het Sheet-menu "Groep opzetten" van de nepbackend: geeft een verse setupcode.
   const setupcode = () => setupcodeMaken(deps);
   // Het Sheet-menu "Beheerlink maken": geeft het token van een nieuwe beheerlink voor een lid (zonder wachtwoord).
   const beheerlink = (lidId, wachtwoord) => {
@@ -63,7 +63,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const app = process.env.APP_URL || 'http://127.0.0.1:4173/';
   if (leeg) {
     console.log(`Nepbackend (lege Sheet) draait op ${url}/macros/s/${demo.scriptId}/exec`);
-    console.log(`Setupcode (30 minuten geldig, eenmalig): ${setupcode()}`);
+    const code = setupcode();
+    console.log(`Setupcode (30 minuten geldig, eenmalig): ${code}`);
+    console.log(`Opzetlink, zoals het Sheet-menu Groep opzetten hem toont: ${app}#/opzetten?b=${demo.scriptId}&code=${code}`);
   } else {
     console.log(`Nepbackend draait op ${url}/macros/s/${demo.scriptId}/exec`);
     console.log(`Pincode van alle demodeelnemers: ${demo.pin}`);

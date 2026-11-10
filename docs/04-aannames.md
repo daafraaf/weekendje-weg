@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.21, 10 november 2026: AAN-77 t/m AAN-79 (fase 22, opzetlink); AAN-45 bijgewerkt.
 Versie 0.20, 9 november 2026: AAN-31 kreeg zijn codeplek; een check telt de tests per aanname (fase 19).
 Versie 0.20, 10 november 2026: AAN-74 t/m AAN-76 (fase 21, taginvoer).
 Versie 0.18, 9 november 2026: AAN-71 (fase 17).
@@ -77,7 +78,7 @@ die test aan en werk je hier de status bij.
 | AAN-42 | Uitloggen zonder verbinding | Flow | `src/web/app.js` (`uitloggen`) | de knop wist altijd de sessie op het apparaat; lukt het script niet (offline of fout), dan blijft de sessie in de Sheet tot ze verloopt | laag | open |
 | AAN-43 | Eigenaar is na opzetten ingelogd | Flow | `src/server/acties/opzet.js` (`groepOpzetten`) | `groepOpzetten` geeft naast de beheerlink een beheersessie van 12 uur terug, zodat "Naar beheren" geen tweede wachtwoordinvoer vraagt | laag | open |
 | AAN-44 | Blokkade bij foute beheerwachtwoorden | Regel | `src/server/acties/beheertoegang.js` (`inloggenBeheer`) | vijf fouten geven 15 minuten blokkade (zelfde teller als de pincode), zonder blijvende blokkade; een reset via het Sheet-menu zet de teller op nul | laag | open |
-| AAN-45 | Beheerlink uit het Sheet-menu | Flow | `src/server/gas/menu.js` (`scriptId`) | het script kent de Pages-URL niet; het menu toont `#b=<scriptId>&beheer=<token>` om achter het adres van de app te zetten | laag | open |
+| AAN-45 | Beheerlink uit het Sheet-menu | Flow | `src/server/gas/menu.js` (`menuBeheerlink`) | met `APP_ADRES` ingevuld toont het menu de volledige beheerlink `<APP_ADRES>#b=<scriptId>&beheer=<token>` in een dialoog met kopieerveld; zonder kent het script de Pages-URL niet en toont het menu `#b=<scriptId>&beheer=<token>` om achter het adres van de app te zetten | laag | open |
 | AAN-46 | Maker van een editie | Regel | `src/server/acties/editie.js` (`editieAanmaken`) | wie een editie maakt is er altijd deelnemer en organisator van (anders kan hij haar niet beheren); een editie heeft minstens twee deelnemers, net als een groep | laag | open |
 | AAN-47 | Links maken voor wie nog geen link heeft | Regel | `src/server/acties/editie.js` (`linksMaken`) | `linksMaken` maakt alleen voor deelnemers zonder link; wie er al een heeft houdt die, vernieuwen gaat via `linkVernieuwen` en `pincodeVernieuwen` | laag | open |
 | AAN-48 | Tijdstip van de deadline | Regel | `src/shared/editie.js` (`deadlineIso`) | de organisator kiest een dag; de deadline eindigt om 23:59 Amsterdamse tijd (zomer- of wintertijd) | laag | open |
@@ -110,6 +111,9 @@ die test aan en werk je hier de status bij.
 | AAN-74 | Tags ontdubbelen | Regel | `src/shared/tags.js` (`tagSleutel`) | een tag is dubbel op kleine letters, zonder accenten, spaties en leestekens ("Escape room" en "escaperoom"); de schrijfwijze van de eerste invoer blijft; Tab verplaatst alleen de focus en maakt geen tag; 40 tekens per tag, 20 per veld | laag | open |
 | AAN-75 | Tagsuggesties | Regel | `src/web/components/tagveld.js` (`suggesties`) | suggesties komen alleen uit de nog niet aangevinkte vinkjes van het blok, nooit uit tags van anderen (allergieën, KOK-4); een term gelijk aan een vinkje zet dat vinkje aan | laag | open |
 | AAN-76 | Oude tekst als tags | Regel | `src/shared/tags.js` (`tagsUitTekst`) | oude tekst in `...Eigen` wordt bij lezen gesplitst op komma, puntkomma en regeleinde en bij een spatie geknipt tot 40 tekens; de Sheet blijft ongewijzigd tot de eerstvolgende keer opslaan | laag | open |
+| AAN-77 | Uitrolinstellingen | Regel | `src/shared/uitrol.js` (`APP_ADRES`, `SJABLOON_KOPIE`) | `APP_ADRES` en `SJABLOON_KOPIE` staan in `src/shared/uitrol.js`; leeg betekent het gedrag van spec 0.3; een ingevulde waarde met een andere vorm faalt de check | laag | open |
+| AAN-78 | Opzetlink | Flow | `src/web/sessie.js` (`leesOpzetlink`) | `#/opzetten?b=<webappId>&code=<setupcode>`; de setupcode mag in het fragment omdat hij eenmalig en 30 minuten geldig is; de app haalt het fragment direct uit de adresbalk | laag | open |
+| AAN-79 | Webapp-ID in het menu | Flow | `src/server/gas/menu.js` (`webappId`) | eerst `getUrl()` als die op `/exec` eindigt, dan de eigenschap `webappId`, dan één keer vragen; reden: het is niet zeker wat `getUrl()` in de nieuwe Apps Script-editor teruggeeft | midden | open |
 
 ## Volgorde voor het gesprek
 
@@ -140,3 +144,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-72 en AAN-73 toegevoegd in fase 18 (rondleiding en installatie).
 - 2026-11-09: fase 19 (eindtest): AAN-31 kreeg zijn codeplek; AAN-42, AAN-45 en AAN-68 kregen een test met hun ID; `scripts/check-aannames.mjs` telt ze in `npm run check`.
 - 2026-11-10: AAN-74 t/m AAN-76 toegevoegd in fase 21 (taginvoer).
+- 2026-11-10: AAN-77 t/m AAN-79 toegevoegd in fase 22 (groep opzetten met een opzetlink); AAN-45 bijgewerkt: met `APP_ADRES` toont het menu de volledige beheerlink.

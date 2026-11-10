@@ -10,7 +10,7 @@ import { maakEditieNieuw } from './screens/editie-nieuw.js';
 import { maakUitnodigen } from './screens/uitnodigen.js';
 import { maakLijstenBeheer } from './screens/lijsten-beheer.js';
 import { maakVragenBeheer } from './screens/vragen-beheer.js';
-import { leesLink, leesSessie, bewaarSessie, wisSessie, scriptUrl, persoonlijkeLinkVan } from './sessie.js';
+import { leesLink, leesOpzetlink, isOpzetPad, leesSessie, bewaarSessie, wisSessie, scriptUrl, persoonlijkeLinkVan } from './sessie.js';
 import { maakStappenbalk } from './components/stappenbalk.js';
 import { maakFormulier } from './screens/formulier.js';
 import { maakVoortgang } from './screens/voortgang.js';
@@ -349,8 +349,11 @@ function kies() {
   const beheerlink = link && link.soort === 'beheer' ? link : geplakteBeheerlink;
   if (beheerlink) {
     binnen = maakBeheerlogin({ link: beheerlink, bijIngelogd, bijAnder });
-  } else if (location.hash === '#/opzetten') {
-    binnen = maakOpzetten({ bijIngelogd });
+  } else if (isOpzetPad(location.hash)) {
+    // GRP-7: de opzetlink verdwijnt meteen uit de adresbalk en de geschiedenis; de waarden gaan mee naar de wizard.
+    const vooraf = leesOpzetlink(location.hash);
+    if (location.hash !== '#/opzetten') history.replaceState(null, '', `${location.pathname}${location.search}#/opzetten`);
+    binnen = maakOpzetten({ bijIngelogd, vooraf });
   } else {
     binnen = maakBinnenkomen({ link, startTekst: link ? location.href : '', bijIngelogd, bijBeheerlink: (l) => { geplakteBeheerlink = l; kies(); } });
   }
