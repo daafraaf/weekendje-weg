@@ -74,7 +74,7 @@ export const antwoordenOpslaan = {
 };
 
 // Scherm `formulier`: instellingen van de editie, lijsten, vragen en mijn antwoorden met versie (spec §5.3).
-// `alleenLezen` is 'stap' (vanaf Overzicht) of 'deadline' (FRM-9), anders null.
+// `alleenLezen` is 'stap' (vanaf Overzicht, FRM-9), anders null.
 export function formulierScherm({ store, sessie, editie, editieId, ctx }) {
   if (!sessie.deelnemerId || !editie) throw new ApiFout('geen_toegang');
   const rij = eigenRij(store, editieId, sessie.deelnemerId);
@@ -88,7 +88,7 @@ export function formulierScherm({ store, sessie, editie, editieId, ctx }) {
     },
     vragen: vragenVan(store, editieId),
     standaardWoonplaats: lid ? lid.woonplaats : '',
-    alleenLezen: editie.stap !== 'invullen' ? 'stap' : ctx.naDeadline ? 'deadline' : null,
+    alleenLezen: editie.stap !== 'invullen' ? 'stap' : null, // DDL-1: de deadline sluit niets af
     antwoorden: { data, versie: rij ? rij.versie : 0 },
     ontbreekt: ontbreekt(data),
   };

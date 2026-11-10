@@ -1,5 +1,6 @@
 # Bouwspecificatie Weekendje weg
 
+Versie 0.6, 10 november 2026: onderdelen uit en invullen vrijer, feedbackronde fase 24 (§7.2.3, §7.2.4, §7.2.6, §7.4.8, OND-1, OND-2, OND-3, FRM-8, FRM-9, FRM-11, DDL-1, OVZ-1, STA-1, EDI-7, EDI-8, EDI-10).
 Versie 0.5, 10 november 2026: stappenbalk met één bron en menu in stapvolgorde, feedbackronde fase 23 (§7.2.1, §7.2.6, §7.14, STA-1, STA-6, STA-8, NAV-1, NAV-9, NAV-10, NAV-11).
 Versie 0.4, 10 november 2026: groep opzetten met één opzetlink uit het Sheet-menu, op verzoek van David (§7.1.9, §7.1.10, §7.18, GRP-1, GRP-6, GRP-7, GRP-8, RON-5).
 Versie 0.3, 9 november 2026: kalendervenster en kalenderweergave bijgewerkt na het ontwerp (AAN-15, §7.3, §9).
@@ -127,7 +128,7 @@ offset (`2027-03-01T23:59:00+01:00`); de tijdzone van script en Sheet is Europe/
 |---|---|---|
 | `Groep` (één rij) | `naam`, `apiVersie`, `opgezet` (bool), `aangemaakt` | F-22 |
 | `Leden` | `id`, `voornaam`, `woonplaats`, `actief` | F-11, F-22, F-27 |
-| `Edities` | `id`, `jaar`, `titel`, `stap` (enum §7.2), `stapData` (JSON: verwachte datum per stap), `periodeVan`, `periodeTot`, `voorkeursmaanden` (JSON, maandnummers), `deadline` (datum+tijd), `blokken` (JSON, aan/uit per blok), `lijsten` (JSON: activiteiten, programma, eten en drinken), `vastgelegdWeekend`, `deelvorm` (`info`, `stemmen`, `geboekt`), `geboektAccommodatieId`, `boodschappenDefinitief` (bool), `versie`, `bijgewerkt` | F-08, F-20, F-30, F-32, F-36, F-43, F-45 |
+| `Edities` | `id`, `jaar`, `titel`, `stap` (enum §7.2), `stapData` (JSON, vervallen: wordt niet meer gelezen of geschreven, DDL-1), `periodeVan`, `periodeTot`, `voorkeursmaanden` (JSON, maandnummers), `deadline` (datum+tijd), `blokken` (JSON, aan/uit per blok), `lijsten` (JSON: activiteiten, programma, eten en drinken), `vastgelegdWeekend`, `deelvorm` (`info`, `stemmen`, `geboekt`), `geboektAccommodatieId`, `boodschappenDefinitief` (bool), `versie`, `bijgewerkt` | F-08, F-20, F-30, F-32, F-36, F-43, F-45 |
 | `Deelnemers` | `id`, `editieId`, `lidId`, `tokenHash`, `pinHash`, `pinSalt`, `rol` (`deelnemer`, `organisator`), `afgehaakt` (bool), `ingevuld` (bool), `ingevuldOp` | F-21, F-29, F-38, F-47 |
 | `Beheerlinks` | `id`, `lidId`, `tokenHash`, `wachtwoordHash` (leeg tot eerste gebruik), `wachtwoordSalt`, `actief` (bool), `gemaakt`. Een beheerlink hoort bij een lid en geeft beheer over de edities waarin dat lid organisator is, plus het aanmaken van nieuwe edities | F-38 |
 | `Antwoorden` | `id`, `editieId`, `deelnemerId`, `data` (JSON §5.2), `versie`, `bijgewerkt` | F-02 t/m F-15, F-24 t/m F-28, F-33, F-36, F-37, F-41 |
@@ -315,17 +316,16 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
    Meenemen, Weekend, Afrekening, Afgerond.
 2. Alleen de organisator zet de stap, één stap vooruit of één stap terug. Terug naar
    `invullen` kan niet meer vanaf `accommodatie` (AAN-05).
-3. Naar `overzicht` gaan sluit het invullen, ook voor de deadline (AAN-04). Na de deadline
-   kan niemand meer opslaan; de organisator kan de deadline verlengen zolang de stap
-   `invullen` is.
-4. Elke stap heeft een verwachte datum in `stapData`, door de organisator aan te passen.
-   Bij aanmaken stelt de app voor: Invullen tot de deadline, Overzicht deadline + 2 dagen,
-   Accommodatie deadline + 14 dagen. Voorbereiding, Weekend en Afrekenen blijven leeg
-   ("volgt") tot het weekend is vastgelegd; dan worden ze vrijdag − 14 dagen, de vrijdag en
-   de zondag + 1 dag, tenzij de organisator ze al had ingevuld.
+3. Naar `overzicht` gaan sluit het invullen, ook voor de deadline (AAN-04). De deadline zelf is
+   informatief en blokkeert niets: opslaan lukt ook erna zolang de stap `invullen` is (DDL-1).
+   De organisator kan de deadline verlengen zolang de stap `invullen` is.
+4. De stappen hebben geen verwachte datums. De enige datum is de deadline van Invullen; die staat
+   bij het formulier ("Graag ingevuld vóór vrijdag 21 november") en in Voortgang, niet in de
+   stappenbalk of het stappenbeheer. De kolom `stapData` blijft in de Sheet en wordt genegeerd
+   (niet gelezen, niet geschreven).
 5. Elke stapwijziging maakt een WhatsApp-tekst voor de organisator (§7.12).
-6. De stap heeft één bron: de editie in de Sheet. De schil houdt één stand (stap, titel, verwachte
-   data, vastgelegd weekend) uit het scherm `start` en tekent stappenbalk en menu daaruit, voor elke
+6. De stap heeft één bron: de editie in de Sheet. De schil houdt één stand (stap, titel,
+   vastgelegd weekend) uit het scherm `start` en tekent stappenbalk en menu daaruit, voor elke
    rol. Ze haalt die stand op bij openen, bij elke navigatie, als de app weer zichtbaar wordt en na
    een stapwijziging in beheer. Een deelnemer ziet zijn editie, een beheersessie de nieuwste eigen
    editie (AAN-71). Er is geen stap in het adres en geen voorbeeldeditie meer.
@@ -372,9 +372,11 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
 7. Eigen vragen van het type tekst: maximaal 500 tekens. De drie velden `...Eigen` zijn taginvoer
    (TAG-1 t/m TAG-10): een lijst van hooguit 20 tags van hooguit 40 tekens, dubbel op kleine letters,
    zonder accenten, spaties en leestekens (AAN-74). Oude tekst wordt bij lezen gesplitst (AAN-76).
-8. "Opslaan" bewaart alles; een deelnemer telt als **ingevuld** zodra minstens één weekend
-   een waarde heeft en beide budgetten en de reistijd gekozen zijn (AAN-33). Het formulier toont wat
-   nog ontbreekt.
+8. "Opslaan" bewaart alles, ook een half formulier (FRM-11); een deelnemer telt als **ingevuld** zodra
+   minstens één weekend een waarde heeft (AAN-33). Alleen de kalender is verplicht; Budget, Reistijd
+   en Verblijf zijn optioneel en dragen "(optioneel)" in de kop. Het formulier toont wat nog ontbreekt.
+   De voorkeuren voor eten en doen (vinkjes uit de editielijsten plus tags, alles optioneel) blijven
+   bij Invullen en komen terug bij de organisator in Weekendje prikker (OND-3).
 9. Opslaan geeft `gewijzigd` als de versie niet overeenkomt (bijvoorbeeld een tweede apparaat
    van dezelfde persoon); de app laadt dan de nieuwste versie en meldt dat.
 
@@ -464,8 +466,8 @@ Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig (AAN-16).
    `https://wa.me/?text=<tekst>`, en altijd met een kopieerknop.
 2. Teksten: uitnodiging per persoon (naam en link, zonder pincode), pincode per persoon
    (alleen de pincode met de naam van de editie), herinnering (wie nog niet heeft ingevuld en
-   de deadline), één per stap (wat er nu van iedereen wordt verwacht en de verwachte datum
-   van de volgende stap), betaalverzoek per betaling ("Wil je €12,40 overmaken voor
+   de deadline), één per stap (wat er nu van iedereen wordt verwacht en welke stap daarna
+   volgt, zonder datums), betaalverzoek per betaling ("Wil je €12,40 overmaken voor
    Weekendje weg 2027?").
 3. Teksten bevatten nooit een pincode samen met een link en nooit een rekeningnummer (AAN-22).
 
@@ -599,13 +601,13 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **EDI-4** "Links maken" toont per deelnemer zijn link en pincode met de twee WhatsApp-teksten en kopieerknoppen.
 - **EDI-5** De organisator vernieuwt de pincode van één deelnemer; de oude werkt direct niet meer.
 - **EDI-6** De organisator maakt een beheerlink voor een lid, zoals een tweede organisator of de organisator van een nieuwe editie; dat lid kiest bij eerste gebruik zijn eigen wachtwoord.
-- **EDI-7** De organisator zet de stap volgens §7.2; elke wijziging toont daarna de WhatsApp-tekst van de nieuwe stap.
-- **EDI-8** De organisator past de verwachte datum per stap aan; de voorstelwaarden volgen §7.2.4.
+- **EDI-7** De organisator zet de stap volgens §7.2; elke wijziging toont daarna de WhatsApp-tekst van de nieuwe stap, zonder datums van latere stappen.
+- **EDI-8** Vervallen (fase 24): de stappen hebben geen verwachte datums meer, zie §7.2.4.
 - **EDI-9** De organisator markeert een deelnemer als afgehaakt en kan dat terugdraaien; de gevolgen volgen §7.7.5, §7.11.4 en §7.13.9.
-- **EDI-10** De organisator verlengt de deadline zolang de stap Invullen is.
+- **EDI-10** De organisator verlengt de deadline zolang de stap Invullen is; stappenbeheer stelt alleen de deadline in.
 
 ### Stappenbalk en startscherm (STA)
-- **STA-1** Bovenaan elk scherm staat de stappenbalk met zeven stappen met de namen uit §7.2.1: afgerond met vinkje, huidige uitgelicht, later grijs, elk met de verwachte datum.
+- **STA-1** Bovenaan elk scherm staat de stappenbalk met zeven stappen met de namen uit §7.2.1: afgerond met vinkje, huidige uitgelicht, later grijs, zonder datums.
 - **STA-2** Op mobiel toont de stappenbalk de huidige stap met de vorige en volgende; tikken klapt alle stappen uit.
 - **STA-3** Het startscherm van deelnemer en organisator volgt de tabel in §7.14.
 - **STA-4** Het startscherm van de organisator toont zijn eerstvolgende actie als knop.
@@ -630,12 +632,19 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **FRM-5** Activiteiten, programma en sfeer en eten en drinken zijn vinkjeslijsten uit de editielijsten, elk met een taginvoer voor wat de lijst niet noemt.
 - **FRM-6** Het blok Samenwerken op vrijdag verschijnt alleen als de organisator het aanzet.
 - **FRM-7** Eigen vragen worden getoond met het invoerelement dat bij hun type hoort.
-- **FRM-8** Opslaan bewaart alles, toont "Opgeslagen" en de status ingevuld volgens §7.4.8.
-- **FRM-9** Na de deadline of vanaf de stap Overzicht is het formulier alleen-lezen met de reden erbij.
+- **FRM-8** Opslaan bewaart alles, ook een half formulier, toont "Opgeslagen" en de status ingevuld volgens §7.4.8.
+- **FRM-9** Vanaf de stap Overzicht is het formulier alleen-lezen met de reden erbij; de deadline sluit het niet (DDL-1).
 - **FRM-10** Een versieconflict laadt de nieuwste antwoorden en meldt dat.
+- **FRM-11** Gedeeltelijk opslaan: alleen de kalender is verplicht, budgetten, reistijd en verblijf zijn optioneel met "(optioneel)" in de kop; een deelnemer met alleen beschikbaarheid telt als ingevuld.
+
+### Onderdelen en deadline (OND, DDL)
+- **OND-1** Boodschappen, kookbeurten, programma, kamerindeling en carpool hebben elk één vlag in `src/shared/onderdelen.js`; alle vijf staan uit (AAN-80).
+- **OND-2** Een onderdeel dat uitstaat is weg uit menu, start, eerstvolgende actie, status per onderdeel en uitleg; zijn route bestaat niet. Acties en tabs in de Sheet blijven ongemoeid.
+- **OND-3** De voorkeuren voor eten en doen blijven bij Invullen (vinkjes uit de editielijsten plus tags, alles optioneel) en komen terug bij de organisator.
+- **DDL-1** De deadline staat alleen bij Invullen en in Voortgang en is informatief: hij blokkeert opslaan niet.
 
 ### Voortgang en overzicht (OVZ)
-- **OVZ-1** Iedereen ziet per deelnemer een vinkje voor ingevuld of nog niet, plus de deadline.
+- **OVZ-1** Iedereen ziet per deelnemer een vinkje voor ingevuld of nog niet, plus de deadline (informatief, DDL-1).
 - **OVZ-2** De organisator ziet een herinneringsknop die de WhatsApp-tekst met de namen van wie nog niet heeft ingevuld maakt.
 - **OVZ-3** Vanaf de stap Overzicht zien deelnemers het overlapoverzicht volgens §7.5.3; daarvoor ziet een deelnemer alleen "Het overzicht verschijnt als de organisator het vrijgeeft".
 - **OVZ-4** De heatmap toont per weekend de aantallen ja, misschien en nee, de voorkeursmaand en de vakantiekenmerken.

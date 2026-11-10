@@ -36,6 +36,7 @@ test('NAV-9: de beheerschermen staan niet los in het hoofdmenu, alleen achter Be
   assert.deepEqual(beheer.routes, ['beheren', ...BEHEER_SCHERMEN]);
 });
 
+const ALLES_AAN = { boodschappen: true, kookbeurten: true, programma: true, kamers: true, carpool: true };
 const ALLE_ROUTES = ['start', 'archief', 'beheren', 'formulier', 'leden', 'voortgang', 'overzicht', 'detail', 'stappen', 'posten', 'afrekening',
   'accommodaties', 'accommodatie-beheer', 'meenemen', 'boodschappen', 'kookbeurten', 'programma', 'kamers', 'carpool', 'uitleg'];
 
@@ -61,7 +62,7 @@ test('STA-8: balk, menu, stappenbeheer en WhatsApp gebruiken dezelfde stapnamen'
   assert.deepEqual(Object.values(STAPNAMEN), ['Invullen', 'Weekendje prikker', 'Accommodatie', 'Meenemen', 'Weekend', 'Afrekening', 'Afgerond']);
   for (const m of MENU.filter((x) => x.stap)) assert.equal(m.label, STAPNAMEN[m.stap], m.naam);
   assert.equal(komtInStap('overzicht'), 'Komt in stap Weekendje prikker');
-  assert.match(stapTekst({ editieTitel: 'W', stap: 'overzicht', stapData: {} }), /De stap Accommodatie volgt later/);
+  assert.match(stapTekst({ editieTitel: 'W', stap: 'overzicht' }), /Daarna volgt de stap Accommodatie\./);
   assert.equal(eersteActie({ editie: { id: 'e1', stap: 'invullen' }, voortgang: { aantal: 2, ingevuld: 2 } }).tekst, 'Zet de stap op Weekendje prikker');
 });
 
@@ -79,8 +80,10 @@ test('STA-4: de eerstvolgende actie van de organisator volgt de stap', () => {
   assert.equal(eersteActie(g('invullen', { voortgang: { aantal: 4, ingevuld: 4 } })).route, '#/stappen');
   assert.equal(eersteActie(g('overzicht')).tekst, 'Weekend vastleggen');
   assert.equal(eersteActie(g('accommodatie')).tekst, 'Accommodaties beheren');
-  assert.equal(eersteActie(g('voorbereiding')).tekst, 'Boodschappen definitief maken');
-  assert.equal(eersteActie(g('weekend')).tekst, 'Programma beheren');
+  assert.equal(eersteActie(g('voorbereiding'), ALLES_AAN).tekst, 'Boodschappen definitief maken');
+  assert.equal(eersteActie(g('weekend'), ALLES_AAN).tekst, 'Programma beheren');
+  assert.equal(eersteActie(g('voorbereiding')).tekst, 'Zet de stap op Weekend'); // OND-2: Boodschappen staat uit
+  assert.equal(eersteActie(g('weekend')).tekst, 'Zet de stap op Afrekening'); // OND-2: Programma staat uit
   assert.equal(eersteActie(g('afrekenen', { afrekening: { open: [{}] } })).tekst, 'Openstaande betalingen');
   assert.equal(eersteActie(g('afgerond')).tekst, 'Nieuwe editie');
   assert.equal(eersteActie(g('afgerond')).route, '#/editie-nieuw?van=e1');

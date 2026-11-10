@@ -3,6 +3,7 @@
 import { h } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { STAPNAMEN } from '../../shared/stappen.js';
+import { onderdeelAan } from '../../shared/onderdelen.js';
 import { datumLang } from '../../shared/datums.js';
 import { editieKeuze } from './voortgang.js';
 import { lokaalNu, maakProgrammaVandaag } from './programma.js';
@@ -32,7 +33,7 @@ function startDeelnemer(g, ctx) {
     case 'voorbereiding':
       return [kaart('Voorbereiding', tekst(weekendRegel(g))), lijst('Voorbereiding', voorbereidingRijen(g))];
     case 'weekend':
-      return [programmaVandaag(ctx), knop('Uitgave toevoegen', '#/posten', 'primary')];
+      return [onderdeelAan('programma') ? programmaVandaag(ctx) : null, knop('Uitgave toevoegen', '#/posten', 'primary')]; // OND-2
     case 'afrekenen': {
       const regel = g.afrekening.open.length ? 'Dit staat er voor jou open.' : 'Voor jou staat er niets open.';
       return [kaart(STAPNAMEN.afrekenen, tekst(regel), g.afrekening.open.length ? h('div', { class: 'solid list', role: 'list' }, betalingRijen(g)) : null, knop('Naar de afrekening', '#/afrekening', 'primary'))];

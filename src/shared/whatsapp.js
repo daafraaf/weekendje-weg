@@ -29,7 +29,7 @@ export function herinneringTekst({ editieTitel, namen, deadline }) {
   return `Hoi allemaal! ${wie} voor ${editieTitel} staan nog open. Invullen kan tot ${datumVan(deadline)}.`;
 }
 
-// AAN-58: per stap wat er nu van iedereen wordt verwacht, en de verwachte datum van de volgende stap (§7.12.2).
+// AAN-58: per stap wat er nu van iedereen wordt verwacht, en welke stap daarna volgt (§7.12.2).
 const STAP_VERWACHT = {
   invullen: (t, d) => `Hoi allemaal! Voor ${t} kun je je beschikbaarheid en wensen invullen in de app. Invullen kan tot ${d.deadline}.`,
   overzicht: (t) => `Hoi allemaal! Het invullen voor ${t} is gesloten. In de app zie je nu welke weekenden het best passen.`,
@@ -40,14 +40,13 @@ const STAP_VERWACHT = {
   afgerond: (t) => `Hoi allemaal! ${t} is afgerond en afgerekend. Bedankt voor het mooie weekend!`,
 };
 
-export function stapTekst({ editieTitel, stap, stapData = {}, deadline }) {
+export function stapTekst({ editieTitel, stap, deadline }) {
   const maak = STAP_VERWACHT[stap];
   if (!maak) throw new Error(`onbekende stap ${stap}`);
-  const tekst = maak(editieTitel, { deadline: datumVan(deadline || stapData.invullen) });
+  const tekst = maak(editieTitel, { deadline: datumVan(deadline) });
   const volgende = STAPPEN[STAPPEN.indexOf(stap) + 1];
   if (!volgende) return tekst;
-  const datum = datumVan(stapData[volgende]);
-  return `${tekst} De stap ${STAPNAMEN[volgende]} volgt ${datum ? `rond ${datum}` : 'later, de datum hoor je nog'}.`; // STA-8: namen uit één tabel
+  return `${tekst} Daarna volgt de stap ${STAPNAMEN[volgende]}.`; // STA-8: namen uit één tabel, DDL-1: geen datums
 }
 
 // Waakhond voor de regel hierboven: waar of onwaar voor één tekst.

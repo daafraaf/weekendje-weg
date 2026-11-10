@@ -1,19 +1,9 @@
-// Stappenbalk (STA-1, STA-2, STA-8): zeven stappen met verwachte datum; op mobiel compact en uitklapbaar.
+// Stappenbalk (STA-1, STA-2, STA-8): zeven stappen zonder datums (DDL-1); op mobiel compact en uitklapbaar.
 // De stap komt altijd van de editie in de Sheet; zonder bekende stap (nog niet geladen of offline) is er geen huidige stap.
 import { STAPPEN, STAPNAMEN, stapIndex } from '../../shared/stappen.js';
 import { h, icoon } from '../dom.js';
 
-const MAANDEN = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
-
-// '2026-12-01' wordt '1 dec'; leeg wordt 'volgt'. Invullen toont 'tot 1 dec' (spec §7.2.4).
-export function stapDatum(stap, iso) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
-  if (!m) return 'volgt';
-  const tekst = `${Number(m[3])} ${MAANDEN[Number(m[2]) - 1]}`;
-  return stap === 'invullen' ? `tot ${tekst}` : tekst;
-}
-
-export function maakStappenbalk({ stap, stapData = {}, titel = '' }) {
+export function maakStappenbalk({ stap, titel = '' }) {
   const nu = stapIndex(stap);
   const klasse = (i) => (i < nu ? 'done' : i === nu ? 'now' : '');
   const status = (i) => (i < nu ? 'klaar' : i === nu ? 'huidige stap' : 'nog niet');
@@ -23,7 +13,7 @@ export function maakStappenbalk({ stap, stapData = {}, titel = '' }) {
     h('span', { class: 'sb-nr' }, i < nu ? icoon('m5 12.5 4.5 4.5L19 7.5', 16) : String(i + 1)),
     h('span', { class: 'sb-tekst' },
       h('span', { class: 'sb-naam' }, naam(s)),
-      h('span', { class: 'sb-datum' }, i === nu ? 'nu' : stapDatum(s, stapData[s])),
+      i === nu ? h('span', { class: 'sb-datum' }, 'nu') : null,
       h('span', { class: 'sr' }, `, ${status(i)}`)))));
 
   const segmenten = h('ol', { class: 'sb-segmenten' }, STAPPEN.map((s, i) => h('li', { class: `seg ${klasse(i)}` },

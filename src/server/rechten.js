@@ -63,9 +63,8 @@ const eigenOfOrganisator = {
 };
 
 // AAN-39: een organisator vult eigen antwoorden in en stemt voor zijn eigen deelnemersrij in die
-// editie. De deadline en de stap Invullen gelden ook voor hem ("na de deadline kan niemand meer
-// opslaan", §7.2.3). AAN-04: naar Overzicht gaan sluit het invullen, ook voor de deadline.
-const eigenAntwoorden = (c) => als(c.stap === 'invullen' && !c.naDeadline);
+// editie. DDL-1: de deadline is informatief en blokkeert niets. AAN-04: naar Overzicht gaan sluit het invullen.
+const eigenAntwoorden = (c) => als(c.stap === 'invullen');
 
 export const REGELS = {
   status: { gast: () => JA, deelnemer: () => JA, organisator: () => JA },

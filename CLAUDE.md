@@ -103,6 +103,9 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 - Stap en menu (STA-8): de schil houdt één stand (`haalStand`/`zetStand` in `web/app.js`) uit `scherm start`; een scherm tekent nooit een eigen stappenbalk. Stapnamen alleen uit `STAPNAMEN` in `shared/stappen.js`, menu-items uit `MENU` in `shared/start.js` (route `overzicht` heet Weekendje prikker). Niet aan de beurt: `maakKomtIn(stap)` (`components/komtin.js`) met `bijGesloten` als vierde argument van de `beheerapi`-aanroep. e2e: `balkNu(page)` in `navigatie.spec.mjs`.
 - Bewerken op Windows: veel bestanden hebben CRLF en `sed -i` maakt er LF van (volledige diff). Vervang met een node-script dat de regeleinden bewaart, of met Edit.
 
+- Onderdelen aan of uit: `ONDERDELEN` in `src/shared/onderdelen.js` (alle vijf uit, AAN-80). Nieuwe plekken die naar boodschappen, kookbeurten, programma, kamers of carpool verwijzen vragen `onderdeelAan(naam)`. e2e zet ze aan door de bundel te herschrijven: `zetOnderdelen(context, 'alle' | 'standaard' | [namen])` in `hulp.mjs`; `koppelNep` doet standaard 'alle', een test met een eigen `context.route` roept het zelf aan.
+- De deadline is informatief (DDL-1) en `stapData` bestaat niet meer in de logica; gebruik geen verwachte datums per stap.
+
 ## Valkuilen
 
 Leeg bij de start. Elke fout die twee keer gebeurt, komt hier.

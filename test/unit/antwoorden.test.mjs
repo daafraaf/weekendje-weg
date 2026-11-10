@@ -45,10 +45,11 @@ test('FRM-8: opslaan bewaart de antwoorden met versie 1 en een tweede keer met v
   assert.equal(scherm.data.antwoorden.data.budgetWeekend, 50000);
 });
 
-test('AAN-33: ingevuld is minstens een weekend, beide budgetten en de reistijd', () => {
-  assert.deepEqual(ontbreekt({}), ['een weekend', 'budget verblijf', 'budget weekend', 'reistijd']);
+test('AAN-33 FRM-11: ingevuld is minstens een weekend met een waarde; budgetten en reistijd zijn optioneel', () => {
+  assert.deepEqual(ontbreekt({}), ['een weekend']);
   assert.equal(isIngevuld(GELDIG), true);
-  assert.deepEqual(ontbreekt({ ...GELDIG, maxReistijdUur: undefined }), ['reistijd']);
+  assert.equal(isIngevuld({ beschikbaarheid: { '2027-04-09': 'misschien' } }), true);
+  assert.equal(isIngevuld({ ...GELDIG, maxReistijdUur: undefined, budgetVerblijf: undefined, budgetWeekend: undefined }), true);
   assert.deepEqual(ontbreekt({ ...GELDIG, beschikbaarheid: {} }), ['een weekend']);
   assert.equal(isIngevuld({ ...GELDIG, beschikbaarheid: { '2027-04-09': 'nee' } }), true);
 });
@@ -57,7 +58,7 @@ test('AAN-33 FRM-8: opslaan zet ingevuld en ingevuldOp op de deelnemer en haalt 
   const { tokenA, vraag, deelnemer } = omgeving();
   const half = vraag(tokenA, 'antwoordenOpslaan', { versie: 0, data: { budgetVerblijf: 5000 } });
   assert.equal(half.data.ingevuld, false);
-  assert.deepEqual(half.data.ontbreekt, ['een weekend', 'budget weekend', 'reistijd']);
+  assert.deepEqual(half.data.ontbreekt, ['een weekend']);
   assert.equal(deelnemer(ANNA).ingevuld, false);
   const vol = vraag(tokenA, 'antwoordenOpslaan', { versie: 1, data: GELDIG });
   assert.equal(vol.data.ingevuld, true);
@@ -82,10 +83,10 @@ test('FRM-10: een oude versie geeft gewijzigd en laat de nieuwste antwoorden ong
   assert.equal(vraag2(tokenB, 'antwoordenOpslaan', { versie: 3, data: GELDIG }).fout, 'gewijzigd');
 });
 
-test('FRM-9: na de deadline en vanaf de stap Overzicht is opslaan gesloten en meldt het scherm de reden', () => {
+test('FRM-9 DDL-1: opslaan na de deadline lukt; vanaf de stap Overzicht is het gesloten en meldt het scherm de reden', () => {
   const laat = omgeving({ nu: new Date('2027-03-02T10:00:00Z') });
-  assert.equal(laat.vraag(laat.tokenA, 'antwoordenOpslaan', { versie: 0, data: GELDIG }).fout, 'gesloten');
-  assert.equal(laat.vraag(laat.tokenA, 'scherm', { naam: 'formulier' }).data.alleenLezen, 'deadline');
+  assert.equal(laat.vraag(laat.tokenA, 'antwoordenOpslaan', { versie: 0, data: GELDIG }).ok, true);
+  assert.equal(laat.vraag(laat.tokenA, 'scherm', { naam: 'formulier' }).data.alleenLezen, null);
   const stap = omgeving({ stap: 'overzicht' });
   assert.equal(stap.vraag(stap.tokenA, 'antwoordenOpslaan', { versie: 0, data: GELDIG }).fout, 'gesloten');
   assert.equal(stap.vraag(stap.tokenA, 'scherm', { naam: 'formulier' }).data.alleenLezen, 'stap');

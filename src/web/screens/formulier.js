@@ -1,5 +1,5 @@
 // Invulformulier met de vier vaste blokken: Kalender, Budget, Reistijd en Verblijf
-// (FRM-1 t/m FRM-4, FRM-8, FRM-9, FRM-10, KAL-1). Ontwerp: docs/design/Formulier.dc.html, T-Gewijzigd, T-AlleenLezen.
+// (FRM-1 t/m FRM-4, FRM-8, FRM-9, FRM-10, FRM-11, DDL-1, KAL-1). Ontwerp: docs/design/Formulier.dc.html, T-Gewijzigd, T-AlleenLezen.
 // Alle tekst gaat via textContent (NFR-5).
 import { tagsUitTekst } from '../../shared/tags.js';
 import { kopMetHint } from '../components/hint.js';
@@ -47,7 +47,7 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
   function toonStatus() {
     const mist = ontbreekt(huidig);
     if (mist.length) statusTekst.textContent = `Nog nodig: ${mist.join(', ')}.`;
-    else statusTekst.textContent = opgeslagen ? 'Ingevuld' : 'Dit is genoeg om als ingevuld te tellen. Vergeet niet op te slaan.';
+    else statusTekst.textContent = opgeslagen ? 'Ingevuld' : 'Dit is genoeg om als ingevuld te tellen. Vergeet niet op te slaan.'; // FRM-11
     statusTekst.className = `form-status t-small${!mist.length && opgeslagen ? ' klaar' : ''}`;
   }
 
@@ -60,7 +60,6 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
   }
 
   function redenTekst() {
-    if (g.alleenLezen === 'deadline') return `De deadline was ${datumLang(g.editie.deadline.slice(0, 10))}. Je kunt je antwoorden nog lezen, maar niet meer wijzigen.`;
     return 'De stap Invullen is voorbij. Je kunt je antwoorden nog lezen, maar niet meer wijzigen.';
   }
 
@@ -120,7 +119,7 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
       h('p', { class: 't-small t-sec' }, 'Het hele jaar in één oogopslag. Weekenden lopen van vrijdag tot en met zondag.'),
       maakKalender({ periodeVan: e.periodeVan, periodeTot: e.periodeTot, voorkeursmaanden: e.voorkeursmaanden, waarden: huidig.beschikbaarheid || {}, alleenLezen: lezen(), bijWijziging: (w) => wijzig({ beschikbaarheid: w }) }));
 
-    const budget = kaartMetHint('Budget', 'budget',
+    const budget = kaartMetHint('Budget (optioneel)', 'budget',
       maakSchuif({
         id: 'bv', label: 'Verblijf, per persoon', aantal: BUDGET_VERBLIJF.aantal, tekstVan: (i) => schijfTekst(BUDGET_VERBLIJF, i), onder: 'schijven van €50',
         waarde: index(BUDGET_VERBLIJF, huidig.budgetVerblijf), alleenLezen: lezen(), bijWijziging: (i) => wijzig({ budgetVerblijf: bovengrens(BUDGET_VERBLIJF, i) }),
@@ -133,14 +132,14 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
     const plaats = h('input', { id: 'wp', class: 'field', type: 'text', maxlength: WOONPLAATS.max, autocomplete: 'off', readonly: lezen() });
     plaats.value = huidig.woonplaats || '';
     plaats.addEventListener('input', () => wijzig({ woonplaats: plaats.value }));
-    const reistijd = kaart('Reistijd',
+    const reistijd = kaart('Reistijd (optioneel)',
       maakSchuif({
         id: 'rt', label: 'Maximaal enkele reis', aantal: REISTIJD.max, tekstVan: (i) => `${i + 1} uur`, onder: `${REISTIJD.min} tot ${REISTIJD.max} uur`,
         waarde: huidig.maxReistijdUur == null ? null : huidig.maxReistijdUur - 1, alleenLezen: lezen(), bijWijziging: (i) => wijzig({ maxReistijdUur: i + 1 }),
       }),
       h('div', {}, h('label', { class: 'label', for: 'wp' }, 'Vertrek vanuit'), plaats));
 
-    const verblijf = kaart('Verblijf',
+    const verblijf = kaart('Verblijf (optioneel)',
       h('p', { class: 't-small t-sec' }, 'Je geeft hier je voorkeuren op. Dat is geen garantie: de organisator zoekt wat het best past bij de hele groep.'),
       VERBLIJF_WENSEN.map((w) => h('div', { class: 'wens' },
         h('p', { class: 't-body wens-naam' }, w.label),
@@ -181,7 +180,9 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
   }
 
   function teken() {
-    const kop = h('div', { class: 'wz-kop' }, h('p', { class: 't-cap' }, g.editie.titel), h('h1', { class: 't-title' }, 'Wanneer kun je?'));
+    // DDL-1: de deadline is informatief; Opslaan lukt ook erna.
+    const deadline = g.editie.deadline && !g.alleenLezen ? h('p', { class: 't-small t-sec', 'data-deadline': true }, `Graag ingevuld vóór ${datumLang(g.editie.deadline.slice(0, 10))}`) : null;
+    const kop = h('div', { class: 'wz-kop' }, h('p', { class: 't-cap' }, g.editie.titel), h('h1', { class: 't-title' }, 'Wanneer kun je?'), deadline);
     const fout = melding ? h('div', { class: 'melding-fout', role: 'alert' }, h('span', { class: 'ico' }, icoon(WAARSCHUWING, 22)), h('p', { class: 't-small' }, melding)) : null;
     const slot = g.alleenLezen ? h('div', { class: 'glass panel dl-info', role: 'status' }, h('span', { class: 'ico', style: 'color:var(--accent)' }, icoon(SLOT, 22)), h('p', { class: 't-small' }, redenTekst())) : null;
     zet(kop, slot, fout, ...blokken(),

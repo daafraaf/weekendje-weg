@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { API_VERSIE } from '../../src/server/api.js';
 import { MAX_FOUT } from '../../src/server/acties/toegang.js';
-import { amsterdamOffset, deadlineIso, stapDatums, datumPlus, BLOKKEN_STANDAARD, MAANDEN_STANDAARD } from '../../src/shared/editie.js';
+import { amsterdamOffset, deadlineIso, datumPlus, BLOKKEN_STANDAARD, MAANDEN_STANDAARD } from '../../src/shared/editie.js';
 import { persoonlijkeLinkVan, leesLink } from '../../src/web/sessie.js';
 import { maakNepApi } from '../mock-backend/server.mjs';
 import { maakDemo } from '../mock-backend/demo.mjs';
@@ -34,7 +34,7 @@ test('EDI-1: een organisator maakt een editie met periode, voorkeursmaanden, dea
   assert.equal(e.stap, 'invullen');
   assert.deepEqual(e.voorkeursmaanden, MAANDEN_STANDAARD); // 4, 5, 9, 10
   assert.deepEqual(e.blokken, { ...BLOKKEN_STANDAARD, samenwerken: true, programma: false });
-  assert.deepEqual(e.stapData, { invullen: '2027-12-01', overzicht: '2027-12-03', accommodatie: '2027-12-15' }); // §7.2.4
+  assert.equal(e.stapData, null); // DDL-1: de kolom blijft, maar wordt niet meer gevuld
   const d = rijen('Deelnemers').filter((x) => x.editieId === e.id);
   assert.equal(d.length, 4);
   assert.deepEqual(d.filter((x) => x.rol === 'organisator').map((x) => x.lidId).sort(), [leden[0], leden[1]].sort());
@@ -99,7 +99,6 @@ test('AAN-48: de deadline eindigt om 23:59 in de tijd van Amsterdam, met winter-
   assert.equal(amsterdamOffset('2027-03-28'), '+02:00');
   assert.equal(amsterdamOffset('2027-10-30'), '+02:00');
   assert.equal(amsterdamOffset('2027-10-31'), '+01:00');
-  assert.deepEqual(stapDatums('2027-02-27T23:59:00+01:00'), { invullen: '2027-02-27', overzicht: '2027-03-01', accommodatie: '2027-03-13' });
   assert.equal(datumPlus('2027-12-30', 3), '2028-01-02');
 });
 

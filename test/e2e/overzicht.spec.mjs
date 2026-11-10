@@ -99,23 +99,20 @@ test('OVZ-6: de organisator ziet per persoon en per blok de vrije tekst en de wo
   await context.close();
 });
 
-test('EDI-8 EDI-10: verwachte datum aanpassen en de deadline verlengen', async ({ browser, nep }) => {
+test('EDI-10 DDL-1: stappenbeheer stelt alleen de deadline in en de balk toont geen datums', async ({ browser, nep }) => {
   nep.store.nieuwVerzoek();
   nep.store.werkBij('Edities', 'demo-editie-2027', { deadline: '2027-03-01T23:59:00+01:00' }, 1);
   nep.store.flush();
   const { page: beheer, context } = await organisatorPagina(browser, nep);
   await beheerNaar(beheer, 'Stappen');
-  await beheer.getByLabel('Meenemen', { exact: true }).fill('2027-05-28');
-  await beheer.getByRole('button', { name: 'Data opslaan' }).click();
-  await expect(beheer.getByText('De verwachte data zijn opgeslagen.')).toBeVisible();
-  await expect(beheer.getByRole('navigation', { name: 'Stappen van de editie' })).toContainText('28 mei');
+  await expect(beheer.getByText('Verwachte datum per stap')).toHaveCount(0);
+  await expect(beheer.getByRole('button', { name: 'Data opslaan' })).toHaveCount(0);
+  await expect(beheer.getByRole('navigation', { name: 'Stappen van de editie' })).not.toContainText(/d+ (mrt|mei)/);
   await beheer.getByLabel('Nieuwe deadline').fill('2027-03-08');
   await beheer.getByRole('button', { name: 'Deadline verlengen' }).click();
   await expect(beheer.getByText('De deadline is verlengd.')).toBeVisible();
   nep.store.nieuwVerzoek();
   const e = nep.store.vind('Edities', 'demo-editie-2027');
   expect(e.deadline).toBe('2027-03-08T23:59:00+01:00');
-  expect(e.stapData.voorbereiding).toBe('2027-05-28');
-  expect(e.stapData.invullen).toBe('2027-03-08');
   await context.close();
 });

@@ -7,7 +7,7 @@ import { resetPogingen } from './toegang.js';
 import { beheerlinkVoorLid } from './opzet.js';
 import { startlijsten, lijstenVan, blokkenVan } from '../../shared/lijsten.js';
 import { maakStartItems } from './items.js';
-import { BLOKKEN_STANDAARD, MAANDEN_STANDAARD, stapDatums } from '../../shared/editie.js';
+import { BLOKKEN_STANDAARD, MAANDEN_STANDAARD } from '../../shared/editie.js';
 
 const MAX_DEELNEMERS = 20; // AAN-20: een groep heeft hooguit 20 leden
 
@@ -64,7 +64,7 @@ export const editieAanmaken = {
     const maanden = unieke(data.voorkeursmaanden || (bron && bron.voorkeursmaanden) || MAANDEN_STANDAARD).sort((a, b) => a - b);
     const lijsten = bron ? JSON.parse(JSON.stringify(lijstenVan(bron))) : startlijsten();
     const editie = store.voegToe('Edities', {
-      jaar: data.jaar, titel, stap: 'invullen', stapData: stapDatums(data.deadline),
+      jaar: data.jaar, titel, stap: 'invullen',
       periodeVan: data.periodeVan, periodeTot: data.periodeTot, voorkeursmaanden: maanden, deadline: data.deadline,
       blokken: { ...(bron ? blokkenVan(bron) : BLOKKEN_STANDAARD), ...(data.blokken || {}) }, lijsten,
       vastgelegdWeekend: '', deelvorm: 'info', geboektAccommodatieId: '', boodschappenDefinitief: false,

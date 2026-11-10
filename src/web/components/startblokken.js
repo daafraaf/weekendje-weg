@@ -3,6 +3,7 @@
 import { h } from '../dom.js';
 import { aftelTekst } from '../../shared/start.js';
 import { euro } from '../../shared/geld.js';
+import { ONDERDELEN, onderdeelAan } from '../../shared/onderdelen.js';
 import { weekendLang } from '../screens/overzicht.js';
 
 export const knop = (tekst, route, soort = 'ghost') => h('a', { class: `btn btn-${soort}`, href: route }, tekst);
@@ -28,17 +29,18 @@ export function weekendRegel(g) {
 }
 
 // De status per onderdeel van de voorbereiding; de organisator ziet dezelfde rijen als status (§7.14).
-export function voorbereidingRijen(g) {
+export function voorbereidingRijen(g, vlaggen = ONDERDELEN) {
   const v = g.voorbereiding;
   if (!v) return [];
   const s = (n, enkel, meer) => `${n} ${n === 1 ? enkel : meer}`;
+  const aan = (n, r) => (onderdeelAan(n, vlaggen) ? r : null); // OND-2
   return [
-    rij('Boodschappenlijst', v.boodschappen.definitief ? `${s(v.boodschappen.aantal, 'boodschap', 'boodschappen')}, definitief` : `${s(v.boodschappen.aantal, 'boodschap', 'boodschappen')}, nog niet definitief`, '#/boodschappen'),
+    aan('boodschappen', rij('Boodschappenlijst', v.boodschappen.definitief ? `${s(v.boodschappen.aantal, 'boodschap', 'boodschappen')}, definitief` : `${s(v.boodschappen.aantal, 'boodschap', 'boodschappen')}, nog niet definitief`, '#/boodschappen')),
     rij('Wie neemt wat mee', `${v.spullen.geclaimd} van ${s(v.spullen.totaal, 'spul', 'spullen')} heeft een eigenaar`, '#/meenemen'),
-    rij('Kookbeurten', `${v.maaltijden.metKok} van ${s(v.maaltijden.totaal, 'maaltijd', 'maaltijden')} heeft een kok${v.maaltijden.mijn ? `, jij kookt ${v.maaltijden.mijn}x` : ''}`, '#/kookbeurten'),
-    rij('Carpool', v.carpool.mijn === 'rijdt' ? 'Jij rijdt' : v.carpool.mijn === 'meerijden' ? 'Jij rijdt mee' : `${s(v.carpool.zonderRit, 'deelnemer heeft', 'deelnemers hebben')} nog geen rit`, '#/carpool'),
-    rij('Kamer', v.kamers.mijn ? `Jij slaapt in ${v.kamers.mijn}` : `${v.kamers.ingedeeld} van ${g.deelnemers} ingedeeld`, '#/kamers'),
-  ];
+    aan('kookbeurten', rij('Kookbeurten', `${v.maaltijden.metKok} van ${s(v.maaltijden.totaal, 'maaltijd', 'maaltijden')} heeft een kok${v.maaltijden.mijn ? `, jij kookt ${v.maaltijden.mijn}x` : ''}`, '#/kookbeurten')),
+    aan('carpool', rij('Carpool', v.carpool.mijn === 'rijdt' ? 'Jij rijdt' : v.carpool.mijn === 'meerijden' ? 'Jij rijdt mee' : `${s(v.carpool.zonderRit, 'deelnemer heeft', 'deelnemers hebben')} nog geen rit`, '#/carpool')),
+    aan('kamers', rij('Kamer', v.kamers.mijn ? `Jij slaapt in ${v.kamers.mijn}` : `${v.kamers.ingedeeld} van ${g.deelnemers} ingedeeld`, '#/kamers')),
+  ].filter(Boolean);
 }
 
 // "Wat jij moet betalen of krijgt" (deelnemer) en de openstaande betalingen (organisator, voor iedereen).

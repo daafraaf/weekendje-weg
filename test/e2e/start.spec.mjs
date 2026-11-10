@@ -1,5 +1,5 @@
 import { test as basis, expect } from '@playwright/test';
-import { startNep } from './hulp.mjs';
+import { startNep, zetOnderdelen } from './hulp.mjs';
 import { startServer } from '../mock-backend/server.mjs';
 import { maakDemo } from '../mock-backend/demo.mjs';
 
@@ -49,6 +49,7 @@ const lokaleDatum = (plusDagen = 0) => {
 async function startOrganisator(context, page, opties) {
   const demo = maakDemo(opties);
   const nep = await startServer({ port: 0, seed: demo.seed });
+  await zetOnderdelen(context); // de bestaande verwachtingen gaan uit van alle onderdelen; onderdelen.spec.mjs test de standaard
   await context.route('https://script.google.com/**', async (route) => {
     // Een gesloten verbinding (ECONNRESET) krijgt één nieuwe poging; is de nepserver al dicht, dan stopt het verzoek.
     const antwoord = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: route.request().postData() || '' }).catch(() => fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: route.request().postData() || '' })).catch(() => null);

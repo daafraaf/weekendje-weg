@@ -30,11 +30,11 @@ test('TOE-7 §6 groep opzetten: alleen zonder sessie met geldige setupcode; eige
   assert.ok(!mag('organisator', 'setupcodeTonen'));
 });
 
-test('TOE-7 §6 eigen antwoorden lezen en wijzigen: tot de deadline en zolang de stap Invullen is', () => {
+test('TOE-7 §6 DDL-1 eigen antwoorden lezen en wijzigen: zolang de stap Invullen is, ook na de deadline', () => {
   for (const rol of ['deelnemer', 'organisator']) {
     const c = rol === 'deelnemer' ? DN : ORG;
     assert.ok(mag(rol, 'antwoordenOpslaan', c));
-    assert.equal(R(rol, 'antwoordenOpslaan', { ...c, naDeadline: true }), 'gesloten');
+    assert.ok(mag(rol, 'antwoordenOpslaan', { ...c, naDeadline: true }));
     assert.equal(R(rol, 'antwoordenOpslaan', { ...c, stap: 'overzicht' }), 'gesloten');
     assert.ok(mag(rol, 'scherm', { ...c, scherm: 'formulier' }));
   }
@@ -227,7 +227,7 @@ test('AAN-38: bestaand item wijzigen volgt verwijderen, formulier lezen mag na d
   assert.ok(!mag('deelnemer', 'betalingTerugdraaien', { ...DN, stap: 'afrekenen', betrokken: false }));
 });
 
-test('AAN-39: ook de organisator kan na de deadline zijn antwoorden niet meer opslaan', () => {
+test('AAN-39: ook de organisator vult eigen antwoorden in, zolang de stap Invullen is', () => {
   assert.ok(mag('organisator', 'antwoordenOpslaan', ORG));
-  assert.equal(R('organisator', 'antwoordenOpslaan', { ...ORG, naDeadline: true }), 'gesloten');
+  assert.equal(R('organisator', 'antwoordenOpslaan', { ...ORG, stap: 'overzicht' }), 'gesloten');
 });

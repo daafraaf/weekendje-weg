@@ -24,8 +24,9 @@ for (const breedte of breedtes) {
         await expect(stappen).toHaveCount(7);
         await expect(stappen.nth(3)).toHaveAttribute('aria-current', 'step');
         await expect(stappen.nth(3)).toContainText('Meenemen');
-        await expect(stappen.nth(0)).toContainText('tot 1 mrt');
-        await expect(stappen.nth(4)).toContainText('volgt');
+        await expect(stappen.nth(0)).not.toContainText(/d+ (mrt|mei)/); // DDL-1: geen datums in de balk
+        await expect(stappen.nth(4)).not.toContainText('volgt');
+        await expect(stappen.nth(3)).toContainText('nu');
         await expect(stappen.nth(0).locator('svg')).toBeVisible();
       } else {
         await expect(balk.locator('.seg')).toHaveCount(7);

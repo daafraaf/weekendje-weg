@@ -5,18 +5,24 @@ import { kopMetHint } from '../components/hint.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { STAPNAMEN } from '../../shared/stappen.js';
 import { stelCategorieVoor } from '../../shared/categorieen.js';
+import { onderdeelAan } from '../../shared/onderdelen.js';
 import { editieKeuze, foutMelding } from './voortgang.js';
 
 const PLUS = ['M12 5v14M5 12h14'];
 const SLOT = ['M7 10.5h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'];
 const NAAM_MAX = 60;
 
-// MEE-1: de drie secties in de volgorde van het ontwerp.
-const SECTIES = [
+// MEE-1: de drie secties in de volgorde van het ontwerp. OND-2: de sectie Boodschappen (en wat naar de lijst verwijst) valt weg
+// zolang het onderdeel Boodschappen uitstaat.
+const sectiesVan = (vlaggen) => (onderdeelAan('boodschappen', vlaggen) ? [
   { soort: 'spullen', kop: 'Spullen', veld: 'Nieuw item', plaatshouder: 'Iets toevoegen' },
   { soort: 'keuken', kop: 'Uit eigen keuken', veld: 'Nieuw item uit je keuken', plaatshouder: 'Iets uit je keuken toevoegen', hint: 'Zonder naam gaat het op de boodschappenlijst.' },
   { soort: 'boodschap', kop: 'Boodschappen die iemand meeneemt', veld: 'Nieuwe boodschap', plaatshouder: 'Een boodschap toevoegen' },
-];
+] : [
+  { soort: 'spullen', kop: 'Spullen', veld: 'Nieuw item', plaatshouder: 'Iets toevoegen' },
+  { soort: 'keuken', kop: 'Uit eigen keuken', veld: 'Nieuw item uit je keuken', plaatshouder: 'Iets uit je keuken toevoegen' },
+]);
+const SECTIES = sectiesVan();
 
 export function maakMeenemen({ sessie, params = {}, bijVerlopen, fetchFn }) {
   let editieId = params.editie || sessie.editieId || '';
@@ -108,7 +114,7 @@ export function maakMeenemen({ sessie, params = {}, bijVerlopen, fetchFn }) {
     const toast = bericht ? h('p', { class: 'form-toast t-small', role: 'status' }, bericht) : null;
     bericht = '';
     zet(
-      kop('Zet erbij wat je meeneemt. Wat niemand claimt uit de keuken, gaat op de boodschappenlijst.'),
+      kop(onderdeelAan('boodschappen') ? 'Zet erbij wat je meeneemt. Wat niemand claimt uit de keuken, gaat op de boodschappenlijst.' : 'Zet erbij wat je meeneemt.'),
       editieKeuze(g.edities, editieId, (id) => { editieId = id; laad(); }, 'mee-editie'),
       melding.el, toast,
       g.alleenLezen ? h('p', { class: 'hint' }, 'De editie is afgerond. Je kunt de lijst nog lezen.') : null,

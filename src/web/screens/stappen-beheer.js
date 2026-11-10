@@ -1,10 +1,10 @@
-// Stappen van een editie beheren (EDI-7, EDI-8, EDI-10): stap vooruit of terug met daarna de WhatsApp-tekst
-// van de nieuwe stap, verwachte data per stap en de deadline verlengen. Alle tekst gaat via textContent (NFR-5).
+// Stappen van een editie beheren (EDI-7, EDI-10, DDL-1): stap vooruit of terug met daarna de WhatsApp-tekst
+// van de nieuwe stap en de deadline verlengen (de enige datum; die van de stappen zijn vervallen). Alle tekst gaat via textContent (NFR-5).
 // STA-8: de stappenbalk staat in de schil en leest de editie uit de Sheet; na een stapwijziging vraagt bijStap hem opnieuw op.
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { deelKnoppen } from '../delen.js';
-import { STAPPEN, STAPNAMEN, volgendeStap, vorigeStap } from '../../shared/stappen.js';
+import { STAPNAMEN, volgendeStap, vorigeStap } from '../../shared/stappen.js';
 import { datumLang } from '../../shared/datums.js';
 import { deadlineIso } from '../../shared/editie.js';
 import { stapTekst } from '../../shared/whatsapp.js';
@@ -38,7 +38,7 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
     melding.toon('');
     const r = await anroep('stapZetten', { stap }, true);
     if (!r) return;
-    gedeeld = { stap: r.editie.stap, tekst: stapTekst({ editieTitel: r.editie.titel, stap: r.editie.stap, stapData: r.editie.stapData, deadline: r.editie.deadline }) };
+    gedeeld = { stap: r.editie.stap, tekst: stapTekst({ editieTitel: r.editie.titel, stap: r.editie.stap, deadline: r.editie.deadline }) };
     bericht = '';
     bijStap();
     await laad();
@@ -49,7 +49,7 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
     const r = await anroep('editieBijwerken', data, true);
     if (!r) return;
     bericht = klaar;
-    bijStap(); // verwachte data staan ook in de balk
+    bijStap();
     await laad();
   }
 
@@ -62,21 +62,6 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
       verder === 'overzicht' ? h('p', { class: 'hint' }, `Naar ${STAPNAMEN.overzicht} sluit het invullen, ook als de deadline nog niet voorbij is.`) : null,
       terug ? h('button', { class: 'btn btn-ghost', type: 'button', 'data-schrijft': true, onclick: () => zetStap(terug) }, icoon(TERUG), `Terug naar ${STAPNAMEN[terug]}`) : null,
       e.stap === 'accommodatie' ? h('p', { class: 'hint' }, 'Terug naar Invullen kan vanaf hier niet meer.') : null);
-  }
-
-  // EDI-8: per stap de verwachte datum; leeg is "volgt".
-  function verwachteData(e, vast) {
-    const velden = STAPPEN.map((s) => {
-      const el = h('input', { id: `st-${s}`, class: 'field', type: 'date', disabled: vast });
-      el.value = (e.stapData || {})[s] || '';
-      return { s, el };
-    });
-    return h('section', { class: 'solid panel beheer-blok', 'aria-labelledby': 'st-data' },
-      h('h2', { class: 't-h3', id: 'st-data' }, 'Verwachte datum per stap'),
-      h('p', { class: 't-small t-sec' }, 'Laat een datum leeg als die nog volgt.'),
-      h('div', { class: 'wz-twee' }, velden.map(({ s, el }) => h('div', {}, h('label', { class: 'label', for: el.id }, STAPNAMEN[s]), el))),
-      h('div', { class: 'dl-knoppen' }, h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, disabled: vast,
-        onclick: () => bijwerken({ stapData: Object.fromEntries(velden.map(({ s, el }) => [s, el.value])) }, 'De verwachte data zijn opgeslagen.') }, 'Data opslaan')));
   }
 
   // EDI-10: verlengen zolang de stap Invullen is.
@@ -99,7 +84,6 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
       return;
     }
     const e = editie();
-    const vast = e.stap === 'afgerond';
     const tekstKaart = gedeeld && gedeeld.stap === e.stap ? h('section', { class: 'glass card beheer-blok', 'aria-labelledby': 'st-wa' },
       h('h2', { class: 't-h3', id: 'st-wa' }, `Bericht voor de groep: ${STAPNAMEN[e.stap]}`),
       h('div', { class: 'solid panel' }, h('p', { class: 't-body wa-tekst' }, gedeeld.tekst)),
@@ -113,8 +97,7 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
       h('section', { class: 'glass card beheer-blok', 'aria-labelledby': 'st-nu' },
         h('h2', { class: 't-h3', id: 'st-nu' }, `Nu: ${STAPNAMEN[e.stap]}`),
         stapKnoppen(e)),
-      deadline(e),
-      verwachteData(e, vast));
+      deadline(e));
   }
 
   zet(h('p', { class: 't-body t-sec' }, 'Laden…'), melding.el);

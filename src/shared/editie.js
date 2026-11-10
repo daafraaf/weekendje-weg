@@ -29,9 +29,3 @@ export function deadlineIso(datum) {
   return `${datum}T23:59:00${amsterdamOffset(datum)}`;
 }
 
-// §7.2.4: Invullen tot de deadline, Overzicht deadline + 2 dagen, Accommodatie deadline + 14 dagen.
-// De overige stappen blijven leeg ("volgt") tot het weekend is vastgelegd.
-export function stapDatums(deadline) {
-  const d = deadline.slice(0, 10);
-  return { invullen: d, overzicht: datumPlus(d, 2), accommodatie: datumPlus(d, 14) };
-}

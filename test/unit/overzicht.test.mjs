@@ -181,17 +181,15 @@ test('AAN-04: naar Overzicht sluit het invullen, ook voor de deadline', () => {
   assert.equal(opslaan().ok, true);
 });
 
-test('EDI-8: de organisator past verwachte data aan en maakt er een leeg', () => {
+test('DDL-1: stapData wordt niet meer gelezen of geschreven; de kolom blijft ongemoeid', () => {
   const { bijwerken, editie } = opzet({ stap: 'accommodatie' });
-  const r = bijwerken({ stapData: { voorbereiding: '2027-05-28', accommodatie: '' } });
-  assert.equal(r.ok, true);
-  assert.equal(r.data.editie.stapData.voorbereiding, '2027-05-28');
-  assert.equal(editie().stapData.accommodatie, undefined);
-  assert.equal(editie().stapData.invullen, fixture.stapData.invullen);
-  assert.equal(bijwerken({ stapData: { weekend: '28-05-2027' } }).fout, 'ongeldig');
+  const voor = JSON.stringify(editie().stapData);
+  assert.equal(bijwerken({ stapData: { voorbereiding: '2027-05-28' } }).fout, 'ongeldig');
+  assert.equal(bijwerken({ deadline: '2099-01-01T23:59:00+01:00' }).fout, 'gesloten');
+  assert.equal(JSON.stringify(editie().stapData), voor);
 });
 
-test('EDI-10 AAN-57: verlengen alleen in Invullen en naar een latere deadline; Invullen schuift mee', () => {
+test('EDI-10 AAN-57: verlengen alleen in Invullen en naar een latere deadline', () => {
   const { nep, bijwerken, editie, zet } = opzet({ stap: 'invullen' });
   nep.store.nieuwVerzoek();
   nep.store.werkBij('Edities', DEMO_EDITIE_ID, { deadline: '2027-03-01T23:59:00+01:00' }, 1);
@@ -200,20 +198,17 @@ test('EDI-10 AAN-57: verlengen alleen in Invullen en naar een latere deadline; I
   const r = bijwerken({ deadline: '2027-03-08T23:59:00+01:00' });
   assert.equal(r.ok, true);
   assert.equal(editie().deadline, '2027-03-08T23:59:00+01:00');
-  assert.equal(editie().stapData.invullen, '2027-03-08');
-  assert.equal(editie().stapData.overzicht, fixture.stapData.overzicht);
   zet('overzicht');
   assert.equal(bijwerken({ deadline: '2027-03-20T23:59:00+01:00' }).fout, 'gesloten');
 });
 
-test('AAN-58: elke stap heeft een tekst met de verwachte datum van de volgende stap, zonder link of pincode', () => {
-  const stapData = { invullen: '2026-12-01', overzicht: '2026-12-03', accommodatie: '2026-12-15' };
+test('AAN-58 DDL-1: elke stap heeft een tekst die de volgende stap noemt, zonder datums, link of pincode', () => {
   for (const stap of STAPPEN) {
-    const t = stapTekst({ editieTitel: 'Weekendje weg 2027', stap, stapData, deadline: '2026-12-01T23:59:00+01:00' });
+    const t = stapTekst({ editieTitel: 'Weekendje weg 2027', stap, deadline: '2026-12-01T23:59:00+01:00' });
     assert.ok(t.includes('Weekendje weg 2027'));
     assert.ok(!heeftLinkEnPincode(t));
   }
-  assert.match(stapTekst({ editieTitel: 'W', stap: 'invullen', stapData, deadline: '2026-12-01T23:59:00+01:00' }), /tot dinsdag 1 december\. De stap Weekendje prikker volgt rond donderdag 3 december\.$/);
-  assert.match(stapTekst({ editieTitel: 'W', stap: 'accommodatie', stapData }), /De stap Meenemen volgt later, de datum hoor je nog\.$/);
-  assert.ok(!/volgt/.test(stapTekst({ editieTitel: 'W', stap: 'afgerond', stapData })));
+  assert.match(stapTekst({ editieTitel: 'W', stap: 'invullen', deadline: '2026-12-01T23:59:00+01:00' }), /tot dinsdag 1 december\. Daarna volgt de stap Weekendje prikker\.$/);
+  assert.match(stapTekst({ editieTitel: 'W', stap: 'accommodatie' }), /Daarna volgt de stap Meenemen\.$/);
+  assert.ok(!/volgt/.test(stapTekst({ editieTitel: 'W', stap: 'afgerond' })));
 });

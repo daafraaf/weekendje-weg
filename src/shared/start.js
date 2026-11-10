@@ -1,12 +1,13 @@
 // Startscherm per stap, menu en aftelteller (spec §7.14, STA-3 t/m STA-6, NAV-10). Pure functies; de voorkant tekent ze.
 import { STAPNAMEN } from './stappen.js';
 import { dagenTussen } from './datums.js';
+import { ONDERDELEN, onderdeelAan } from './onderdelen.js';
 
 // NAV-10, AAN-12: het hoofdmenu heeft altijd deze zeven items, in de volgorde van de stappen en met de namen van de
 // stappenbalk. `stap` koppelt een item aan zijn stap; `routes` zijn de schermen waarop het item actief is.
 // Afrekening opent Wie betaalt wat en heeft de eindafrekening als tweede tab (NAV-11). Een scherm dat nog niet aan
 // de beurt is, toont zelf "Komt in stap ..."; boodschappen, kookbeurten, programma, kamers en carpool staan niet in
-// het menu en blijven bereikbaar via het startscherm en hun eigen adres.
+// het menu (OND-2: ze staan uit, zie onderdelen.js).
 export const MENU = [
   { naam: 'start', label: 'Start' },
   { naam: 'formulier', label: STAPNAMEN.invullen, stap: 'invullen' },
@@ -47,7 +48,7 @@ export function aftelTekst(vandaag, vrijdag) {
 }
 
 // STA-4: de eerstvolgende actie van de organisator als knop { tekst, route }. `g` is het antwoord van het scherm `start`.
-export function eersteActie(g) {
+export function eersteActie(g, vlaggen = ONDERDELEN) {
   const e = g.editie;
   if (!e) return { tekst: 'Nieuwe editie maken', route: '#/editie-nieuw' };
   const naarStap = (naam) => ({ tekst: `Zet de stap op ${naam}`, route: '#/stappen' });
@@ -59,9 +60,9 @@ export function eersteActie(g) {
     case 'accommodatie':
       return e.deelvorm === 'geboekt' ? naarStap(STAPNAMEN.voorbereiding) : { tekst: 'Accommodaties beheren', route: '#/accommodatie-beheer' };
     case 'voorbereiding':
-      return e.boodschappenDefinitief ? naarStap(STAPNAMEN.weekend) : { tekst: 'Boodschappen definitief maken', route: '#/boodschappen' };
+      return e.boodschappenDefinitief || !onderdeelAan('boodschappen', vlaggen) ? naarStap(STAPNAMEN.weekend) : { tekst: 'Boodschappen definitief maken', route: '#/boodschappen' };
     case 'weekend':
-      return g.programma.punten ? naarStap(STAPNAMEN.afrekenen) : { tekst: 'Programma beheren', route: '#/programma' };
+      return g.programma.punten || !onderdeelAan('programma', vlaggen) ? naarStap(STAPNAMEN.afrekenen) : { tekst: 'Programma beheren', route: '#/programma' };
     case 'afrekenen':
       return g.afrekening.open.length ? { tekst: 'Openstaande betalingen', route: '#/afrekening' } : naarStap(STAPNAMEN.afgerond);
     default:

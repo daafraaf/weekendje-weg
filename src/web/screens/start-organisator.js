@@ -6,6 +6,7 @@ import { STAPNAMEN } from '../../shared/stappen.js';
 import { datumLang } from '../../shared/datums.js';
 import { knop, kaart, tekst, klein, lijst, accommodatieRegel, weekendRegel, voorbereidingRijen, betalingRijen, samenvatting } from '../components/startblokken.js';
 import { maakProgrammaVandaag } from './programma.js';
+import { onderdeelAan } from '../../shared/onderdelen.js';
 
 export function startOrganisator(g, ctx) {
   const e = g.editie;
@@ -33,7 +34,9 @@ export function startOrganisator(g, ctx) {
       onder.push(kaart('Status per onderdeel', tekst(weekendRegel(g))), lijst('Status per onderdeel', voorbereidingRijen(g)));
       break;
     case 'weekend':
-      onder.push(maakProgrammaVandaag({ sessie: ctx.sessie, bijVerlopen: ctx.bijVerlopen, fetchFn: ctx.fetchFn, nu: ctx.nu }), knop('Uitgave toevoegen', '#/posten'), knop('Programma beheren', '#/programma'));
+      if (onderdeelAan('programma')) onder.push(maakProgrammaVandaag({ sessie: ctx.sessie, bijVerlopen: ctx.bijVerlopen, fetchFn: ctx.fetchFn, nu: ctx.nu })); // OND-2
+      onder.push(knop('Uitgave toevoegen', '#/posten'));
+      if (onderdeelAan('programma')) onder.push(knop('Programma beheren', '#/programma'));
       break;
     case 'afrekenen':
       onder.push(kaart('Openstaande betalingen', g.afrekening.open.length ? h('div', { class: 'solid list', role: 'list' }, betalingRijen(g)) : tekst('Er staat niets open.'), knop('Naar de afrekening', '#/afrekening')));

@@ -13,8 +13,24 @@ export async function logIn(context, { rondleidingGezien = true, soort = 'deelne
   if (rondleidingGezien) await context.addInitScript(() => localStorage.setItem('ww-rondleiding', '1'));
 }
 
+// OND-1: de vlaggen staan in de bundel (src/shared/onderdelen.js). De tests herschrijven die ene letterlijke in app.js:
+// 'alle' (standaard voor de bestaande tests) zet de vijf onderdelen aan, 'standaard' laat de bundel zoals hij is,
+// een lijst namen zet alleen die aan. Er is geen haak in de app zelf.
+export async function zetOnderdelen(context, welke = 'alle') {
+  if (welke === 'standaard') return;
+  const namen = welke === 'alle' ? ['boodschappen', 'kookbeurten', 'programma', 'kamers', 'carpool'] : welke;
+  await context.route('**/app.js', async (route) => {
+    const antwoord = await route.fetch();
+    let body = await antwoord.text();
+    body = body.replace(/var ONDERDELEN = {[^}]*};/, `var ONDERDELEN = { ${['boodschappen', 'kookbeurten', 'programma', 'kamers', 'carpool'].map((n) => `${n}: ${namen.includes(n)}`).join(', ')} };`);
+    await route.fulfill({ response: antwoord, body });
+  });
+}
+
 // Stuurt de aanroepen van een context naar script.google.com door naar de nepbackend en logt in als Anna.
+// opties.onderdelen: zie zetOnderdelen; standaard 'alle'.
 export async function koppelNep(context, nep, opties) {
+  await zetOnderdelen(context, (opties && opties.onderdelen) || 'alle');
   await context.route('https://script.google.com/**', async (route) => {
     const verzoek = { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: route.request().postData() || '' };
     // Een hergebruikte verbinding kan door de nepserver gesloten zijn (ECONNRESET); één nieuwe poging volstaat.
@@ -33,7 +49,7 @@ export async function beheerNaar(page, naam) {
   await page.getByRole('main').getByRole('link', { name: new RegExp(`^${naam}`) }).click();
 }
 
-export async function startDemo(context, { stap = 'weekend', als = 'Bas', beheer = false, aanpassen } = {}) {
+export async function startDemo(context, { stap = 'weekend', als = 'Bas', beheer = false, aanpassen, onderdelen } = {}) {
   const demo = maakVolledigeDemo({ stap });
   if (aanpassen) aanpassen(demo.seed, demo);
   const nep = await startServer({ port: 0, seed: demo.seed });
@@ -47,7 +63,7 @@ export async function startDemo(context, { stap = 'weekend', als = 'Bas', beheer
   nep.store.nieuwVerzoek();
   nep.store.voegToe('Sessies', { tokenHash: hashToken(nodeSha256, token), soort: beheer ? 'beheer' : 'deelnemer', subjectId, verloopt: '2099-01-01T00:00:00.000Z' });
   nep.store.flush();
-  await koppelNep(context, nep, beheer ? { soort: 'beheer', token, editieId: '' } : { token });
+  await koppelNep(context, nep, beheer ? { soort: 'beheer', token, editieId: '', onderdelen } : { token, onderdelen });
   return { nep, demo };
 }
 

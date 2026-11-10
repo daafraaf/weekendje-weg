@@ -2,6 +2,7 @@
 
 Versie 0.23, 10 november 2026: fase 23: AAN-40 vervallen, AAN-12 en AAN-71 herschreven.
 Versie 0.22, 10 november 2026: AAN-46 aangepast: de maker hoeft geen organisator te zijn.
+Versie 0.22, 10 november 2026: AAN-80 (fase 24, onderdelen uit); AAN-04, AAN-33, AAN-39 en AAN-57 aangepast.
 Versie 0.21, 10 november 2026: AAN-77 t/m AAN-79 (fase 22, opzetlink); AAN-45 bijgewerkt.
 Versie 0.20, 9 november 2026: AAN-31 kreeg zijn codeplek; een check telt de tests per aanname (fase 19).
 Versie 0.20, 10 november 2026: AAN-74 t/m AAN-76 (fase 21, taginvoer).
@@ -39,7 +40,7 @@ die test aan en werk je hier de status bij.
 | AAN-01 | Blokkering na foute pincodes | Regel | `src/server/acties/toegang.js` (`MAX_FOUT`) | 5 pogingen, 15 minuten; na 3 blokkades nieuwe pincode nodig | laag | open |
 | AAN-02 | Duur van een sessie | Regel | `src/server/acties/toegang.js` (`SESSIE_DEELNEMER_MS`) | deelnemer 60 dagen, beheer 12 uur | laag | open |
 | AAN-03 | Roulerende organisator | Flow | `src/server/rechten.js` (`REGELS.editieAanmaken`) | Beheerlinks horen bij een lid; elke houder van een beheerlink kan een nieuwe editie aanmaken en beheerlinks voor andere leden maken; het nieuwe lid kiest zijn eigen wachtwoord; de eigenaar kan via het Sheet-menu altijd een beheerlink maken | midden | open |
-| AAN-04 | Naar Overzicht gaan sluit het invullen | Flow | `src/server/rechten.js` (`eigenAntwoorden`) | ja, ook voor de deadline | midden | open |
+| AAN-04 | Naar Overzicht gaan sluit het invullen | Flow | `src/server/rechten.js` (`eigenAntwoorden`) | ja; de deadline zelf blokkeert niets (DDL-1) | midden | open |
 | AAN-05 | Stap terug | Regel | `src/shared/stappen.js` (`stapMogelijk`) | één stap terug, niet meer terug naar Invullen vanaf Accommodatie | laag | open |
 | AAN-06 | Rangorde voorkeursdatum | Regel | `src/shared/rangorde.js` (`vergelijk`) | minste nee, meeste ja, meeste misschien, voorkeursmaand, vroegste | midden | open |
 | AAN-07 | Wat de groep ziet na vrijgave | Flow | `src/server/acties/overzicht.js` (`overzichtScherm`) | aantallen zonder namen, bandbreedte van budget en reistijd; vrije tekst en allergieën met namen alleen voor de organisator | midden | open |
@@ -68,13 +69,13 @@ die test aan en werk je hier de status bij.
 | AAN-30 | Wie het archief ziet | Flow | `src/server/acties/start.js` (`archiefScherm`) | iedere deelnemer met een geldige link van een editie van de groep | laag | open |
 | AAN-31 | Links per editie | Flow | `src/server/acties/editie.js` (`linksMaken`) | nieuwe link en pincode per editie; oude links alleen-lezen na Afgerond | midden | open |
 | AAN-32 | Hashen | Regel | `src/server/crypto.js` (`ITERATIES`) | tokens SHA-256 zonder salt; pincode en wachtwoord iteratieve SHA-256 met salt, aantal iteraties zo dat een login in Apps Script onder 1 seconde blijft (meten in fase 20) | laag | open |
-| AAN-33 | Ingevuld-status | Regel | `src/shared/antwoorden.js` (`ontbreekt`) | minstens één weekend, beide budgetten en reistijd gekozen | laag | open |
+| AAN-33 | Ingevuld-status | Regel | `src/shared/antwoorden.js` (`ontbreekt`) | minstens één weekend met een waarde; budgetten en reistijd zijn optioneel (FRM-11) | laag | open |
 | AAN-34 | Wat koks zien | Flow | `src/server/acties/maaltijden.js` (`eetwensen`) | aantallen per eetwens en vrije tekst zonder namen; allergieën met namen alleen voor de organisator (volgt B-28; zonder deze regel kan ieder lid zich kok maken en alle allergieën met namen zien) | midden | open |
 | AAN-35 | Afrekening goed genoeg in plaats van minimaal | Regel | `src/shared/afrekening.js` (`afrekening`) | eerst gelijke bedragen koppelen, daarna grootste schuldenaar naar grootste schuldeiser | laag | open |
 | AAN-36 | Wie de pincode kiest | Regel | `src/server/crypto.js` (`maakPincode`) | het script kiest willekeurig zes cijfers; de organisator verstuurt hem alleen (F-38 zei "de organisator voegt een wachtwoordje toe") | laag | open |
 | AAN-37 | Navigatielijst voor vaste externe links | Regel | `scripts/check-bronregels.mjs` (`NAVIGATIELIJST`) | de enige plek in `src/web` waar `wa.me` en `maps.google.com` mogen staan is `src/web/navigatie.js` (spec noemt de lijst, niet de bestandsnaam) | laag | open |
 | AAN-38 | Rechten voor acties die §6 niet letterlijk noemt | Regel | `src/server/rechten.js` (`SCHERMEN`) | eigen antwoorden en de andere schermen lezen mag elk lid van de editie, ook na de deadline; een bestaand item of een bestaande post wijzigen volgt de regel voor verwijderen; `deelnemersBeheren` en `vragenBeheren` vallen onder de rij Editie; `betalingTerugdraaien` volgt "Betaling markeren" | laag | open |
-| AAN-39 | Eigen antwoorden en stem van de organisator | Regel | `src/server/rechten.js` (`eigenAntwoorden`) | de beheersessie werkt voor de deelnemersrij van het eigen lid in die editie; deadline en stap Invullen gelden ook voor de organisator (§7.2.3 "niemand") | laag | open |
+| AAN-39 | Eigen antwoorden en stem van de organisator | Regel | `src/server/rechten.js` (`eigenAntwoorden`) | de beheersessie werkt voor de deelnemersrij van het eigen lid in die editie; de stap Invullen geldt ook voor de organisator; de deadline blokkeert niemand (DDL-1) | laag | open |
 | AAN-40 | Voorbeeldeditie in de schil | Regel | `src/web/app.js` (`VOORBEELD`) | tot de login er is (fase 3) toont de schil een voorbeeldeditie; de stap komt uit `#/start?stap=...`, een onbekende stap valt terug op Invullen; vervallen in fase 23: balk en menu lezen de stap van de editie in de Sheet (STA-8) | laag | vervallen |
 | AAN-41 | Beheerlink voor de beheerlogin bestaat | Flow | `src/web/screens/pincode.js` (`bijBeheerlink`) | een geplakte beheerlink wordt herkend en leidt naar de beheerlogin; de tijdelijke melding uit fase 3 is vervallen met fase 4 | laag | vervallen |
 | AAN-42 | Uitloggen zonder verbinding | Flow | `src/web/app.js` (`uitloggen`) | de knop wist altijd de sessie op het apparaat; lukt het script niet (offline of fout), dan blijft de sessie in de Sheet tot ze verloopt | laag | open |
@@ -92,7 +93,7 @@ die test aan en werk je hier de status bij.
 | AAN-54 | Vorm van een antwoord op een eigen vraag | Regel | `src/shared/lijsten.js` (`antwoordGeldig`) | het antwoord is een tekst: ja of nee, de sleutel van de gekozen optie, bij meerkeuze de sleutels met komma's, een cijfer 1 tot 5, of de vrije tekst; een vraag heeft hooguit 20 stuks, een keuzevraag 2 tot 10 opties; opslaan laat antwoorden op verwijderde vragen weg | laag | open |
 | AAN-55 | Blokken en lijsten ook vast na Invullen | Regel | `src/server/acties/vragen.js` (`alleenInvullen`) | zoals EDI-3 voor vragen zegt, kan de organisator ook de blokken en lijsten (EDI-2) alleen aanpassen zolang de editie in de stap Invullen staat | laag | open |
 | AAN-56 | Eigen vragen in het overzicht | Regel | `src/server/acties/overzicht.js` (`TELBARE_VRAGEN`) | §7.5.3 noemt "per eigen keuzevraag het aantal per optie"; deelnemers zien dat voor ja/nee, keuze, meerkeuze en schaal (aantal per cijfer); tekstvragen zien alleen de organisator, met naam | laag | open |
-| AAN-57 | Deadline verlengen | Regel | `src/server/acties/stappen.js` (`stapWijzigingen`) | verlengen kan alleen naar een latere deadline dan de huidige, zolang de stap Invullen is; de verwachte datum van Invullen schuift mee, Overzicht en Accommodatie blijven staan | laag | open |
+| AAN-57 | Deadline verlengen | Regel | `src/server/acties/stappen.js` (`stapWijzigingen`) | verlengen kan alleen naar een latere deadline dan de huidige, zolang de stap Invullen is | laag | open |
 | AAN-58 | Teksten per stap | Regel | `src/shared/whatsapp.js` (`STAP_VERWACHT`) | de spec zegt wat een stapbericht bevat, niet de woorden; per stap één zin over wat er nu verwacht wordt, plus "<volgende stap> volgt rond <datum>" of "volgt later" als die datum leeg is | laag | open |
 | AAN-59 | Grenzen van een post | Regel | `src/shared/geld.js` (`POST_GRENZEN`) | de spec zegt alleen bedrag groter dan 0; een post is 1 cent tot € 100.000 met een omschrijving van 1 tot 80 tekens, de betaler en iedereen in de verdeling zijn deelnemers van de editie (afgehaakt mag) | laag | open |
 | AAN-60 | Totalen en jouw deel netto | Regel | `src/shared/saldo.js` (`totalen`) | GELD-6 noemt totalen per categorie; een ontvangst gaat van de uitgaven in zijn categorie af, het totaal bovenaan is netto en "jouw deel" is je aandeel in uitgaven min je aandeel in ontvangsten | laag | open |
@@ -116,6 +117,7 @@ die test aan en werk je hier de status bij.
 | AAN-77 | Uitrolinstellingen | Regel | `src/shared/uitrol.js` (`APP_ADRES`, `SJABLOON_KOPIE`) | `APP_ADRES` en `SJABLOON_KOPIE` staan in `src/shared/uitrol.js`; leeg betekent het gedrag van spec 0.3; een ingevulde waarde met een andere vorm faalt de check | laag | open |
 | AAN-78 | Opzetlink | Flow | `src/web/sessie.js` (`leesOpzetlink`) | `#/opzetten?b=<webappId>&code=<setupcode>`; de setupcode mag in het fragment omdat hij eenmalig en 30 minuten geldig is; de app haalt het fragment direct uit de adresbalk | laag | open |
 | AAN-79 | Webapp-ID in het menu | Flow | `src/server/gas/menu.js` (`webappId`) | eerst `getUrl()` als die op `/exec` eindigt, dan de eigenschap `webappId`, dan één keer vragen; reden: het is niet zeker wat `getUrl()` in de nieuwe Apps Script-editor teruggeeft | midden | open |
+| AAN-80 | Onderdelen uit | Instelling | `src/shared/onderdelen.js` (`ONDERDELEN`) | boodschappen, kookbeurten, programma, kamers en carpool staan uit met één vlag per onderdeel; uit betekent weg uit route, menu, start, eersteActie en status (geen grijs item); acties en tabs blijven bestaan | midden | open |
 
 ## Volgorde voor het gesprek
 
@@ -148,4 +150,5 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-10: AAN-74 t/m AAN-76 toegevoegd in fase 21 (taginvoer).
 - 2026-11-10: AAN-77 t/m AAN-79 toegevoegd in fase 22 (groep opzetten met een opzetlink); AAN-45 bijgewerkt: met `APP_ADRES` toont het menu de volledige beheerlink.
 - 2026-11-10: AAN-46 aangepast op verzoek van David: de maker van een editie kan de organisatie aan een ander lid geven.
+- 2026-11-10: fase 24 (onderdelen uit, invullen vrijer): AAN-80 toegevoegd; AAN-04, AAN-33, AAN-39 en AAN-57 aangepast.
 - 2026-11-10: fase 23 (stappenbalk één bron, menu in stapvolgorde): AAN-40 vervallen; AAN-12 en AAN-71 herschreven.

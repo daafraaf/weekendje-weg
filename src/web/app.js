@@ -34,6 +34,10 @@ import { maakCarpool } from './screens/carpool.js';
 import { maakRondleiding, rondleidingGezien } from './screens/rondleiding.js';
 import { luisterNaarInstallatie, kanInstalleren, installeer } from './platform.js';
 import { registreer, routelijst, start, ververs } from './router.js';
+import { onderdeelAan } from '../shared/onderdelen.js';
+
+// OND-1, OND-2: een onderdeel dat uitstaat wordt niet geregistreerd, dus geen route, geen menu-item en geen scherm op zijn adres.
+const registreerOnderdeel = (naam, def) => { if (onderdeelAan(naam)) registreer(naam, def); };
 
 registreer('start', {
   titel: 'Start',
@@ -207,7 +211,7 @@ registreer('meenemen', {
 });
 
 // MEE-5 t/m MEE-9: de boodschappenlijst op supermarktvolgorde.
-registreer('boodschappen', {
+registreerOnderdeel('boodschappen', {
   titel: 'Boodschappen',
   icoon: ['M4 5h2l2 10h9l2-7H7', 'M10 19.5h.01M17 19.5h.01'],
   render(params) {
@@ -216,7 +220,7 @@ registreer('boodschappen', {
 });
 
 // KOK-1 t/m KOK-4: maaltijden met koks, ingrediënten en eetwensen.
-registreer('kookbeurten', {
+registreerOnderdeel('kookbeurten', {
   titel: 'Kookbeurten',
   icoon: ['M5 11h14v3a5 5 0 0 1-5 5h-4a5 5 0 0 1-5-5z', 'M8 7c0-1 1-1 1-2M12 7c0-1 1-1 1-2M16 7c0-1 1-1 1-2'],
   render(params) {
@@ -225,7 +229,7 @@ registreer('kookbeurten', {
 });
 
 // PRG-1, PRG-2: het weekendprogramma per dag; de organisator beheert het hier.
-registreer('programma', {
+registreerOnderdeel('programma', {
   titel: 'Programma',
   icoon: ['M5 6h14v14H5z', 'M5 10h14', 'M9 3v4M15 3v4', 'M9 14h6'],
   render(params) {
@@ -234,7 +238,7 @@ registreer('programma', {
 });
 
 // KMR-1: kamers met bewoners; de organisator maakt kamers en deelt in.
-registreer('kamers', {
+registreerOnderdeel('kamers', {
   titel: 'Kamers',
   icoon: ['M3 18v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7', 'M3 15h18', 'M6 9V6.5A1.5 1.5 0 0 1 7.5 5h9A1.5 1.5 0 0 1 18 6.5V9'],
   render(params) {
@@ -243,7 +247,7 @@ registreer('kamers', {
 });
 
 // CAR-1, CAR-2: ritten met vrije plaatsen en wie nog geen rit heeft.
-registreer('carpool', {
+registreerOnderdeel('carpool', {
   titel: 'Carpool',
   icoon: ['M5 16V11l1.7-4h10.6L19 11v5', 'M5 16h14v2.5H5z', 'M8 13h.01M16 13h.01'],
   render(params) {
@@ -311,11 +315,11 @@ document.addEventListener('submit', houdTegen, true);
 
 const soortNu = () => { const s = leesSessie(localStorage); return s ? s.soort : undefined; };
 
-// STA-8: de stap heeft één bron, de editie in de Sheet. De schil houdt één stand (stap, titel, verwachte data,
+// STA-8: de stap heeft één bron, de editie in de Sheet. De schil houdt één stand (stap, titel,
 // vastgelegd weekend) uit het scherm `start` en tekent balk en menu daaruit, voor elke rol en op elk scherm.
 // Ophalen bij openen, bij elke navigatie, als de app weer zichtbaar wordt en na een stapwijziging in beheer.
 // AAN-71: de server kiest de editie: voor een deelnemer de zijne, voor een beheersessie de nieuwste eigen editie.
-let editieStand = null; // { stap, titel, stapData, vastgelegdWeekend } of null
+let editieStand = null; // { stap, titel, vastgelegdWeekend } of null
 let standBekend = false; // false: nog niet geladen; true met editieStand null: er is geen editie
 let standVraag = 0; // alleen het antwoord op de laatste vraag telt
 let menuActief = '';
@@ -326,12 +330,12 @@ function toonMenu(actief = menuActief) {
 
 function toonBalk() {
   if (standBekend && !editieStand) { balkPlek.replaceChildren(); return; } // zonder editie geen balk
-  const s = editieStand || { stap: null, titel: '', stapData: {} };
-  balkPlek.replaceChildren(maakStappenbalk({ stap: s.stap, stapData: s.stapData, titel: s.titel }));
+  const s = editieStand || { stap: null, titel: '' };
+  balkPlek.replaceChildren(maakStappenbalk({ stap: s.stap, titel: s.titel }));
 }
 
 function zetStand(editie) {
-  const nieuw = editie ? { stap: editie.stap, titel: editie.titel || '', stapData: editie.stapData || {}, vastgelegdWeekend: editie.vastgelegdWeekend || '' } : null;
+  const nieuw = editie ? { stap: editie.stap, titel: editie.titel || '', vastgelegdWeekend: editie.vastgelegdWeekend || '' } : null;
   const gelijk = standBekend && JSON.stringify(nieuw) === JSON.stringify(editieStand);
   standBekend = true;
   editieStand = nieuw;

@@ -6,6 +6,7 @@ import { startServer } from '../mock-backend/server.mjs';
 import { maakVolledigeDemo } from '../mock-backend/demo.mjs';
 import { datumPlus } from '../../src/shared/editie.js';
 import { saldi } from '../../src/shared/saldo.js';
+import { zetOnderdelen } from './hulp.mjs';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -42,6 +43,7 @@ test('NFR-11 §11 eindtest: zes personen doorlopen een editie van uitnodiging to
     const context = await browser.newContext({ serviceWorkers: 'block' });
     await context.addInitScript(() => localStorage.setItem('ww-rondleiding', '1'));
     await context.addInitScript(() => { window.gedeeld = []; Object.defineProperty(navigator, 'share', { configurable: true, value: async (d) => { window.gedeeld.push(d.text); } }); });
+    await zetOnderdelen(context); // OND-1: de eindtest loopt langs alle onderdelen, dus alle vijf aan
     await context.route('https://script.google.com/**', async (route) => {
       const antwoord = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: route.request().postData() || '' }).catch(() => null);
       if (!antwoord) return route.abort().catch(() => {});

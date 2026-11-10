@@ -33,14 +33,11 @@ export const VERBLIJF_WENSEN = [
   { sleutel: 'linnengoed', label: 'Linnengoed inbegrepen', opties: JA_NEE },
 ];
 
-// §7.4.8, AAN-33: ingevuld is minstens één weekend met een waarde, beide budgetten en de reistijd gekozen.
+// §7.4.8, AAN-33, FRM-11: ingevuld is minstens één weekend met een waarde; budgetten, reistijd en de rest zijn optioneel.
 // Geeft de lijst van wat nog ontbreekt; leeg betekent ingevuld.
 export function ontbreekt(data = {}) {
   const lijst = [];
   if (!Object.values(data.beschikbaarheid || {}).some(Boolean)) lijst.push('een weekend');
-  if (data.budgetVerblijf == null) lijst.push('budget verblijf');
-  if (data.budgetWeekend == null) lijst.push('budget weekend');
-  if (data.maxReistijdUur == null) lijst.push('reistijd');
   return lijst;
 }
 

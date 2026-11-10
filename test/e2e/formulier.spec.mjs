@@ -21,19 +21,18 @@ async function kies(page, id, index) {
 test('FRM-1 FRM-2 FRM-3 FRM-4 FRM-8 KAL-1: de vier vaste blokken invullen, opslaan en ingevuld zien', async ({ page, nep }) => {
   await page.goto('/#/formulier');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Wanneer kun je?');
-  for (const blok of ['Kalender', 'Budget', 'Reistijd', 'Verblijf']) await expect(page.getByRole('heading', { level: 2, name: blok, exact: true })).toBeVisible();
+  for (const blok of ['Kalender', 'Budget (optioneel)', 'Reistijd (optioneel)', 'Verblijf (optioneel)']) await expect(page.getByRole('heading', { level: 2, name: blok, exact: true })).toBeVisible();
   await expect(page.getByText('Je geeft hier je voorkeuren op. Dat is geen garantie: de organisator zoekt wat het best past bij de hele groep.')).toBeVisible();
   await expect(page.getByLabel('Vertrek vanuit')).toHaveValue('Zwolle'); // FRM-3: standaard de woonplaats van het lid
-  await expect(status(page)).toHaveText('Nog nodig: een weekend, budget verblijf, budget weekend, reistijd.');
+  await expect(status(page)).toHaveText('Nog nodig: een weekend.'); // FRM-11
   await expect(waardeTekst(page, 'bv')).toContainText('Nog kiezen');
 
   await weekend(page, '9 apr').click(); // ja
-  await expect(status(page)).toHaveText('Nog nodig: budget verblijf, budget weekend, reistijd.');
+  await expect(status(page)).toContainText('genoeg om als ingevuld te tellen'); // FRM-11: alleen de kalender is verplicht
   await kies(page, 'bv', 2); // FRM-2
   await expect(waardeTekst(page, 'bv')).toContainText('€100 tot €150');
   await kies(page, 'bw', 3);
   await expect(waardeTekst(page, 'bw')).toContainText('€300 tot €400');
-  await expect(status(page)).toHaveText('Nog nodig: reistijd.');
   await kies(page, 'rt', 1); // 2 uur
   await expect(waardeTekst(page, 'rt')).toContainText('2 uur');
   await page.getByLabel('Vertrek vanuit').fill('Utrecht');
@@ -89,18 +88,20 @@ test('FRM-10: een oude versie geeft de conflictmelding en de nieuwste antwoorden
   await context2.close();
 });
 
-test('FRM-9: na de deadline is het formulier alleen-lezen met de reden', async ({ page, nep }) => {
+test('FRM-11 DDL-1: alleen beschikbaarheid opslaan lukt, ook na de deadline, en de deadline staat als informatie bij het formulier', async ({ page, nep }) => {
   nep.store.nieuwVerzoek();
   nep.store.werkBij('Edities', 'demo-editie-2027', { deadline: '2020-01-01T23:59:00+01:00' }, 1);
   nep.store.flush();
   await page.goto('/#/formulier');
-  await expect(page.getByText('De deadline was woensdag 1 januari.')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Opslaan' })).toHaveCount(0);
-  await expect(weekend(page, '9 apr')).toBeDisabled();
-  await expect(page.locator('#bv')).toBeDisabled();
-  await expect(page.locator('#rt')).toBeDisabled();
-  await expect(page.getByLabel('Vertrek vanuit')).toHaveAttribute('readonly', '');
-  await expect(page.getByRole('group', { name: 'Sauna' }).getByRole('button').first()).toBeDisabled();
+  await expect(page.getByText('Graag ingevuld vóór woensdag 1 januari')).toBeVisible();
+  await expect(weekend(page, '9 apr')).toBeEnabled();
+  await weekend(page, '9 apr').click();
+  await page.getByRole('button', { name: 'Opslaan' }).click();
+  await opgeslagen(page);
+  const rij = antwoorden(nep);
+  expect(rij[0].data.budgetVerblijf).toBeUndefined();
+  nep.store.nieuwVerzoek();
+  expect(nep.store.vind('Deelnemers', 'dln0000000000002').ingevuld).toBe(true);
 });
 
 test('FRM-9: vanaf de stap Overzicht is het formulier alleen-lezen', async ({ page, nep }) => {
@@ -115,7 +116,7 @@ test('FRM-9: vanaf de stap Overzicht is het formulier alleen-lezen', async ({ pa
 test('NFR-9: het formulier past op 360 pixels zonder horizontaal scrollen', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto('/#/formulier');
-  await expect(page.getByRole('heading', { level: 2, name: 'Verblijf', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Verblijf (optioneel)', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
