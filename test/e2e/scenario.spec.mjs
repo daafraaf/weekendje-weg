@@ -68,7 +68,7 @@ test('NFR-11 §11 eindtest: zes personen doorlopen een editie van uitnodiging to
   const deadline = datumPlus(new Date().toISOString().slice(0, 10), 30);
   await alsBeheer();
   await naar(anne, 'editie-nieuw');
-  await anne.getByLabel('Jaar').fill(String(jaar));
+  await anne.getByLabel('Jaar').selectOption(String(jaar));
   await anne.getByLabel('Periode van').fill(`${jaar}-04-01`);
   await anne.getByLabel('Periode tot en met').fill(`${jaar}-10-31`);
   await anne.getByLabel('Deadline invullen').fill(deadline);

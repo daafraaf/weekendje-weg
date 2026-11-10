@@ -36,6 +36,7 @@ export const editieAanmaken = {
     deelnemers: v.lijst(v.id(), { max: MAX_DEELNEMERS }),
     organisatoren: v.lijst(v.id(), { max: MAX_DEELNEMERS }),
     vanEditieId: v.optioneel(v.id()),
+    zonderMaker: v.optioneel(v.bool()),
   }),
   uitvoeren({ store, sessie, data }) {
     const titel = data.titel.trim();
@@ -45,10 +46,15 @@ export const editieAanmaken = {
     // ARC-2, AAN-71: zonder eigen keuze nemen de deelnemers en organisatoren van de afgeronde editie over.
     const overnemen = bron && !data.deelnemers.length && !data.organisatoren.length;
     const vorige = (rol) => (overnemen ? store.lees('Deelnemers').filter((d) => d.editieId === bron.id && (!rol || d.rol === rol)).map((d) => d.lidId) : []);
-    // AAN-46: wie de editie maakt, is er altijd deelnemer en organisator van; een editie heeft minstens twee deelnemers.
+    // AAN-46: wie de editie maakt, is er deelnemer en organisator van, tenzij hij met `zonderMaker` de organisatie
+    // aan een ander lid geeft; dan doet hij alleen mee als hij bij de deelnemers staat. Een editie heeft altijd
+    // minstens één organisator en minstens twee deelnemers.
     const leden = new Map(store.lees('Leden').map((l) => [l.id, l]));
     const weg = (id) => overnemen && !(leden.get(id) || {}).actief; // een lid dat intussen inactief is, blijft bij overnemen weg
-    const organisatoren = unieke([sessie.lidId, ...data.organisatoren, ...vorige('organisator')]).filter((id) => id === sessie.lidId || !weg(id));
+    const zonderMaker = data.zonderMaker === true;
+    const organisatoren = unieke([...(zonderMaker ? [] : [sessie.lidId]), ...data.organisatoren, ...vorige('organisator')])
+      .filter((id) => (id === sessie.lidId ? !zonderMaker : !weg(id)));
+    if (!organisatoren.length) throw new ApiFout('ongeldig', 'Kies minstens één organisator.');
     const lidIds = unieke([...organisatoren, ...data.deelnemers, ...vorige().filter((id) => !weg(id))]);
     if (lidIds.length < 2) throw new ApiFout('ongeldig', 'Kies minstens twee deelnemers.');
     for (const id of lidIds) {
@@ -69,7 +75,7 @@ export const editieAanmaken = {
       editieId: editie.id, lidId, tokenHash: '', pinHash: '', pinSalt: '',
       rol: organisatoren.includes(lidId) ? 'organisator' : 'deelnemer', afgehaakt: false, ingevuld: false, ingevuldOp: '',
     }));
-    return { editie: { id: editie.id, titel: editie.titel, jaar: editie.jaar, stap: editie.stap }, deelnemers: deelnemers.map((d) => ({ id: d.id, lidId: d.lidId, rol: d.rol })) };
+    return { editie: { id: editie.id, titel: editie.titel, jaar: editie.jaar, stap: editie.stap }, eigenOrganisator: organisatoren.includes(sessie.lidId), deelnemers: deelnemers.map((d) => ({ id: d.id, lidId: d.lidId, rol: d.rol })) };
   },
 };
 

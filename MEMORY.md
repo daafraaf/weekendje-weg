@@ -20,6 +20,7 @@ Nog geen.
 Nieuwste bovenaan. Houd hier de laatste drie fasen; oudere regels naar
 `docs/sessielog-archief.md`.
 
+- 2026-11-10 na fase 22: lader en blokkade tegen dubbel opslaan in de schil (`bijBezig` in `web/api.js`); Nieuwe editie met jaarlijst, uitleg per veld en een organisator die niet de maker is (AAN-46 aangepast, `zonderMaker`); check groen.
 - 2026-11-10 fase 22 (opzetlink): Sheet-menu Groep opzetten met opzetlink en dialoog, wizard met ingevulde stap 1, rondleiding in drie stappen, uitrolinstellingen (GRP-1, GRP-6, GRP-7, GRP-8, RON-5), check groen, AAN-77 t/m 79 toegevoegd; zie `docs/overdracht/fase-22.md`.
 - 2026-11-10 fase 21/22: taginvoer (TAG-1 t/m 9) en navigatie (NAV-1 t/m 8) af, check groen, AAN-74 t/m 76 toegevoegd; TAG-10 en NAV-9 (Beheren) erna gebouwd; zie `docs/overdracht/fase-21.md`.
 - 2026-11-09 fase 19: eindtest af (NFR-11): scenario met zes contexten, toegankelijkheid, beveiligingsronde, demo volgens §11, aannamecheck in npm run check; check groen, geen nieuwe aannames; zie `docs/overdracht/fase-19.md`.

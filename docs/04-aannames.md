@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.22, 10 november 2026: AAN-46 aangepast: de maker hoeft geen organisator te zijn.
 Versie 0.21, 10 november 2026: AAN-77 t/m AAN-79 (fase 22, opzetlink); AAN-45 bijgewerkt.
 Versie 0.20, 9 november 2026: AAN-31 kreeg zijn codeplek; een check telt de tests per aanname (fase 19).
 Versie 0.20, 10 november 2026: AAN-74 t/m AAN-76 (fase 21, taginvoer).
@@ -79,7 +80,7 @@ die test aan en werk je hier de status bij.
 | AAN-43 | Eigenaar is na opzetten ingelogd | Flow | `src/server/acties/opzet.js` (`groepOpzetten`) | `groepOpzetten` geeft naast de beheerlink een beheersessie van 12 uur terug, zodat "Naar beheren" geen tweede wachtwoordinvoer vraagt | laag | open |
 | AAN-44 | Blokkade bij foute beheerwachtwoorden | Regel | `src/server/acties/beheertoegang.js` (`inloggenBeheer`) | vijf fouten geven 15 minuten blokkade (zelfde teller als de pincode), zonder blijvende blokkade; een reset via het Sheet-menu zet de teller op nul | laag | open |
 | AAN-45 | Beheerlink uit het Sheet-menu | Flow | `src/server/gas/menu.js` (`menuBeheerlink`) | met `APP_ADRES` ingevuld toont het menu de volledige beheerlink `<APP_ADRES>#b=<scriptId>&beheer=<token>` in een dialoog met kopieerveld; zonder kent het script de Pages-URL niet en toont het menu `#b=<scriptId>&beheer=<token>` om achter het adres van de app te zetten | laag | open |
-| AAN-46 | Maker van een editie | Regel | `src/server/acties/editie.js` (`editieAanmaken`) | wie een editie maakt is er altijd deelnemer en organisator van (anders kan hij haar niet beheren); een editie heeft minstens twee deelnemers, net als een groep | laag | open |
+| AAN-46 | Maker van een editie | Regel | `src/server/acties/editie.js` (`editieAanmaken`) | wie een editie maakt is er deelnemer en organisator van, tenzij hij op Nieuwe editie zijn eigen vinkje bij organisator uitzet (`zonderMaker`): dan organiseert een ander lid, doet de maker alleen mee als hij is aangevinkt en kan hij de editie niet beheren; een editie heeft altijd minstens één organisator en minstens twee deelnemers; organisator wisselen in een bestaande editie kan niet | laag | open |
 | AAN-47 | Links maken voor wie nog geen link heeft | Regel | `src/server/acties/editie.js` (`linksMaken`) | `linksMaken` maakt alleen voor deelnemers zonder link; wie er al een heeft houdt die, vernieuwen gaat via `linkVernieuwen` en `pincodeVernieuwen` | laag | open |
 | AAN-48 | Tijdstip van de deadline | Regel | `src/shared/editie.js` (`deadlineIso`) | de organisator kiest een dag; de deadline eindigt om 23:59 Amsterdamse tijd (zomer- of wintertijd) | laag | open |
 | AAN-49 | Grenzen van een schooljaar | Regel | `src/shared/vakanties.js` (`schooljaarBekend`) | een schooljaar "2026-2027" geldt van 1 september 2026 tot en met 31 augustus 2027; daarbuiten toont de kalender "Schoolvakanties nog niet bekend" | laag | open |
@@ -145,3 +146,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: fase 19 (eindtest): AAN-31 kreeg zijn codeplek; AAN-42, AAN-45 en AAN-68 kregen een test met hun ID; `scripts/check-aannames.mjs` telt ze in `npm run check`.
 - 2026-11-10: AAN-74 t/m AAN-76 toegevoegd in fase 21 (taginvoer).
 - 2026-11-10: AAN-77 t/m AAN-79 toegevoegd in fase 22 (groep opzetten met een opzetlink); AAN-45 bijgewerkt: met `APP_ADRES` toont het menu de volledige beheerlink.
+- 2026-11-10: AAN-46 aangepast op verzoek van David: de maker van een editie kan de organisatie aan een ander lid geven.

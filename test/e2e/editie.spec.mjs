@@ -61,7 +61,12 @@ test('EDI-1 EDI-4 EDI-5 TOE-8 TOE-12: editie met zes deelnemers, links en pincod
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Nieuwe editie');
   for (const m of [4, 5, 9, 10]) await expect(page.locator(`#ed-maand-${m}`)).toBeChecked();
   await expect(page.locator('#ed-maand-6')).not.toBeChecked();
-  await expect(page.getByLabel('Eva is organisator')).toBeDisabled();
+  await expect(page.getByLabel('Eva is organisator')).toBeChecked();
+  // Het jaar is een keuzelijst met alleen jaartallen, en elk veld heeft een regel uitleg.
+  await expect(page.locator('select#ed-jaar option')).toHaveCount(5);
+  await expect(page.getByLabel('Jaar')).toHaveAccessibleDescription('Het jaar waarin het weekend valt.');
+  await expect(page.getByLabel('Deadline invullen')).toHaveAccessibleDescription(/Tot en met deze dag \(23:59\) vult iedereen/);
+  await expect(page.getByLabel('Periode van')).toHaveAccessibleDescription(/eerste dag/);
   await page.getByLabel('Titel').fill('Studievrienden · Weekendje weg 2028');
   await page.getByLabel('Deadline invullen').fill('2027-12-01');
   await page.getByLabel('Anna is organisator').check();
@@ -196,4 +201,28 @@ test('EDI-1: een editie vraagt een deadline en minstens twee deelnemers', async 
   await expect(page.getByText('Kies minstens twee deelnemers')).toBeVisible();
   nep.store.nieuwVerzoek();
   expect(nep.store.lees('Edities')).toHaveLength(1);
+});
+
+test('EDI-1 AAN-46: de maker geeft de organisatie aan een ander lid en krijgt uitleg over de beheerlink', async ({ page, nep }) => {
+  await logInAlsOrganisator(page, nep);
+  await beheerNaar(page, 'Nieuwe editie');
+  await page.getByLabel('Deadline invullen').fill('2027-12-01');
+  // Zonder organisator kan het niet.
+  await page.getByLabel('Eva is organisator').uncheck();
+  await page.getByRole('button', { name: 'Editie maken' }).click();
+  await expect(page.getByText('Kies minstens één organisator')).toBeVisible();
+  await page.getByLabel('Anna is organisator').check();
+  await page.getByLabel('Titel').fill('Weekend van Anna');
+  await page.getByRole('button', { name: 'Editie maken' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Editie gemaakt');
+  await expect(page.getByText('Anna organiseert Weekend van Anna. Jij beheert deze editie niet.')).toBeVisible();
+  await expect(page.getByRole('listitem').filter({ hasText: 'Beheerlink maken' })).toBeVisible();
+  nep.store.nieuwVerzoek();
+  const editie = nep.store.lees('Edities').find((e) => e.titel === 'Weekend van Anna');
+  const leden = new Map(nep.store.lees('Leden').map((l) => [l.id, l.voornaam]));
+  const rollen = nep.store.lees('Deelnemers').filter((d) => d.editieId === editie.id).map((d) => [leden.get(d.lidId), d.rol]);
+  expect(rollen.filter(([, rol]) => rol === 'organisator')).toEqual([['Anna', 'organisator']]);
+  expect(rollen).toContainEqual(['Eva', 'deelnemer']);
+  await page.getByRole('link', { name: 'Terug naar Beheren' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Beheren');
 });

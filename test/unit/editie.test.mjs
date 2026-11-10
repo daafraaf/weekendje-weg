@@ -41,7 +41,31 @@ test('EDI-1: een organisator maakt een editie met periode, voorkeursmaanden, dea
   assert.ok(d.every((x) => x.tokenHash === '' && x.pinHash === ''), 'links komen pas bij Links maken');
 });
 
-test('EDI-1 AAN-46: de maker is altijd deelnemer en organisator, en een editie heeft minstens twee deelnemers', () => {
+test('EDI-1 AAN-46: met zonderMaker organiseert een ander lid; de maker doet alleen mee als hij is aangevinkt en beheert de editie niet', () => {
+  const { beheer, maak, links, rijen, leden } = opzet();
+  const s = beheer();
+  // Zonder organisator kan het niet.
+  assert.equal(maak(s, { zonderMaker: true, organisatoren: [] }).fout, 'ongeldig');
+  assert.equal(maak(s, { zonderMaker: true, organisatoren: [leden[0]], deelnemers: [leden[1], leden[2]] }).fout, 'ongeldig');
+  // Anna organiseert, Eva (de maker) doet mee als deelnemer.
+  let r = maak(s, { zonderMaker: true, organisatoren: [leden[1]] });
+  assert.equal(r.ok, true, JSON.stringify(r));
+  assert.equal(r.data.eigenOrganisator, false);
+  let d = rijen('Deelnemers').filter((x) => x.editieId === r.data.editie.id);
+  assert.deepEqual(d.filter((x) => x.rol === 'organisator').map((x) => x.lidId), [leden[1]]);
+  assert.equal(d.find((x) => x.lidId === leden[0]).rol, 'deelnemer');
+  // TOE-7: de maker kan deze editie niet beheren, de organisator wel.
+  assert.equal(links(s, r.data.editie.id).fout, 'geen_toegang');
+  assert.equal(links(beheer(leden[1]), r.data.editie.id).ok, true);
+  // De maker blijft er helemaal buiten als hij niet bij de deelnemers staat.
+  r = maak(s, { zonderMaker: true, organisatoren: [leden[1]], deelnemers: [leden[1], leden[2]] });
+  d = rijen('Deelnemers').filter((x) => x.editieId === r.data.editie.id);
+  assert.deepEqual(d.map((x) => x.lidId).sort(), [leden[1], leden[2]].sort());
+  // Zonder de vlag blijft het oude gedrag.
+  assert.equal(maak(s, { organisatoren: [leden[1]] }).data.eigenOrganisator, true);
+});
+
+test('EDI-1 AAN-46: zonder zonderMaker is de maker deelnemer en organisator, en een editie heeft minstens twee deelnemers', () => {
   const { beheer, maak, rijen, leden } = opzet();
   const r = maak(beheer(leden[1]), { deelnemers: [leden[2]], organisatoren: [] });
   assert.equal(r.ok, true);
