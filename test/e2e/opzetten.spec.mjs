@@ -240,6 +240,29 @@ test('GRP-5: de organisator voegt leden toe, wijzigt een woonplaats en maakt een
   expect(leden.find((l) => l.voornaam === 'Sanne').actief).toBe(false);
 });
 
+test('GRP-5: tijdens opslaan staat er een lader en geeft een tweede klik of Enter geen dubbel lid', async ({ page, nep }) => {
+  const token = nep.beheerlink(nep.demo.seed.Leden[0].id, WACHTWOORD);
+  await page.goto(`/#b=${SCRIPT_ID}&beheer=${token}`);
+  await page.getByLabel('Wachtwoord', { exact: true }).fill(WACHTWOORD);
+  await page.getByRole('button', { name: 'Inloggen' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  // Een traag script: elk verzoek duurt ruim een halve seconde.
+  await page.route('https://script.google.com/**', async (route) => { await new Promise((r) => { setTimeout(r, 600); }); await route.fallback(); });
+
+  await page.getByLabel('Naam', { exact: true }).fill('Sanne');
+  await page.getByLabel('Woonplaats', { exact: true }).fill('Eindhoven');
+  await page.getByLabel('Woonplaats', { exact: true }).press('Enter');
+  await expect(page.locator('.lader')).toHaveText('Opslaan…');
+  await page.getByLabel('Woonplaats', { exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Lid toevoegen' }).dispatchEvent('click'); // op mobiel kan het menu over de knop liggen
+  await expect(page.getByText('Eindhoven')).toBeVisible();
+  await expect(page.locator('.lader')).toBeHidden();
+  await expect(page.getByLabel('Naam', { exact: true })).toHaveValue('');
+  await expect(page.getByLabel('Naam', { exact: true })).toBeFocused();
+  nep.store.nieuwVerzoek();
+  expect(nep.store.lees('Leden').filter((l) => l.voornaam === 'Sanne')).toHaveLength(1);
+});
+
 test('GRP-5 TOE-7: een deelnemerssessie ziet het ledenscherm niet', async ({ page, nep }) => {
   await page.goto(`/${nep.demo.fragment(1)}`);
   await page.getByLabel('Cijfer 1').click();

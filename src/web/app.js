@@ -1,7 +1,7 @@
 // App-schil: binnenkomen met link en pincode (fase 3), beheerlogin en opzetwizard (fase 4), daarna router, stappenbalk, menu, offline-melding en service worker.
 import { STAPPEN } from '../shared/stappen.js';
 import { h, icoon } from './dom.js';
-import { OFFLINE_TEKST, maakApi } from './api.js';
+import { OFFLINE_TEKST, maakApi, bijBezig } from './api.js';
 import { maakBinnenkomen } from './screens/pincode.js';
 import { maakBeheerlogin } from './screens/beheerlogin.js';
 import { maakOpzetten } from './screens/opzetten.js';
@@ -286,6 +286,35 @@ let laatsteSessie = '';
 let onthoudenLink = null;
 let geplakteBeheerlink = null; // TOE-11: een beheerlink uit het plakveld leidt naar de beheerlogin
 root.append(schil, melding);
+
+// Lader: het script antwoordt soms pas na een paar seconden. Tijdens opslaan staat er meteen "Opslaan…" en doen
+// de schrijfknoppen niets, zodat een tweede klik of Enter geen dubbele invoer geeft. Laden toont de melding pas
+// na een korte wachttijd, zodat een snel antwoord niet flikkert.
+const LADER_WACHT_MS = 400;
+const laderTekst = h('span', {});
+const lader = h('div', { class: 'glass lader', role: 'status', hidden: true }, h('span', { class: 'lader-draai', 'aria-hidden': 'true' }), laderTekst);
+root.append(lader);
+let schrijftNu = false;
+let laderTimer = null;
+bijBezig(({ alle, schrijft }) => {
+  schrijftNu = schrijft > 0;
+  document.documentElement.classList.toggle('is-bezig', schrijftNu);
+  clearTimeout(laderTimer);
+  laderTimer = null;
+  if (!alle) { lader.hidden = true; laderTekst.textContent = ''; return; }
+  // Schermen tonen bij hun eerste keer laden zelf "Laden…"; de lader gebruikt daarom een eigen woord.
+  laderTekst.textContent = schrijftNu ? 'Opslaan…' : 'Even geduld…';
+  if (schrijftNu) lader.hidden = false;
+  else if (lader.hidden) laderTimer = setTimeout(() => { lader.hidden = false; }, LADER_WACHT_MS);
+});
+// Een klik op een schrijfknop of het verzenden van zijn formulier wordt genegeerd zolang er iets wordt opgeslagen.
+function houdTegen(e) {
+  if (!schrijftNu || !(e.target instanceof Element)) return;
+  const raakt = e.type === 'submit' ? e.target.querySelector('[data-schrijft]') : e.target.closest('[data-schrijft]');
+  if (raakt) { e.preventDefault(); e.stopPropagation(); }
+}
+document.addEventListener('click', houdTegen, true);
+document.addEventListener('submit', houdTegen, true);
 
 const soortNu = () => { const s = leesSessie(localStorage); return s ? s.soort : undefined; };
 

@@ -9,12 +9,24 @@ export class ApiFoutKlient extends Error {
   constructor(code, melding, data) { super(melding); this.code = code; this.data = data; }
 }
 
+// Bezig-melding: de schil luistert mee, zodat elk scherm dezelfde lader krijgt en opslaan niet dubbel gaat.
+// De luisteraar krijgt { alle, schrijft }: het aantal lopende verzoeken en hoeveel daarvan schrijven.
+const lopend = { alle: 0, schrijft: 0 };
+let bezigLuisteraar = null;
+export function bijBezig(fn) { bezigLuisteraar = fn; }
+function tel(d, schrijft) {
+  lopend.alle += d;
+  if (schrijft) lopend.schrijft += d;
+  if (bezigLuisteraar) bezigLuisteraar({ ...lopend });
+}
+
 export function maakApi({ basisUrl, sessie = () => '', editieId = () => '', fetchFn = (...a) => fetch(...a), online = () => navigator.onLine }) {
   return {
     // NFR-12: zonder verbinding wordt opslaan geblokkeerd; lezen mag het toch proberen.
     async anroep(actie, data = {}, { schrijft = false } = {}) {
       if (schrijft && !online()) throw new ApiFoutKlient('offline', OFFLINE_TEKST);
       let antwoord;
+      tel(1, schrijft);
       try {
         const r = await fetchFn(basisUrl, {
           method: 'POST',
@@ -24,6 +36,8 @@ export function maakApi({ basisUrl, sessie = () => '', editieId = () => '', fetc
         antwoord = await r.json();
       } catch {
         throw new ApiFoutKlient('offline', OFFLINE_TEKST);
+      } finally {
+        tel(-1, schrijft);
       }
       if (!antwoord.ok) throw new ApiFoutKlient(antwoord.fout, antwoord.fout === 'api_versie' ? VEROUDERD_TEKST : antwoord.melding, antwoord.data);
       return antwoord.data;

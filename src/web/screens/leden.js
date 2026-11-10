@@ -46,8 +46,10 @@ export function maakLeden({ sessie, uitloggen, bijVerlopen, fetchFn }) {
   voeg.addEventListener('click', async () => {
     if (!naam.value.trim()) { toonMelding('Vul een naam in.'); return; }
     await wijzig({ soort: 'toevoegen', voornaam: naam.value.trim(), woonplaats: plaats.value.trim() });
-    if (melding.hidden) { naam.value = ''; plaats.value = ''; }
+    if (melding.hidden) { naam.value = ''; plaats.value = ''; naam.focus(); }
   });
+  // Enter in een van de velden voegt toe; de klik loopt langs de schil, die hem negeert zolang er wordt opgeslagen.
+  for (const veld of [naam, plaats]) veld.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); voeg.click(); } });
   const nieuw = h('section', { class: 'solid panel wz-nieuw' },
     h('h2', { class: 't-h2' }, 'Lid toevoegen'),
     h('div', { class: 'wz-twee' },
