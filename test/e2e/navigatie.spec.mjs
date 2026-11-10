@@ -72,3 +72,19 @@ test('NAV-7: een vraagteken klapt een korte hint open en dicht', async ({ page, 
     await expect(knop).toHaveAttribute('aria-expanded', 'false');
   } finally { nep.server.close(); }
 });
+
+test('NAV-9: de beheerschermen zitten achter één menu-item Beheren', async ({ page, context }) => {
+  const { nep } = await startDemo(context, { stap: 'accommodatie', als: 'Anne', beheer: true });
+  try {
+    await page.goto('/#/leden');
+    for (const naam of ['Leden', 'Lijsten', 'Vragen', 'Stappen', 'Uitnodigen']) await expect(menu(page).getByRole('link', { name: naam, exact: true })).toHaveCount(0);
+    const beheren = menu(page).getByRole('link', { name: 'Beheren', exact: true });
+    await expect(beheren).toHaveAttribute('aria-current', 'page'); // we staan op een beheerscherm
+    await beheren.click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Beheren');
+    await expect(page.getByRole('main').getByRole('link')).toHaveCount(8);
+    await page.getByRole('main').getByRole('link', { name: /^Lijsten/ }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(beheren).toHaveAttribute('aria-current', 'page');
+  } finally { nep.server.close(); }
+});

@@ -98,7 +98,7 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
   `editieId` de nieuwste eigen editie van de organisator en geven `edities` mee voor de kiezer.
 
 - Taginvoer: `src/shared/tags.js` (`tagSleutel`, `voegToe`, `tagsUitTekst`, `tagsFout`) en `components/tagveld.js`; de server accepteert alleen lijsten, `tagsUitTekst` leest oude tekst bij lezen. Een invoerveld met `list=` heet in Playwright een `combobox`.
-- Navigatie: Archief en Uitleg staan in `NIET_IN_MENU` (`shared/start.js`); het profielmenu (`components/profielmenu.js`) en de sectie `maakAfgelopen` (`screens/archief.js`) vervangen ze. Hints: tekst in `web/hints.js`, `kopMetHint` in `components/hint.js`.
+- Navigatie: Archief en Uitleg staan in `NIET_IN_MENU` (`shared/start.js`); het profielmenu (`components/profielmenu.js`) en de sectie `maakAfgelopen` (`screens/archief.js`) vervangen ze. Beheerschermen staan in `BEHEER_SCHERMEN` en komen via het scherm `beheren` in het menu; tests gaan er via `beheerNaar` in `test/e2e/hulp.mjs` heen. Hints: tekst in `web/hints.js`, `kopMetHint` in `components/hint.js`.
 
 ## Valkuilen
 

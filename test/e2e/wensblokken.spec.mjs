@@ -1,5 +1,5 @@
 import { test as basis, expect } from '@playwright/test';
-import { startNep } from './hulp.mjs';
+import { startNep, beheerNaar } from './hulp.mjs';
 
 const SCRIPT_ID = 'demo-weekendje-weg-0001';
 const WACHTWOORD = 'duinpan-kraanvogel';
@@ -34,7 +34,7 @@ test('FRM-5 FRM-6 FRM-7 EDI-2 EDI-3 AAN-75: organisator voegt activiteit en keuz
   const { page: beheer, context } = await organisatorPagina(browser, nep);
 
   // EDI-2 en AAN-21: een activiteit erbij en Samenwerken aan.
-  await menu(beheer, 'Lijsten').click();
+  await beheerNaar(beheer, 'Lijsten');
   await expect(beheer.getByRole('heading', { level: 1 })).toHaveText('Lijsten');
   await beheer.getByLabel('Nieuw onderdeel bij Activiteiten').fill('Boogschieten');
   await beheer.locator('[data-lijst="activiteiten"]').getByRole('button', { name: 'Toevoegen' }).click();
@@ -43,11 +43,12 @@ test('FRM-5 FRM-6 FRM-7 EDI-2 EDI-3 AAN-75: organisator voegt activiteit en keuz
   await expect(beheer.getByText('Opgeslagen', { exact: true })).toBeVisible();
 
   // EDI-3: een eigen meerkeuzevraag.
-  await menu(beheer, 'Vragen').click();
+  await beheerNaar(beheer, 'Vragen');
   await expect(beheer.getByRole('heading', { level: 1 })).toHaveText('Eigen vragen');
   await beheer.getByLabel('Vraag', { exact: true }).fill('Welke spellen nemen we mee?');
   await beheer.getByLabel('Type').selectOption('meerkeuze');
-  await beheer.getByLabel(/Antwoordopties/).fill('Catan\nUno\nPoker');
+  const opties = beheer.getByRole('combobox', { name: /Antwoordopties/ }); // TAG-10
+  for (const o of ['Catan', 'Uno', 'Poker']) { await opties.fill(o); await opties.press('Enter'); }
   await beheer.getByRole('button', { name: 'Toevoegen' }).click();
   await expect(beheer.getByText('Welke spellen nemen we mee?')).toBeVisible();
   await expect(beheer.getByText('Meerdere keuzes: Catan, Uno, Poker')).toBeVisible();
@@ -88,7 +89,7 @@ test('FRM-5 FRM-6 FRM-7 EDI-2 EDI-3 AAN-75: organisator voegt activiteit en keuz
   await expect(page.getByRole('checkbox', { name: 'Uno' })).not.toBeChecked();
 
   // AAN-21: Programma uitzetten haalt het blok uit het formulier.
-  await beheer.getByRole('link', { name: 'Lijsten' }).click();
+  await beheerNaar(beheer, 'Lijsten');
   await beheer.getByLabel('Programma en sfeer', { exact: true }).uncheck();
   await beheer.getByRole('button', { name: 'Opslaan' }).click();
   await expect(beheer.getByText('Opgeslagen', { exact: true })).toBeVisible();

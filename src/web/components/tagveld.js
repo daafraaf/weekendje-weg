@@ -1,11 +1,12 @@
 // Taginvoer (TAG-1 t/m TAG-6). Een tag is een los onderdeel met een kruisje. Alle tekst gaat via textContent (NFR-5).
 // Enter, komma of de knop Toevoegen maken een tag; wat nog in het veld staat bij het verlaten ook. Tab maakt zelf geen tag (AAN-74).
 // vinkjes: [{ sleutel, label }] van het blok. Is een term gelijk aan een vinkje, dan wordt dat aangezet in plaats van een tag te maken.
+// max: het aantal tags dat het veld toelaat (standaard TAGS_MAX; TAG-10 gebruikt het voor de opties van een vraag).
 // Suggesties komen alleen uit de nog niet aangevinkte vinkjes (AAN-75).
 import { h } from '../dom.js';
 import { TAG_MAX, TAGS_MAX, schoonTag, tagSleutel, splitsTekst, voegToe, tagsFout } from '../../shared/tags.js';
 
-export function maakTagveld({ id, label, tags = [], vinkjes = [], aangevinkt = () => [], alleenLezen = false, bijWijziging = () => {}, bijVinkje = () => {} }) {
+export function maakTagveld({ id, label, tags = [], vinkjes = [], aangevinkt = () => [], alleenLezen = false, max = TAGS_MAX, bijWijziging = () => {}, bijVinkje = () => {} }) {
   let lijst = [...tags];
   const lijstEl = h('ul', { class: 'tags', 'aria-label': `${label}, ingevoerde onderdelen` });
   const invoer = h('input', { id, class: 'field tag-invoer', type: 'text', maxlength: TAG_MAX, autocomplete: 'off', list: `${id}-sug`, readonly: alleenLezen, 'aria-describedby': `${id}-melding`, placeholder: 'Typ en druk op Enter' });
@@ -53,7 +54,7 @@ export function maakTagveld({ id, label, tags = [], vinkjes = [], aangevinkt = (
     const pas = nieuw.filter((s) => schoonTag(s).length <= TAG_MAX);
     const r = voegToe(lijst, pas);
     if (r.dubbel.length) meldingen.push(`${r.dubbel.join(', ')} staat er al.`);
-    if (r.tags.length > TAGS_MAX) meldingen.push(`Maximaal ${TAGS_MAX} onderdelen per veld.`);
+    if (r.tags.length > max) meldingen.push(`Maximaal ${max} onderdelen per veld.`);
     else if (r.tags.length > lijst.length) {
       const toegevoegd = r.tags.slice(lijst.length);
       lijst = r.tags;

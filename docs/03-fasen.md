@@ -50,6 +50,7 @@ David samen met Claude Code.
 | 18 | Rondleiding en installatie | RON-1, RON-2, RON-3, RON-4 | - | Sonnet |
 | 19 | Eindtest | NFR-11 | - | Opus |
 | 20 | Uitrol (met David) | NFR-17 | - | Sonnet |
+| 22 | Groep opzetten met opzetlink | GRP-1, GRP-6, GRP-7, GRP-8, RON-5 | AAN-28, AAN-45, AAN-77, AAN-78, AAN-79 | Sonnet |
 
 ## Fase 0: Opzet
 
@@ -233,6 +234,17 @@ David samen met Claude Code.
 - **Klaar als:** David heeft ingelogd met `clasp login` en bij GitHub. De sjabloon-Sheet heeft een kopieerlink, de Pages-site draait, een echte groep met twee testpersonen doorloopt inloggen, invullen en een uitgave op een iPhone en een Android-telefoon. Tweestapsverificatie en een beschermde `main` zijn gecontroleerd.
 - **Leest:** spec §2, §3, §10 (NFR-17), §14
 - **Hangt af van:** fase 19
+
+## Fase 22: Groep opzetten met opzetlink
+
+Toegevoegd na de uitrol, bij bouwspec versie 0.4. Fase 21 (taginvoer) staat los van deze lijst.
+
+- **Eisen:** GRP-1, GRP-6, GRP-7, GRP-8, RON-5
+- **Aannames:** AAN-28, AAN-45, AAN-77, AAN-78, AAN-79
+- **Raakt:** zie `fasen/fase-22.md`
+- **Klaar als:** `npm run check` groen. Een opzetlink opent de wizard bij stap 1 met URL en setupcode ingevuld en laat alleen `#/opzetten` in de adresbalk staan. Het Sheet-menu "Groep opzetten" toont de opzetlink in een dialoog; een opgezette groep krijgt geen code.
+- **Leest:** spec §3 (Implementaties), §7.1.9, §7.1.10, §7.18, §8 GRP, RON-5, NFR-2, NFR-5
+- **Hangt af van:** fase 21 gecommit
 
 ## Opdracht voor de hele run
 

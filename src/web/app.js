@@ -27,6 +27,7 @@ import { maakKookbeurten } from './screens/kookbeurten.js';
 import { maakProgramma } from './screens/programma.js';
 import { maakStart } from './screens/start.js';
 import { maakArchief } from './screens/archief.js';
+import { maakBeheren } from './screens/beheren.js';
 import { maakMenuItems } from './components/menu.js';
 import { maakProfielmenu } from './components/profielmenu.js';
 import { maakKamers } from './screens/kamers.js';
@@ -55,6 +56,16 @@ registreer('archief', {
   icoon: ['M4 6h16v4H4z', 'M5.5 10v9h13v-9', 'M10 14h4'],
   render() {
     return maakArchief({ sessie: leesSessie(localStorage), bijVerlopen: () => { wisSessie(localStorage); kies(); } });
+  },
+});
+
+// NAV-9: de ingang voor alle beheerschermen.
+registreer('beheren', {
+  titel: 'Beheren',
+  soort: 'beheer',
+  icoon: ['M4 7h10M18 7h2M4 17h2M10 17h10', 'M16 5v4M8 15v4'],
+  render() {
+    return maakBeheren({ routes: routelijst('beheer') });
   },
 });
 

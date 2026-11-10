@@ -1,4 +1,5 @@
 import { test as basis, expect } from '@playwright/test';
+import { beheerNaar } from './hulp.mjs';
 import { startServer } from '../mock-backend/server.mjs';
 import { maakDemo } from '../mock-backend/demo.mjs';
 import { heeftLinkEnPincode } from '../../src/shared/whatsapp.js';
@@ -56,7 +57,7 @@ test('EDI-1 EDI-4 EDI-5 TOE-8 TOE-12: editie met zes deelnemers, links en pincod
   await logInAlsOrganisator(page, nep);
 
   // EDI-1: een editie maken met zes deelnemers, de standaard voorkeursmaanden en een deadline.
-  await menu(page, 'Nieuwe editie').click();
+  await beheerNaar(page, 'Nieuwe editie');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Nieuwe editie');
   for (const m of [4, 5, 9, 10]) await expect(page.locator(`#ed-maand-${m}`)).toBeChecked();
   await expect(page.locator('#ed-maand-6')).not.toBeChecked();
@@ -106,7 +107,7 @@ test('EDI-1 EDI-4 EDI-5 TOE-8 TOE-12: editie met zes deelnemers, links en pincod
   const anna = namen.indexOf('Anna');
   const bas = namen.indexOf('Bram');
   const sessieBram = vraag(nep, { actie: 'inloggenDeelnemer', data: { token: links[bas].slice(-22), pin: pins[bas] } }).data.sessie;
-  await menu(page, 'Leden').click();
+  await beheerNaar(page, 'Leden');
   await page.getByRole('button', { name: 'Uitloggen' }).click();
   await page.goto('about:blank');
   await page.goto(`/${links[anna].slice(links[anna].indexOf('#'))}`);
@@ -116,7 +117,7 @@ test('EDI-1 EDI-4 EDI-5 TOE-8 TOE-12: editie met zes deelnemers, links en pincod
 
   // TOE-8: wie terugkomt, ziet geen links of pincodes meer, alleen de knoppen om nieuwe te maken.
   await logInAlsOrganisator(page, nep);
-  await menu(page, 'Uitnodigen').click();
+  await beheerNaar(page, 'Uitnodigen');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Uitnodigen');
   await expect(page.getByText('Nog geen link')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Nieuwe pincode voor Anna' })).toBeVisible();
@@ -143,7 +144,7 @@ test('EDI-1 EDI-4 EDI-5 TOE-8 TOE-12: editie met zes deelnemers, links en pincod
   expect(vraag(nep, { actie: 'uitloggen', sessie: sessieBram }).fout).toBe('geen_toegang');
 
   // Anna: oude pincode faalt in de app, de nieuwe werkt met dezelfde link.
-  await menu(page, 'Leden').click();
+  await beheerNaar(page, 'Leden');
   await page.getByRole('button', { name: 'Uitloggen' }).click();
   await page.goto('about:blank');
   await page.goto(`/${links[anna].slice(links[anna].indexOf('#'))}`);
@@ -164,7 +165,7 @@ test('EDI-1 EDI-4 EDI-5 TOE-8 TOE-12: editie met zes deelnemers, links en pincod
 
 test('EDI-6: de organisator maakt een beheerlink voor een lid, dat lid kiest een eigen wachtwoord', async ({ page, nep }) => {
   await logInAlsOrganisator(page, nep);
-  await menu(page, 'Uitnodigen').click();
+  await beheerNaar(page, 'Uitnodigen');
   await page.getByLabel('Lid', { exact: true }).selectOption({ label: 'Chris' });
   await page.getByRole('button', { name: 'Beheerlink maken' }).click();
   const link = await page.getByRole('textbox', { name: 'Beheerlink van Chris' }).inputValue();
@@ -172,7 +173,7 @@ test('EDI-6: de organisator maakt een beheerlink voor een lid, dat lid kiest een
   await expect(page.getByRole('button', { name: 'Beheerlink van Chris kopiëren' })).toBeVisible();
   await expect(page.getByText('Je ziet deze link alleen nu')).toBeVisible();
 
-  await menu(page, 'Leden').click();
+  await beheerNaar(page, 'Leden');
   await page.getByRole('button', { name: 'Uitloggen' }).click();
   await page.goto('about:blank');
   await page.goto(`/${link.slice(link.indexOf('#'))}`);
@@ -186,7 +187,7 @@ test('EDI-6: de organisator maakt een beheerlink voor een lid, dat lid kiest een
 
 test('EDI-1: een editie vraagt een deadline en minstens twee deelnemers', async ({ page, nep }) => {
   await logInAlsOrganisator(page, nep);
-  await menu(page, 'Nieuwe editie').click();
+  await beheerNaar(page, 'Nieuwe editie');
   await page.getByRole('button', { name: 'Editie maken' }).click();
   await expect(page.getByText('Kies een deadline')).toBeVisible();
   await page.getByLabel('Deadline invullen').fill('2027-12-01');

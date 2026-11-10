@@ -1,5 +1,5 @@
 import { test as basis, expect } from '@playwright/test';
-import { startNep } from './hulp.mjs';
+import { startNep, beheerNaar } from './hulp.mjs';
 
 const SCRIPT_ID = 'demo-weekendje-weg-0001';
 const WACHTWOORD = 'duinpan-kraanvogel';
@@ -51,7 +51,7 @@ test('OVZ-3 OVZ-4 OVZ-5 EDI-7: de organisator zet de stap naar Overzicht, daarna
   await expect(page.getByText('Het overzicht verschijnt als de organisator het vrijgeeft')).toBeVisible();
 
   const { page: beheer, context } = await organisatorPagina(browser, nep);
-  await menu(beheer, 'Stappen').click();
+  await beheerNaar(beheer, 'Stappen');
   await expect(beheer.getByRole('heading', { level: 1 })).toHaveText('Stappen');
   const balk = beheer.getByRole('navigation', { name: 'Stappen van de editie' });
   await expect(balk.locator('[aria-current="step"]')).toContainText('Invullen');
@@ -85,7 +85,7 @@ test('OVZ-3 OVZ-4 OVZ-5 EDI-7: de organisator zet de stap naar Overzicht, daarna
 
 test('OVZ-6: de organisator ziet per persoon en per blok de vrije tekst en de woonplaats', async ({ browser, nep }) => {
   const { page: beheer, context } = await organisatorPagina(browser, nep);
-  await menu(beheer, 'Per persoon').click();
+  await beheerNaar(beheer, 'Per persoon');
   await expect(beheer.getByRole('heading', { level: 1 })).toHaveText('Per persoon');
   const bram = beheer.getByRole('button', { name: /^Bram/ });
   await expect(bram).toHaveAttribute('aria-expanded', 'false');
@@ -104,7 +104,7 @@ test('EDI-8 EDI-10: verwachte datum aanpassen en de deadline verlengen', async (
   nep.store.werkBij('Edities', 'demo-editie-2027', { deadline: '2027-03-01T23:59:00+01:00' }, 1);
   nep.store.flush();
   const { page: beheer, context } = await organisatorPagina(browser, nep);
-  await menu(beheer, 'Stappen').click();
+  await beheerNaar(beheer, 'Stappen');
   await beheer.getByLabel('Voorbereiding').fill('2027-05-28');
   await beheer.getByRole('button', { name: 'Data opslaan' }).click();
   await expect(beheer.getByText('De verwachte data zijn opgeslagen.')).toBeVisible();

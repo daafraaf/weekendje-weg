@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { API_VERSIE } from '../../src/server/api.js';
 import { hashToken } from '../../src/server/crypto.js';
-import { inMenu, aftelTekst, eersteActie } from '../../src/shared/start.js';
+import { inMenu, BEHEER_SCHERMEN, aftelTekst, eersteActie } from '../../src/shared/start.js';
 import { STAPPEN } from '../../src/shared/stappen.js';
 import { maakNepApi } from '../mock-backend/server.mjs';
 import { maakDemo, DEMO_EDITIE_ID } from '../mock-backend/demo.mjs';
@@ -29,8 +29,12 @@ test('NAV-1: Archief en Uitleg staan in geen enkele stap in het hoofdmenu', () =
   for (const stap of [null, ...STAPPEN]) for (const naam of ['archief', 'uitleg']) assert.equal(inMenu(naam, stap), false, `${naam} bij ${stap}`);
 });
 
+test('NAV-9: de beheerschermen staan niet los in het hoofdmenu, alleen achter Beheren', () => {
+  for (const stap of [null, ...STAPPEN]) for (const naam of BEHEER_SCHERMEN) assert.equal(inMenu(naam, stap), false, `${naam} bij ${stap}`);
+});
+
 test('STA-6 AAN-12: voor Accommodatie staan alleen formulier en voortgang in het menu, daarna alles', () => {
-  const altijd = ['start', 'formulier', 'voortgang', 'leden', 'stappen'];
+  const altijd = ['start', 'formulier', 'voortgang', 'beheren'];
   const onderdelen = ['accommodaties', 'meenemen', 'boodschappen', 'kookbeurten', 'programma', 'kamers', 'carpool', 'posten', 'afrekening'];
   for (const stap of [null, 'invullen', 'overzicht']) {
     for (const naam of altijd) assert.equal(inMenu(naam, stap), true, `${naam} bij ${stap}`);

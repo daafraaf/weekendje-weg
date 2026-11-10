@@ -95,7 +95,7 @@ for (const stap of STAPPEN) {
       await expect(actie.getByRole('link', { name: ORGANISATOR[stap] })).toBeVisible();
       await expect(boven.locator(':scope > :first-child')).toHaveAttribute('aria-label', 'Eerstvolgende actie');
       await expect(menu(page).getByRole('link', { name: 'Kamers', exact: true })).toHaveCount(vanaf(stap, 'accommodatie') ? 1 : 0);
-      await expect(menu(page).getByRole('link', { name: 'Leden', exact: true })).toHaveCount(1);
+      await expect(menu(page).getByRole('link', { name: 'Beheren', exact: true })).toHaveCount(1);
     } finally { nep.server.close(); }
   });
 }

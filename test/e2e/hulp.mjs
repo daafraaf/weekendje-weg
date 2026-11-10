@@ -27,6 +27,12 @@ export async function koppelNep(context, nep, opties) {
 
 // De volledige demo uit spec §11 (editie 2027 in `stap`) met een sessie voor `als`: een deelnemer van 2027,
 // of met `beheer: true` een beheersessie van dat lid. `aanpassen(seed)` kan de demo vooraf wijzigen.
+// NAV-9: naar een beheerscherm via het menu-item Beheren en het overzicht.
+export async function beheerNaar(page, naam) {
+  await page.getByRole('navigation', { name: 'Menu' }).getByRole('link', { name: 'Beheren', exact: true }).click();
+  await page.getByRole('main').getByRole('link', { name: new RegExp(`^${naam}`) }).click();
+}
+
 export async function startDemo(context, { stap = 'weekend', als = 'Bas', beheer = false, aanpassen } = {}) {
   const demo = maakVolledigeDemo({ stap });
   if (aanpassen) aanpassen(demo.seed, demo);

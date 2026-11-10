@@ -14,9 +14,12 @@ export const MENU_VANAF = {
 // NAV-1: Archief en Uitleg staan niet meer in het hoofdmenu; Uitleg zit in het profielmenu, Archief in de sectie Afgelopen weekenden.
 export const NIET_IN_MENU = new Set(['archief', 'uitleg']);
 
+// NAV-9: de beheerschermen zitten achter één menu-item Beheren. De volgorde is die van het overzicht.
+export const BEHEER_SCHERMEN = ['leden', 'editie-nieuw', 'uitnodigen', 'lijsten-beheer', 'vragen-beheer', 'detail', 'stappen', 'accommodatie-beheer'];
+
 // Een onbekende stap (nog niet geladen, of geen editie) geldt als Invullen: dan staan alleen de altijd bereikbare onderdelen in het menu.
 export function inMenu(naam, stap) {
-  if (NIET_IN_MENU.has(naam)) return false;
+  if (NIET_IN_MENU.has(naam) || BEHEER_SCHERMEN.includes(naam)) return false;
   const vanaf = MENU_VANAF[naam];
   if (!vanaf) return true;
   return stapIndex(stap) >= stapIndex(vanaf);

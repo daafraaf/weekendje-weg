@@ -2,6 +2,7 @@
 // Alle tekst gaat via textContent (NFR-5).
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
+import { maakTagveld } from '../components/tagveld.js';
 import { VRAAGTYPEN, VRAAGTYPE_NAMEN, VRAAG_OPTIES, VRAAG_TEKST_MAX, LABEL_MAX } from '../../shared/lijsten.js';
 
 const WAARSCHUWING = ['M12 4 2.8 19.5h18.4z', 'M12 10v4M12 17h.01'];
@@ -42,14 +43,16 @@ export function maakVragenBeheer({ sessie, params = {}, bijVerlopen, fetchFn }) 
     tekst.value = vraag ? vraag.tekst : '';
     const type = h('select', { id: 'vb-type', class: 'field', disabled: vast || slotTekst }, VRAAGTYPEN.map((t) => h('option', { value: t }, VRAAGTYPE_NAMEN[t])));
     type.value = vraag ? vraag.type : 'janee';
-    const optiesVeld = h('textarea', { id: 'vb-opties', class: 'field', maxlength: VRAAG_OPTIES.max * (LABEL_MAX + 1), disabled: vast || slotTekst, placeholder: 'Eén optie per regel' });
-    optiesVeld.value = vraag ? vraag.opties.map((o) => o.label).join('\n') : '';
-    const optiesBlok = h('div', {}, h('label', { class: 'label', for: 'vb-opties' }, `Antwoordopties (${VRAAG_OPTIES.min} tot ${VRAAG_OPTIES.max}, één per regel)`), optiesVeld);
+    // TAG-10: de opties zijn taginvoer; de volgorde is de volgorde van invoeren.
+    let optieTags = vraag ? vraag.opties.map((o) => o.label) : [];
+    const optiesLabel = `Antwoordopties (${VRAAG_OPTIES.min} tot ${VRAAG_OPTIES.max})`;
+    const optiesVeld = maakTagveld({ id: 'vb-opties', label: optiesLabel, tags: optieTags, max: VRAAG_OPTIES.max, alleenLezen: vast || slotTekst, bijWijziging: (t) => { optieTags = t; } });
+    const optiesBlok = h('div', {}, h('label', { class: 'label', for: 'vb-opties' }, optiesLabel), optiesVeld.el);
     const zichtbaar = () => { optiesBlok.hidden = !['keuze', 'meerkeuze'].includes(type.value); };
     type.addEventListener('change', zichtbaar);
     zichtbaar();
     const opslaan = () => {
-      const lijst = optiesBlok.hidden ? [] : optiesVeld.value.split('\n').map((t) => t.trim()).filter(Boolean);
+      const lijst = optiesBlok.hidden ? [] : optieTags;
       const bestaand = vraag ? vraag.opties : [];
       const opties = lijst.map((label, i) => (bestaand[i] && bestaand[i].label === label ? { sleutel: bestaand[i].sleutel, label } : { label }));
       if (vraag) verstuur({ actie: 'wijzigen', id: vraag.id, tekst: tekst.value, ...(slotTekst ? {} : { type: type.value, opties }) });

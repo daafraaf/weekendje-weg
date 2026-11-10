@@ -1,5 +1,6 @@
 # Bouwspecificatie Weekendje weg
 
+Versie 0.4, 10 november 2026: groep opzetten met één opzetlink uit het Sheet-menu, op verzoek van David (§7.1.9, §7.1.10, §7.18, GRP-1, GRP-6, GRP-7, GRP-8, RON-5).
 Versie 0.3, 9 november 2026: kalendervenster en kalenderweergave bijgewerkt na het ontwerp (AAN-15, §7.3, §9).
 Versie 0.2, 8 november 2026, na review door Opus. Bron: `00-bron.md` en `00-bron-2.md`, interview: `01-interview.md`.
 
@@ -292,7 +293,7 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
    veld "Plak je persoonlijke link"; de app haalt `b` en `t` (of `beheer`) uit de geplakte
    tekst met dezelfde regels als 7.1.2. De rondleiding op iOS zegt: eerst op het
    beginscherm zetten, dan in de app de link plakken en de pincode invoeren.
-9. Setupcode: acht tekens, gemaakt via het Sheet-menu "Weekendje weg → Setupcode tonen",
+9. Setupcode: acht tekens, gemaakt via het Sheet-menu "Weekendje weg → Groep opzetten" (§7.18),
    eenmalig en 30 minuten geldig (AAN-28), opgeslagen in `PropertiesService`.
    `groepOpzetten` werkt alleen als de groep nog niet is opgezet en maakt de eerste
    beheerlink voor het lid van de eigenaar met het gekozen wachtwoord.
@@ -300,7 +301,9 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
     kiest dat lid een wachtwoord van minimaal 10 tekens; daarna wordt het bij elke login
     gevraagd. Een beheersessie mag beheren in edities waarin het lid organisator is en mag
     nieuwe edities aanmaken (AAN-03). Het Sheet-menu heeft "Beheerlink maken" (lid kiezen)
-    en "Wachtwoord resetten" (beheerlink kiezen; het wachtwoordveld wordt leeg).
+    en "Wachtwoord resetten" (beheerlink kiezen; het wachtwoordveld wordt leeg). Is
+    `APP_ADRES` ingevuld (§7.18.1), dan toont "Beheerlink maken" de volledige link
+    `<APP_ADRES>#b=<scriptId>&beheer=<token>` (GRP-8, AAN-45).
 11. Persoonlijke links horen bij één editie. Na de stap Afgerond blijven ze werken,
     alleen-lezen (AAN-31).
 
@@ -524,6 +527,34 @@ De voorkant stuurt `apiVersie` mee. Wijkt die af van het script, dan antwoordt h
 `api_versie` en toont de voorkant: "Het script van deze groep is verouderd. De eigenaar werkt
 het bij via …" met een link naar de uitleg in de README (AAN-14).
 
+### 7.18 Opzetlink en uitrolinstellingen
+1. **Uitrolinstellingen.** `src/shared/uitrol.js` heeft twee constanten: `APP_ADRES` (het
+   adres van de app op Pages, `https://`, eindigt op `/`) en `SJABLOON_KOPIE` (de kopieerlink
+   van de sjabloon-Sheet, `https://docs.google.com/spreadsheets/d/<id>/copy`). Het zijn geen
+   geheimen; ze staan in de publieke repo. Voorkant en script importeren ze, het script krijgt
+   ze mee bij `clasp push` naar de sjabloon en elke kopie erft ze. Leeg mag: dan werkt alles
+   zoals in versie 0.3 (het menu toont code en webapp-URL om over te nemen, de rondleiding
+   heeft geen knop "Kopie maken"). Een ingevulde waarde met een andere vorm laat
+   `npm run check` falen (AAN-77).
+2. **Webapp-ID.** Het menu "Groep opzetten" bepaalt het deployment-ID in deze volgorde:
+   `ScriptApp.getService().getUrl()` als die eindigt op `/exec`; anders de script-eigenschap
+   `webappId`; anders vraagt het menu één keer de webapp-URL, met dezelfde regels als GRP-2
+   (een `/dev`-URL wordt geweigerd met uitleg), en bewaart het ID als `webappId`. "Beheerlink
+   maken" gebruikt dezelfde volgorde zonder te vragen (AAN-79).
+3. **Opzetlink.** `<APP_ADRES>#/opzetten?b=<webappId>&code=<setupcode>`. Alles staat na het
+   `#` en komt dus niet in een serverlog of bij GitHub. De setupcode is eenmalig en 30 minuten
+   geldig (AAN-28), dus de link geeft geen blijvende toegang. `leesLink` herkent een opzetlink
+   nooit als persoonlijke link of beheerlink. De app leest `b` en `code` uit en zet het adres
+   meteen terug op `#/opzetten` met `history.replaceState` (AAN-78).
+4. **Dialoog.** Het menu toont de opzetlink in een dialoog via `HtmlService` en
+   `showModalDialog`: een knop die de link in een nieuw tabblad opent
+   (`target="_blank" rel="noopener noreferrer"`), een alleen-lezen veld met de link om te
+   kopiëren, en de geldigheid van de code. Alle waarden in de HTML zijn ge-escaped en er staat
+   geen ander extern adres in dan `APP_ADRES`. De scopes in `appsscript.json` blijven gelijk
+   (`showModalDialog` valt onder `script.container.ui`).
+5. **API.** Er komt geen nieuwe API-actie en `API_VERSIE` blijft gelijk, zodat bestaande
+   groepen niet "verouderd" melden.
+
 ## 8. Functionele eisen en acceptatiecriteria
 
 ### Toegang (TOE)
@@ -541,11 +572,14 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **TOE-12** De organisator vernieuwt de link van een deelnemer; de oude link en de bestaande sessies van die deelnemer werken direct niet meer.
 
 ### Groep opzetten (GRP)
-- **GRP-1** Het Sheet-menu "Weekendje weg" heeft: Setupcode tonen, Beheerlink maken, Beheerwachtwoord resetten, Uitleg.
+- **GRP-1** Het Sheet-menu "Weekendje weg" heeft: Groep opzetten, Beheerlink maken, Beheerwachtwoord resetten, Uitleg.
 - **GRP-2** De opzetwizard in de app vraagt de script-URL (alleen `/macros/s/<id>/exec`, een `/dev`-URL wordt geweigerd met uitleg), de setupcode, de groepsnaam, de leden (voornaam, woonplaats), welk lid de eigenaar is en een beheerwachtwoord, en zet de groep op.
 - **GRP-3** Een tweede `groepOpzetten` op een opgezette groep wordt geweigerd.
 - **GRP-4** Na opzetten toont de wizard de beheerlink met een kopieerknop en de uitleg om hem te bewaren.
 - **GRP-5** De organisator kan leden toevoegen, hun woonplaats wijzigen en ze inactief maken; leden worden nooit verwijderd.
+- **GRP-6** "Groep opzetten" in het Sheet-menu bepaalt het webapp-ID (§7.18.2), maakt een setupcode en toont de opzetlink in de dialoog uit §7.18.4. Is de groep al opgezet, dan zegt het menu dat en maakt het geen code. Is `APP_ADRES` leeg, dan toont de dialoog de setupcode en de webapp-URL om in de wizard te plakken.
+- **GRP-7** Een opzetlink opent de wizard bij stap 1 met script-URL en setupcode ingevuld, een korte regel dat de Sheet gekoppeld is, en de focus op de groepsnaam. In de adresbalk en de geschiedenis staat daarna alleen `#/opzetten`. Een opzetlink met een ongeldige `b` of `code` opent stap 0 met de melding "Deze opzetlink klopt niet. Kies in de Sheet opnieuw Weekendje weg en Groep opzetten."
+- **GRP-8** Met `APP_ADRES` ingevuld toont "Beheerlink maken" de volledige beheerlink in dezelfde dialoog als GRP-6, met kopieerveld.
 
 ### Editie (EDI)
 - **EDI-1** Een organisator maakt een editie met titel, jaar, periode, voorkeursmaanden (standaard 4, 5, 9, 10), deadline, deelnemers, organisator(en) en aan/uit per optioneel blok.
@@ -653,7 +687,7 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **RON-2** De installatie-uitleg herkent iOS Safari, iOS met een andere browser, Android Chrome en desktop Chrome of Edge, en toont de passende stappen; op iOS met de volgorde uit §7.1.8 en een knop "Kopieer mijn link"; andere browsers krijgen "Zet een bladwijzer".
 - **RON-3** Op Android en desktop Chromium toont de app een knop "Installeren" via `beforeinstallprompt`.
 - **RON-4** De rondleiding is later terug te vinden in het profielmenu onder "Uitleg".
-- **RON-5** De opzetwizard (GRP-2) begint met een rondleiding voor de eigenaar: sjabloon kopiëren, script implementeren, URL plakken, setupcode.
+- **RON-5** De opzetwizard (GRP-2) begint met een rondleiding voor de eigenaar in drie stappen: een kopie van de sjabloon maken (knop "Kopie maken" naar `SJABLOON_KOPIE`, als die is ingevuld), het script implementeren en toestemming geven (met de uitleg dat je bij "Google heeft deze app niet geverifieerd" via Geavanceerd verder gaat), en in de Sheet Weekendje weg en Groep opzetten kiezen en op de link klikken. Een knop "Ik heb de URL en de setupcode al" leidt naar de handmatige route van stap 1.
 - **RON-6** De app is installeerbaar: manifest met naam, iconen 192 en 512 pixels en maskable, `display: standalone`, en een service worker die alleen de app-schil cachet.
 
 ### Taginvoer (TAG)
@@ -666,7 +700,7 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **TAG-7** Opslag als lijst per veld onder dezelfde sleutels.
 - **TAG-8** Oude tekst wordt bij lezen als lijst gelezen zonder verlies van inhoud.
 - **TAG-9** Organisator-detail en koks tonen de losse tags; KOK-4 blijft anoniem.
-- **TAG-10** (nog niet gebouwd) De opties van een eigen vraag worden taginvoer.
+- **TAG-10** De opties van een eigen vraag worden taginvoer.
 
 ### Navigatie (NAV)
 - **NAV-1** Het hoofdmenu bevat alleen onderdelen van de lopende editie volgens STA-6, zonder Archief en Uitleg.
@@ -677,6 +711,7 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **NAV-6** De rondleiding van RON-1 blijft ongewijzigd en opent via Uitleg in het profielmenu.
 - **NAV-7** Vraagtekens met hints (hooguit 200 tekens, geen hover) bij Kalender, Budget, de drie tagblokken, Wie neemt wat mee, Boodschappen, Kookbeurten en Uitgaven. De stappenbalk heeft er nog geen.
 - **NAV-8** Uitloggen is vanaf elk scherm bereikbaar via het profielmenu.
+- **NAV-9** In een beheersessie staan de beheerschermen (Leden, Nieuwe editie, Uitnodigen, Lijsten, Vragen, Per persoon, Stappen, Accommodaties beheren) achter één menu-item Beheren met een overzicht; het item is actief op elk beheerscherm.
 
 ## 9. Design
 
