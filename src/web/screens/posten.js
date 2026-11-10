@@ -1,6 +1,7 @@
 // Posten met totalen per categorie en saldi (GELD-1, GELD-5 t/m GELD-7).
 // Ontwerp: docs/design/Posten.dc.html. Alle tekst gaat via textContent (NFR-5).
 import { h, icoon } from '../dom.js';
+import { kopMetHint } from '../components/hint.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { STAPNAMEN } from '../components/stappenbalk.js';
 import { euro, categorieLabel } from '../../shared/geld.js';
@@ -58,7 +59,7 @@ export function maakPosten({ sessie, params = {}, bijVerlopen, fetchFn }) {
     const toevoegen = g.alleenLezen || !g.ik ? null
       : h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, onclick: () => bewerk(null) }, icoon(PLUS, 22), 'Uitgave toevoegen');
     zet(
-      h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN[g.editie.stap] || ''), h('h1', { class: 't-title' }, 'Uitgaven')),
+      h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN[g.editie.stap] || ''), kopMetHint(h('h1', { class: 't-title' }, 'Uitgaven'), 'verdeling')),
       editieKeuze(g.edities, editieId, (id) => { editieId = id; laad(); }, 'po-editie'),
       melding.el, toast,
       h('section', { class: 'glass card post-totaal' },

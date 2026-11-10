@@ -25,8 +25,12 @@ function opzet(opties = {}) {
   return { demo, nep, vraag, beheer, zetStap, wijzig, scherm, anna: (naam) => scherm('anna', naam), org: (naam) => scherm(beheer, naam, DEMO_EDITIE_ID) };
 }
 
-test('STA-6 AAN-12: voor Accommodatie staan alleen formulier, voortgang en archief in het menu, daarna alles', () => {
-  const altijd = ['start', 'formulier', 'voortgang', 'archief', 'leden', 'stappen'];
+test('NAV-1: Archief en Uitleg staan in geen enkele stap in het hoofdmenu', () => {
+  for (const stap of [null, ...STAPPEN]) for (const naam of ['archief', 'uitleg']) assert.equal(inMenu(naam, stap), false, `${naam} bij ${stap}`);
+});
+
+test('STA-6 AAN-12: voor Accommodatie staan alleen formulier en voortgang in het menu, daarna alles', () => {
+  const altijd = ['start', 'formulier', 'voortgang', 'leden', 'stappen'];
   const onderdelen = ['accommodaties', 'meenemen', 'boodschappen', 'kookbeurten', 'programma', 'kamers', 'carpool', 'posten', 'afrekening'];
   for (const stap of [null, 'invullen', 'overzicht']) {
     for (const naam of altijd) assert.equal(inMenu(naam, stap), true, `${naam} bij ${stap}`);

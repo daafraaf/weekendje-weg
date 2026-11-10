@@ -3,7 +3,7 @@ import { stapIndex } from './stappen.js';
 import { dagenTussen } from './datums.js';
 
 // AAN-12, STA-6: vanaf welke stap een onderdeel in het menu staat. Wat hier niet staat, is altijd bereikbaar
-// (start, formulier, voortgang, archief en de beheerschermen van de organisator, AAN-71).
+// (start, formulier, voortgang en de beheerschermen van de organisator, AAN-71).
 export const MENU_VANAF = {
   overzicht: 'overzicht',
   accommodaties: 'accommodatie',
@@ -11,8 +11,12 @@ export const MENU_VANAF = {
   kamers: 'accommodatie', carpool: 'accommodatie', posten: 'accommodatie', afrekening: 'accommodatie',
 };
 
+// NAV-1: Archief en Uitleg staan niet meer in het hoofdmenu; Uitleg zit in het profielmenu, Archief in de sectie Afgelopen weekenden.
+export const NIET_IN_MENU = new Set(['archief', 'uitleg']);
+
 // Een onbekende stap (nog niet geladen, of geen editie) geldt als Invullen: dan staan alleen de altijd bereikbare onderdelen in het menu.
 export function inMenu(naam, stap) {
+  if (NIET_IN_MENU.has(naam)) return false;
   const vanaf = MENU_VANAF[naam];
   if (!vanaf) return true;
   return stapIndex(stap) >= stapIndex(vanaf);

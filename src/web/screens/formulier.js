@@ -1,6 +1,8 @@
 // Invulformulier met de vier vaste blokken: Kalender, Budget, Reistijd en Verblijf
 // (FRM-1 t/m FRM-4, FRM-8, FRM-9, FRM-10, KAL-1). Ontwerp: docs/design/Formulier.dc.html, T-Gewijzigd, T-AlleenLezen.
 // Alle tekst gaat via textContent (NFR-5).
+import { tagsUitTekst } from '../../shared/tags.js';
+import { kopMetHint } from '../components/hint.js';
 import { h, icoon } from '../dom.js';
 import { maakApi } from '../api.js';
 import { scriptUrl } from '../sessie.js';
@@ -68,6 +70,7 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
     if (!r) return;
     g = r;
     huidig = { ...(r.antwoorden.data || {}) };
+    for (const k of ['activiteitenEigen', 'programmaEigen', 'etenDrinkenEigen']) if (huidig[k] !== undefined) huidig[k] = tagsUitTekst(huidig[k]); // AAN-76
     if (huidig.woonplaats === undefined && r.standaardWoonplaats) huidig.woonplaats = r.standaardWoonplaats; // §7.4.4
     versie = r.antwoorden.versie;
     opgeslagen = false;
@@ -103,16 +106,21 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
     return h('section', { class: 'glass card form-blok' }, h('h2', { class: 't-h2' }, titel), ...inhoud);
   }
 
+  // NAV-7: dezelfde kaart met een vraagteken achter de kop.
+  function kaartMetHint(titel, hint, ...inhoud) {
+    return h('section', { class: 'glass card form-blok' }, kopMetHint(h('h2', { class: 't-h2' }, titel), hint), ...inhoud);
+  }
+
   const lezen = () => Boolean(g.alleenLezen);
   const index = (budget, cent) => (cent == null ? null : indexVanBovengrens(budget, cent));
 
   function blokken() {
     const e = g.editie;
-    const kalender = kaart('Kalender',
+    const kalender = kaartMetHint('Kalender', 'kalender',
       h('p', { class: 't-small t-sec' }, 'Het hele jaar in één oogopslag. Weekenden lopen van vrijdag tot en met zondag.'),
       maakKalender({ periodeVan: e.periodeVan, periodeTot: e.periodeTot, voorkeursmaanden: e.voorkeursmaanden, waarden: huidig.beschikbaarheid || {}, alleenLezen: lezen(), bijWijziging: (w) => wijzig({ beschikbaarheid: w }) }));
 
-    const budget = kaart('Budget',
+    const budget = kaartMetHint('Budget', 'budget',
       maakSchuif({
         id: 'bv', label: 'Verblijf, per persoon', aantal: BUDGET_VERBLIJF.aantal, tekstVan: (i) => schijfTekst(BUDGET_VERBLIJF, i), onder: 'schijven van €50',
         waarde: index(BUDGET_VERBLIJF, huidig.budgetVerblijf), alleenLezen: lezen(), bijWijziging: (i) => wijzig({ budgetVerblijf: bovengrens(BUDGET_VERBLIJF, i) }),
@@ -146,10 +154,10 @@ export function maakFormulier({ sessie, bijVerlopen, fetchFn }) {
           },
         }))));
     // FRM-5: vinkjeslijsten uit de editielijsten, elk met een vrij veld; een blok dat de organisator uitzette, ontbreekt.
-    const wensen = WENSBLOKKEN.filter((b) => e.blokken[b.blok]).map((b) => kaart(b.kop,
+    const wensen = WENSBLOKKEN.filter((b) => e.blokken[b.blok]).map((b) => kaartMetHint(b.kop, 'tags',
       h('p', { class: 't-small t-sec' }, b.uitleg),
       maakVinkjeslijst({
-        id: b.blok, label: b.kop, items: e.lijsten[b.blok], gekozen: huidig[b.blok] || [], eigen: huidig[`${b.blok}Eigen`] || '', eigenLabel: b.eigenLabel, alleenLezen: lezen(),
+        id: b.blok, label: b.kop, items: e.lijsten[b.blok], gekozen: huidig[b.blok] || [], eigen: tagsUitTekst(huidig[`${b.blok}Eigen`]), eigenLabel: b.eigenLabel, alleenLezen: lezen(),
         bijWijziging: ({ gekozen, eigen }) => wijzig({ [b.blok]: gekozen, [`${b.blok}Eigen`]: eigen }),
       })));
     // FRM-6: alleen als de organisator het aanzet.

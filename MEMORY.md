@@ -1,6 +1,6 @@
 # MEMORY.md — Weekendje weg
 
-Laatst bijgewerkt: 2026-11-09 (fase 19)
+Laatst bijgewerkt: 2026-11-10 (taginvoer en navigatie)
 
 ## Status
 
@@ -20,6 +20,7 @@ Nog geen.
 Nieuwste bovenaan. Houd hier de laatste drie fasen; oudere regels naar
 `docs/sessielog-archief.md`.
 
+- 2026-11-10 fase 21/22: taginvoer (TAG-1 t/m 9) en navigatie (NAV-1 t/m 8) af, check groen, AAN-74 t/m 76 toegevoegd; TAG-10 en bundelen van Beheren open; zie `docs/overdracht/fase-21.md`.
 - 2026-11-09 fase 19: eindtest af (NFR-11): scenario met zes contexten, toegankelijkheid, beveiligingsronde, demo volgens §11, aannamecheck in npm run check; check groen, geen nieuwe aannames; zie `docs/overdracht/fase-19.md`.
 - 2026-11-09 fase 18: rondleiding en installatie af (RON-1 t/m 4), check groen, AAN-72 en AAN-73 toegevoegd; zie `docs/overdracht/fase-18.md`.
 - 2026-11-09 fase 17: startschermen per stap en archief af (STA-3 t/m 6, ARC-1, ARC-2), check groen, AAN-71 toegevoegd, AAN-12, 29, 30 hebben hun codeplek; zie `docs/overdracht/fase-17.md`.

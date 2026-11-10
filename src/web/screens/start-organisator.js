@@ -3,7 +3,7 @@
 import { h } from '../dom.js';
 import { eersteActie } from '../../shared/start.js';
 import { datumLang } from '../../shared/datums.js';
-import { knop, kaart, tekst, klein, rij, lijst, accommodatieRegel, weekendRegel, voorbereidingRijen, betalingRijen, samenvatting } from '../components/startblokken.js';
+import { knop, kaart, tekst, klein, lijst, accommodatieRegel, weekendRegel, voorbereidingRijen, betalingRijen, samenvatting } from '../components/startblokken.js';
 import { maakProgrammaVandaag } from './programma.js';
 
 export function startOrganisator(g, ctx) {
@@ -38,7 +38,7 @@ export function startOrganisator(g, ctx) {
       onder.push(kaart('Openstaande betalingen', g.afrekening.open.length ? h('div', { class: 'solid list', role: 'list' }, betalingRijen(g)) : tekst('Er staat niets open.'), knop('Naar de afrekening', '#/afrekening')));
       break;
     default:
-      onder.push(samenvatting(g), rij('Archief', 'Alle edities van de groep', '#/archief'));
+      onder.push(samenvatting(g));
   }
   return [boven, ...onder];
 }

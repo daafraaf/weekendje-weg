@@ -4,9 +4,11 @@ import { v } from '../validatie.js';
 import { vrijdagen } from '../../shared/datums.js';
 import { vragenVan, schoonEigenVragen } from './vragen.js';
 import { lijstenVan, blokkenVan } from '../../shared/lijsten.js';
+import { TAG_MAX, TAGS_MAX, tagsFout } from '../../shared/tags.js';
 import { BUDGET_VERBLIJF, BUDGET_WEEKEND, REISTIJD, WOONPLAATS, VRIJ_VELD_MAX, VERBLIJF_WENSEN, indexVanBovengrens, ontbreekt } from '../../shared/antwoorden.js';
 
 const vrij = () => v.tekst({ min: 0, max: VRIJ_VELD_MAX });
+const tags = () => v.lijst(v.tekst({ min: 1, max: TAG_MAX }), { max: TAGS_MAX }); // TAG-5, TAG-7
 const lijstVan = () => v.lijst(v.tekst({ min: 1, max: 60 }), { max: 60 });
 const verblijfSchema = v.object(Object.fromEntries(VERBLIJF_WENSEN.map((w) => [w.sleutel, v.optioneel(v.keuze(w.opties.map(([k]) => k)))])));
 
@@ -18,9 +20,9 @@ const dataSchema = v.object({
   woonplaats: v.optioneel(v.tekst({ min: 0, max: 100 })),
   maxReistijdUur: v.optioneel(v.getal({ min: REISTIJD.min, max: REISTIJD.max })),
   verblijf: v.optioneel(verblijfSchema),
-  activiteiten: v.optioneel(lijstVan()), activiteitenEigen: v.optioneel(vrij()),
-  programma: v.optioneel(lijstVan()), programmaEigen: v.optioneel(vrij()),
-  etenDrinken: v.optioneel(lijstVan()), etenDrinkenEigen: v.optioneel(vrij()),
+  activiteiten: v.optioneel(lijstVan()), activiteitenEigen: v.optioneel(tags()),
+  programma: v.optioneel(lijstVan()), programmaEigen: v.optioneel(tags()),
+  etenDrinken: v.optioneel(lijstVan()), etenDrinkenEigen: v.optioneel(tags()),
   samenwerken: v.optioneel(v.keuze(['ja', 'misschien', 'nee'])),
   eigenVragen: v.optioneel(v.map(v.tekst({ min: 1, max: 64 }), vrij(), { max: 50 })),
 });
@@ -34,6 +36,10 @@ function controleer(data, editie) {
   if (data.woonplaats !== undefined) {
     const lengte = data.woonplaats.trim().length;
     if (lengte < WOONPLAATS.min || lengte > WOONPLAATS.max) fout(`Een woonplaats heeft ${WOONPLAATS.min} tot ${WOONPLAATS.max} tekens.`);
+  }
+  for (const k of ['activiteitenEigen', 'programmaEigen', 'etenDrinkenEigen']) {
+    const f = data[k] === undefined ? null : tagsFout(data[k]);
+    if (f) fout(f);
   }
   if (data.beschikbaarheid && editie.periodeVan && editie.periodeTot) {
     const geldig = new Set(vrijdagen(editie.periodeVan, editie.periodeTot));

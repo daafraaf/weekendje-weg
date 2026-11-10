@@ -6,6 +6,7 @@ import { maakBeheerApi } from '../beheerapi.js';
 import { datumKort } from '../../shared/datums.js';
 import { BUDGET_VERBLIJF, BUDGET_WEEKEND, VERBLIJF_WENSEN, indexVanBovengrens, schijfTekst } from '../../shared/antwoorden.js';
 import { WENSBLOKKEN } from '../../shared/lijsten.js';
+import { tagsUitTekst } from '../../shared/tags.js';
 import { editieKeuze, foutMelding } from './voortgang.js';
 import { weekendLang } from './overzicht.js';
 
@@ -47,7 +48,7 @@ function regels(p, d) {
   for (const blok of WENSBLOKKEN) {
     if (!d.blokken[blok.blok]) continue;
     voeg(blok.kop, labels(d.lijsten[blok.blok], data[blok.blok]).join(', '));
-    voeg(blok.blok === 'etenDrinken' ? 'Allergie of anders' : `${blok.kop}: eigen`, data[`${blok.blok}Eigen`] || '');
+    voeg(blok.blok === 'etenDrinken' ? 'Allergie of anders' : `${blok.kop}: eigen`, tagsUitTekst(data[`${blok.blok}Eigen`]).join(', '));
   }
   if (d.blokken.samenwerken && data.samenwerken) voeg('Vrijdag werken', drie(data.samenwerken));
   for (const q of d.vragen) {
@@ -82,8 +83,8 @@ function perBlok(d) {
   const rij = (naam, waarde) => h('div', { class: 'row' }, h('span', { class: 'rij-naam detail-naam' }, naam), h('span', { class: 'rij-tekst' }, waarde));
   for (const blok of WENSBLOKKEN) {
     if (!d.blokken[blok.blok]) continue;
-    const met = d.personen.filter((p) => (p.data || {})[`${blok.blok}Eigen`]);
-    if (met.length) secties.push(h('section', { class: 'solid list', 'aria-label': `${blok.kop}, vrije tekst` }, h('p', { class: 't-cap lijst-kop' }, `${blok.kop}: ${blok.eigenLabel.toLowerCase()}`), met.map((p) => rij(p.voornaam, p.data[`${blok.blok}Eigen`]))));
+    const met = d.personen.filter((p) => tagsUitTekst((p.data || {})[`${blok.blok}Eigen`]).length > 0);
+    if (met.length) secties.push(h('section', { class: 'solid list', 'aria-label': `${blok.kop}, vrije tekst` }, h('p', { class: 't-cap lijst-kop' }, `${blok.kop}: ${blok.eigenLabel.toLowerCase()}`), met.map((p) => rij(p.voornaam, tagsUitTekst(p.data[`${blok.blok}Eigen`]).join(', ')))));
   }
   if (d.blokken.samenwerken) {
     const met = d.personen.filter((p) => (p.data || {}).samenwerken);

@@ -44,7 +44,8 @@ test('RON-4 Overslaan telt als gezien en de rondleiding staat onder Uitleg', asy
   await page.goto('/');
   await page.getByRole('button', { name: 'Overslaan' }).click();
   await expect(page).toHaveURL(/#\/start/);
-  await page.getByRole('navigation', { name: 'Menu' }).getByRole('link', { name: 'Uitleg' }).click();
+  await page.getByRole('button', { name: 'Profiel en uitleg' }).click();
+  await page.getByRole('link', { name: 'Uitleg' }).click(); // NAV-2, NAV-6
   await expect(page.getByRole('heading', { name: 'Welkom bij Weekendje weg' })).toBeVisible();
 });
 

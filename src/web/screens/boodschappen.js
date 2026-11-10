@@ -1,6 +1,7 @@
 // Boodschappenlijst (MEE-5 t/m MEE-9): op supermarktvolgorde, gedeeld afvinken, definitief en kopiëren als tekst.
 // Ontwerp: docs/design/Boodschappen.dc.html. Alle tekst, ook de itemnamen, gaat via textContent (NFR-5).
 import { h, icoon } from '../dom.js';
+import { kopMetHint } from '../components/hint.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { STAPNAMEN } from '../components/stappenbalk.js';
 import { kopieer } from '../delen.js';
@@ -20,7 +21,7 @@ export function maakBoodschappen({ sessie, params = {}, bijVerlopen, fetchFn }) 
   const zet = (...k) => wortel.replaceChildren(...k.flat().filter((x) => x != null && x !== false));
   const kop = (sub, chip) => h('header', { class: 'wz-kop bd-kop' },
     h('div', {}, h('p', { class: 't-cap' }, g && g.editie ? STAPNAMEN[g.editie.stap] || 'Voorbereiding' : 'Voorbereiding'),
-      h('h1', { class: 't-title' }, 'Boodschappen'), sub ? h('p', { class: 't-body t-sec' }, sub) : null), chip);
+      kopMetHint(h('h1', { class: 't-title' }, 'Boodschappen'), 'boodschappen'), sub ? h('p', { class: 't-body t-sec' }, sub) : null), chip);
 
   async function schrijf(actie, data, tekst) {
     melding.toon('');

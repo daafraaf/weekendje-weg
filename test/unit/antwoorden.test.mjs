@@ -106,7 +106,10 @@ test('FRM-2 FRM-3: budgetten, reistijd en woonplaats volgen de schijven en grenz
   assert.equal(slecht({ beschikbaarheid: { '2027-04-10': 'ja' } }), 'ongeldig'); // een zaterdag
   assert.equal(slecht({ beschikbaarheid: { '2028-04-07': 'ja' } }), 'ongeldig'); // buiten de periode
   assert.equal(slecht({ verblijf: { sauna: 'lieverWel' } }), 'ongeldig'); // lieverWel hoort alleen bij eigenKamer
-  assert.equal(slecht({ programmaEigen: 'x'.repeat(501) }), 'ongeldig');
+  assert.equal(slecht({ programmaEigen: 'x'.repeat(501) }), 'ongeldig'); // een tekst is geen lijst meer (TAG-7)
+  assert.equal(slecht({ programmaEigen: ['x'.repeat(41)] }), 'ongeldig'); // TAG-5
+  assert.equal(slecht({ activiteitenEigen: Array.from({ length: 21 }, (_, i) => `t${i}`) }), 'ongeldig');
+  assert.equal(slecht({ etenDrinkenEigen: ['Notenallergie', 'notenallergie'] }), 'ongeldig'); // AAN-74
   assert.equal(vraag(tokenA, 'antwoordenOpslaan', { versie: 0, data: { budgetVerblijf: 5000, budgetWeekend: 100000, maxReistijdUur: 12, woonplaats: ' Utrecht ' } }).ok, true);
   assert.equal(vraag(tokenA, 'scherm', { naam: 'formulier' }).data.antwoorden.data.woonplaats, 'Utrecht');
 });

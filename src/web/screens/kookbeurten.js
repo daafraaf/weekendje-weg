@@ -1,6 +1,7 @@
 // Kookbeurten (KOK-1 t/m KOK-4): maaltijden met koks, ingrediënten en de eetwensen voor de koks.
 // Ontwerp: docs/design/Kookbeurten.dc.html. Alle tekst, ook de ingevoerde namen, gaat via textContent (NFR-5).
 import { h, icoon } from '../dom.js';
+import { kopMetHint } from '../components/hint.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { STAPNAMEN } from '../components/stappenbalk.js';
 import { datumLang } from '../../shared/datums.js';
@@ -20,7 +21,7 @@ export function maakKookbeurten({ sessie, params = {}, bijVerlopen, fetchFn }) {
   const anroep = maakBeheerApi({ sessie, editieId: () => editieId, bijVerlopen, toonMelding: melding.toon, fetchFn });
   const zet = (...k) => wortel.replaceChildren(...k.flat().filter((x) => x != null && x !== false));
   const kop = (sub) => h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, g && g.editie ? STAPNAMEN[g.editie.stap] || 'Voorbereiding' : 'Voorbereiding'),
-    h('h1', { class: 't-title' }, 'Kookbeurten'), sub ? h('p', { class: 't-body t-sec' }, sub) : null);
+    kopMetHint(h('h1', { class: 't-title' }, 'Kookbeurten'), 'kookbeurten'), sub ? h('p', { class: 't-body t-sec' }, sub) : null);
 
   async function schrijf(actie, data, tekst) {
     melding.toon('');

@@ -7,6 +7,7 @@ import { datumLang } from '../../shared/datums.js';
 import { editieKeuze } from './voortgang.js';
 import { lokaalNu, maakProgrammaVandaag } from './programma.js';
 import { startOrganisator } from './start-organisator.js';
+import { maakAfgelopen } from './archief.js';
 import { knop, kaart, tekst, klein, rij, lijst, aftelBlok, accommodatieRegel, weekendRegel, voorbereidingRijen, betalingRijen, samenvatting } from '../components/startblokken.js';
 
 function programmaVandaag(ctx) {
@@ -37,7 +38,7 @@ function startDeelnemer(g, ctx) {
       return [kaart('Afrekenen', tekst(regel), g.afrekening.open.length ? h('div', { class: 'solid list', role: 'list' }, betalingRijen(g)) : null, knop('Naar de afrekening', '#/afrekening', 'primary'))];
     }
     default:
-      return [samenvatting(g), knop('Archief', '#/archief', 'primary')];
+      return [samenvatting(g)];
   }
 }
 
@@ -65,7 +66,8 @@ export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStap
         e.deadline && e.stap === 'invullen' ? klein(`Deadline ${datumLang(e.deadline.slice(0, 10))}.`) : null),
       editieKeuze(g.edities, e.id, (id) => { editieId = id; laad(); }, 'start-editie'),
       aftelBlok(g, nu().datum),
-      h('div', { class: 'beheer', 'data-boven': e.stap }, boven));
+      h('div', { class: 'beheer', 'data-boven': e.stap }, boven),
+      maakAfgelopen({ sessie, bijVerlopen, fetchFn, open: e.stap === 'afgerond' })); // NAV-4
   }
 
   async function laad() {

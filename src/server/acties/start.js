@@ -89,7 +89,7 @@ export function archiefScherm({ store }) {
     .filter((d) => d.editieId === editieId && (rol === undefined || d.rol === rol))
     .map((d) => (leden.get(d.lidId) || {}).voornaam || '').filter(Boolean).sort(opNaam);
   const edities = [...store.lees('Edities')].sort((a, b) => b.jaar - a.jaar || (a.id < b.id ? 1 : -1)).map((e) => ({
-    jaar: e.jaar, titel: e.titel, stap: e.stap, vastgelegdWeekend: e.vastgelegdWeekend || '',
+    id: e.id, jaar: e.jaar, titel: e.titel, stap: e.stap, vastgelegdWeekend: e.vastgelegdWeekend || '',
     accommodatie: geboektVan(store, e),
     organisatoren: namen(e.id, 'organisator'), deelnemers: namen(e.id),
   }));

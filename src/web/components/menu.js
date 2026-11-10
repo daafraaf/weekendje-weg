@@ -1,4 +1,4 @@
-// Menu (STA-6, AAN-12): vanaf de stap Accommodatie alle onderdelen, daarvoor formulier, voortgang en archief.
+// Hoofdmenu (STA-6, NAV-1, AAN-12): vanaf de stap Accommodatie alle onderdelen, daarvoor formulier en voortgang.
 import { h, icoon } from '../dom.js';
 import { inMenu } from '../../shared/start.js';
 

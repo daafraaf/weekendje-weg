@@ -24,7 +24,7 @@ export function kiesEditie({ store, sessie, editie }) {
   }
   const edities = eigenEdities(store, sessie);
   const gekozen = editie || edities[edities.length - 1] || null;
-  return { editie: gekozen, edities: edities.map((e) => ({ id: e.id, titel: e.titel, jaar: e.jaar })) };
+  return { editie: gekozen, edities: edities.map((e) => ({ id: e.id, titel: e.titel, jaar: e.jaar, stap: e.stap })) };
 }
 
 const deelnemersVan = (store, editieId) => store.lees('Deelnemers').filter((d) => d.editieId === editieId);

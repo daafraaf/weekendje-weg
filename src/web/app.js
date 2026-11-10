@@ -28,10 +28,11 @@ import { maakProgramma } from './screens/programma.js';
 import { maakStart } from './screens/start.js';
 import { maakArchief } from './screens/archief.js';
 import { maakMenuItems } from './components/menu.js';
+import { maakProfielmenu } from './components/profielmenu.js';
 import { maakKamers } from './screens/kamers.js';
 import { maakCarpool } from './screens/carpool.js';
 import { maakRondleiding, rondleidingGezien } from './screens/rondleiding.js';
-import { luisterNaarInstallatie } from './platform.js';
+import { luisterNaarInstallatie, kanInstalleren, installeer } from './platform.js';
 import { registreer, routelijst, start, ververs } from './router.js';
 
 // AAN-40: tot de schermen echte editiegegevens lezen toont de schil een voorbeeldeditie; de stap komt uit #/start?stap=...
@@ -265,7 +266,8 @@ const menu = h('nav', { class: 'glass menu', 'aria-label': 'Menu' });
 const melding = h('div', { class: 'glass toast offline-melding', role: 'alert', hidden: true },
   h('span', { class: 'ico' }, icoon(['M3 3l18 18', 'M8.5 16.2a5 5 0 0 1 7 0', 'M5 12.6a10 10 0 0 1 4-2.3', 'M14.8 10.4A10 10 0 0 1 19 12.6', 'M2 9a15 15 0 0 1 4.3-2.6', 'M11 5.1A15 15 0 0 1 22 9', 'M12 19.5h.01'], 22)),
   h('span', {}, h('span', { class: 'titel' }, OFFLINE_TEKST)));
-const schil = h('div', { class: 'schil', hidden: true }, menu, balkPlek, inhoud);
+const kopregel = h('header', { class: 'kopregel' }); // NAV-2: het profielmenu staat op elk scherm op dezelfde plek
+const schil = h('div', { class: 'schil', hidden: true }, menu, kopregel, balkPlek, inhoud);
 let binnen = null;
 let schilGestart = false;
 let laatsteSessie = '';
@@ -325,6 +327,7 @@ function kies() {
   schil.hidden = !sessie;
   if (sessie) {
     const sleutel = sessie.sessie;
+    if (sleutel !== laatsteSessie) kopregel.replaceChildren(maakProfielmenu({ soort: sessie.soort, kanInstalleren, installeer, uitloggen }));
     // RON-1, AAN-73: een deelnemer zonder gezien-vlag op dit apparaat begint met de rondleiding.
     if (sessie.soort === 'deelnemer' && !rondleidingGezien(localStorage) && !location.hash.startsWith('#/uitleg')) history.replaceState(null, '', `${location.pathname}${location.search}#/uitleg`);
     if (!schilGestart) { schilGestart = true; start(inhoud, (naam, params) => { toonMenu(naam); toonBalk(params); if (naam !== 'start') haalMenuStap(); }, soortNu); } else if (sleutel !== laatsteSessie) ververs();

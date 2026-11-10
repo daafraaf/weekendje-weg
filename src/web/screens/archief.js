@@ -7,7 +7,7 @@ import { weekendLang } from './overzicht.js';
 
 const veiligeLink = (l) => /^https:\/\//.test(l || '');
 
-function editieKaart(e) {
+export function editieKaart(e) {
   const acc = e.accommodatie;
   return h('section', { class: 'glass card beheer-blok', 'data-editie': e.titel },
     h('p', { class: 't-cap' }, `${e.jaar} · ${STAPNAMEN[e.stap] || e.stap}`),
@@ -17,7 +17,28 @@ function editieKaart(e) {
       ? h('p', { class: 't-body' }, `Accommodatie: ${acc.naam}${acc.plaats ? `, ${acc.plaats}` : ''}`, veiligeLink(acc.link) ? ' · ' : null, veiligeLink(acc.link) ? h('a', { href: acc.link, target: '_blank', rel: 'noopener noreferrer' }, 'Link') : null)
       : h('p', { class: 't-body' }, 'Geen accommodatie geboekt.'),
     h('p', { class: 't-small t-sec' }, `Organisatie: ${e.organisatoren.join(', ') || 'onbekend'}`),
-    h('p', { class: 't-small t-sec' }, `Deelnemers: ${e.deelnemers.join(', ')}`));
+    h('p', { class: 't-small t-sec' }, `Deelnemers: ${e.deelnemers.join(', ')}`),
+    e.id ? h('a', { class: 'btn btn-ghost', href: `#/start?editie=${encodeURIComponent(e.id)}` }, 'Bekijk') : null); // NAV-4
+}
+
+// NAV-4: de sectie Afgelopen weekenden op de startpagina. Dicht bij een lopende editie en open bij een afgeronde; de lijst laadt bij het openen.
+export function maakAfgelopen({ sessie, bijVerlopen, fetchFn, open = false }) {
+  const lijst = h('div', { class: 'beheer' });
+  const fout = h('p', { class: 't-small t-sec', hidden: true });
+  const anroep = maakBeheerApi({ sessie, editieId: () => '', bijVerlopen, toonMelding: (t) => { fout.textContent = t || ''; fout.hidden = !t; }, fetchFn });
+  const sectie = h('details', { class: 'afgelopen', open }, h('summary', { class: 't-h3' }, 'Afgelopen weekenden'), fout, lijst);
+  let geladen = false;
+  async function laad() {
+    geladen = true;
+    lijst.replaceChildren(h('p', { class: 't-small t-sec' }, 'Laden…'));
+    const g = await anroep('scherm', { naam: 'archief' }, false);
+    if (!g) { geladen = false; lijst.replaceChildren(); return; }
+    const klaar = g.edities.filter((e) => e.stap === 'afgerond');
+    lijst.replaceChildren(...(klaar.length ? klaar.map(editieKaart) : [h('p', { class: 't-body t-sec' }, 'Er zijn nog geen afgelopen weekenden.')]));
+  }
+  sectie.addEventListener('toggle', () => { if (sectie.open && !geladen) laad(); });
+  if (open) laad();
+  return sectie;
 }
 
 export function maakArchief({ sessie, bijVerlopen, fetchFn }) {

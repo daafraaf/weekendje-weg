@@ -1,5 +1,6 @@
 // Kookbeurten: maaltijden, koks en wat een kok van de groep te zien krijgt (spec §5.1, §7.10, KOK-1 t/m KOK-4).
 // Wie wat mag staat in rechten.js: maaltijden beheert de organisator, kok worden of stoppen kan iedereen.
+import { tagsUitTekst } from '../../shared/tags.js';
 import { ApiFout } from '../fouten.js';
 import { v } from '../validatie.js';
 import { blokkenVan } from '../../shared/lijsten.js';
@@ -87,8 +88,7 @@ function eetwensen(h, editie, deelnemers) {
   const actief = new Set(deelnemers.filter((d) => !d.afgehaakt).map((d) => d.id));
   const teksten = h.store.lees('Antwoorden')
     .filter((a) => a.editieId === editie.id && actief.has(a.deelnemerId))
-    .map((a) => String((a.data || {}).etenDrinkenEigen || '').trim())
-    .filter(Boolean);
+    .flatMap((a) => tagsUitTekst((a.data || {}).etenDrinkenEigen)); // TAG-9: losse tags, nog steeds zonder namen
   return {
     aantallen: etenDrinkenTelling(h.store, editie, deelnemers).filter((w) => w.aantal > 0),
     teksten: schud(teksten, h.deps.random),

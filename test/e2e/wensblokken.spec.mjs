@@ -30,7 +30,7 @@ async function organisatorPagina(browser, nep) {
   return { page, context };
 }
 
-test('FRM-5 FRM-6 FRM-7 EDI-2 EDI-3: organisator voegt activiteit en keuzevraag toe en zet samenwerken aan, deelnemer ziet en beantwoordt ze', async ({ page, browser, nep }) => {
+test('FRM-5 FRM-6 FRM-7 EDI-2 EDI-3 AAN-75: organisator voegt activiteit en keuzevraag toe en zet samenwerken aan, deelnemer ziet en beantwoordt ze', async ({ page, browser, nep }) => {
   const { page: beheer, context } = await organisatorPagina(browser, nep);
 
   // EDI-2 en AAN-21: een activiteit erbij en Samenwerken aan.
@@ -59,7 +59,14 @@ test('FRM-5 FRM-6 FRM-7 EDI-2 EDI-3: organisator voegt activiteit en keuzevraag 
   }
   await page.getByRole('checkbox', { name: 'Boogschieten' }).check(); // FRM-5
   await page.getByRole('checkbox', { name: 'Wandelen' }).check();
-  await page.getByLabel('Zelf iets bedacht?').fill('Zwemmen in het meer');
+  const zelf = page.getByRole('combobox', { name: 'Zelf iets bedacht?' });
+  await zelf.fill('Zwemmen in het meer'); // TAG-1, TAG-2
+  await zelf.press('Enter');
+  await zelf.fill('zwemmen in het MEER'); // AAN-74: dubbel
+  await zelf.press('Enter');
+  await zelf.fill('Wandelen'); // AAN-75: gelijk aan een vinkje, geen tag
+  await zelf.press('Enter');
+  await expect(page.getByRole('list', { name: /ingevoerde onderdelen/ }).getByRole('listitem')).toHaveCount(1);
   await page.getByRole('checkbox', { name: 'Vegetarisch' }).check();
   await page.getByRole('group', { name: 'Samenwerken op vrijdag' }).getByRole('button', { name: /Misschien/ }).click(); // FRM-6
   await page.getByRole('checkbox', { name: 'Catan' }).check(); // FRM-7
@@ -69,13 +76,13 @@ test('FRM-5 FRM-6 FRM-7 EDI-2 EDI-3: organisator voegt activiteit en keuzevraag 
 
   nep.store.nieuwVerzoek();
   const data = nep.store.lees('Antwoorden')[0].data;
-  expect(data).toMatchObject({ activiteiten: ['wandelen', 'boogschieten'], activiteitenEigen: 'Zwemmen in het meer', etenDrinken: ['vegetarisch'], samenwerken: 'misschien' });
+  expect(data).toMatchObject({ activiteiten: ['wandelen', 'boogschieten'], activiteitenEigen: ['Zwemmen in het meer'], etenDrinken: ['vegetarisch'], samenwerken: 'misschien' });
   expect(Object.values(data.eigenVragen)[0]).toBe('catan,poker');
 
   await page.reload(); // alles komt terug
   await expect(page.getByRole('checkbox', { name: 'Boogschieten' })).toBeChecked();
   await expect(page.getByRole('checkbox', { name: 'Fietsen' })).not.toBeChecked();
-  await expect(page.getByLabel('Zelf iets bedacht?')).toHaveValue('Zwemmen in het meer');
+  await expect(page.getByRole('list', { name: /Zelf iets bedacht/ }).getByRole('listitem')).toHaveText(['Zwemmen in het meer×']); // TAG-7
   await expect(page.getByRole('group', { name: 'Samenwerken op vrijdag' }).getByRole('button', { name: /Misschien/ })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('checkbox', { name: 'Catan' })).toBeChecked();
   await expect(page.getByRole('checkbox', { name: 'Uno' })).not.toBeChecked();

@@ -17,7 +17,7 @@ const DEELNEMER = {
   voorbereiding: ['Boodschappenlijst', 'Wie neemt wat mee', 'Kookbeurten', 'Carpool', 'Kamer'],
   weekend: ['Uitgave toevoegen'],
   afrekenen: ['Dit staat er voor jou open', 'Naar de afrekening'],
-  afgerond: ['Samenvatting', 'Archief'],
+  afgerond: ['Samenvatting'],
 };
 const ORGANISATOR = {
   invullen: 'Herinnering sturen',
@@ -76,7 +76,7 @@ for (const stap of STAPPEN) {
       // Een deelnemer heeft geen eerstvolgende actie van de organisator.
       await expect(page.getByRole('region', { name: 'Eerstvolgende actie' })).toHaveCount(0);
       // STA-6: vanaf Accommodatie alles in het menu, daarvoor alleen formulier, voortgang en archief.
-      for (const naam of ['Invullen', 'Voortgang', 'Archief']) await expect(menu(page).getByRole('link', { name: naam, exact: true })).toHaveCount(1);
+      for (const naam of ['Invullen', 'Voortgang']) await expect(menu(page).getByRole('link', { name: naam, exact: true })).toHaveCount(1);
       for (const naam of ['Kamers', 'Carpool', 'Geld', 'Afrekening', 'Accommodatie', 'Meenemen']) {
         await expect(menu(page).getByRole('link', { name: naam, exact: true })).toHaveCount(vanaf(stap, 'accommodatie') ? 1 : 0);
       }

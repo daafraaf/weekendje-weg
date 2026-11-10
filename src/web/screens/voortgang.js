@@ -11,8 +11,10 @@ const WAARSCHUWING = ['M12 4 2.8 19.5h18.4z', 'M12 10v4M12 17h.01'];
 
 // Kiezer voor een organisator met meer edities; ook gebruikt door overzicht en detail.
 export function editieKeuze(edities, editieId, bijKeuze, id = 'ed-keuze') {
-  if (!edities || edities.length < 2) return null;
-  const s = h('select', { id, class: 'field' }, edities.map((e) => h('option', { value: e.id }, e.titel)));
+  // NAV-5: afgeronde edities staan in de sectie Afgelopen weekenden; de gekozen editie blijft altijd in de lijst.
+  const lijst = (edities || []).filter((e) => e.stap !== 'afgerond' || e.id === editieId);
+  if (lijst.length < 2) return null;
+  const s = h('select', { id, class: 'field' }, lijst.map((e) => h('option', { value: e.id }, e.titel)));
   s.value = editieId;
   s.addEventListener('change', () => bijKeuze(s.value));
   return h('div', {}, h('label', { class: 'label', for: id }, 'Editie'), s);

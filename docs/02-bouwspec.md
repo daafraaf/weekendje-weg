@@ -158,9 +158,9 @@ offset (`2027-03-01T23:59:00+01:00`); de tijdzone van script en Sheet is Europe/
   "woonplaats": "Utrecht",
   "maxReistijdUur": 2,
   "verblijf": { "eigenKamer": "lieverWel", "eigenBadkamer": "maaktNietUit", "sauna": "ja", "bubbelbad": "nee", "barbecue": "ja", "buitenruimte": "ja", "schoonmaak": "ja", "linnengoed": "ja" },
-  "activiteiten": ["escaperoom", "smeden"], "activiteitenEigen": "kanoën",
-  "programma": ["uitslapen", "bordspellen"], "programmaEigen": "",
-  "etenDrinken": ["ipa", "nulbier", "vegetarisch"], "etenDrinkenEigen": "notenallergie",
+  "activiteiten": ["escaperoom", "smeden"], "activiteitenEigen": ["kanoën"],
+  "programma": ["uitslapen", "bordspellen"], "programmaEigen": [],
+  "etenDrinken": ["ipa", "nulbier", "vegetarisch"], "etenDrinkenEigen": ["notenallergie"],
   "samenwerken": "ja",
   "eigenVragen": { "<vraagId>": "antwoord" }
 }
@@ -358,7 +358,9 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
    organisator zoekt wat het best past bij de hele groep."
 6. Samenwerken op vrijdag vraagt: "Wil je vrijdag overdag op de locatie werken? Dan kom je
    's ochtends al aan." met ja, misschien, nee.
-7. Elk vrij tekstveld: maximaal 500 tekens.
+7. Eigen vragen van het type tekst: maximaal 500 tekens. De drie velden `...Eigen` zijn taginvoer
+   (TAG-1 t/m TAG-10): een lijst van hooguit 20 tags van hooguit 40 tekens, dubbel op kleine letters,
+   zonder accenten, spaties en leestekens (AAN-74). Oude tekst wordt bij lezen gesplitst (AAN-76).
 8. "Opslaan" bewaart alles; een deelnemer telt als **ingevuld** zodra minstens één weekend
    een waarde heeft en beide budgetten en de reistijd gekozen zijn (AAN-33). Het formulier toont wat
    nog ontbreekt.
@@ -495,7 +497,7 @@ Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig (AAN-16).
 | Voorbereiding | Boodschappenlijst, wie neemt wat mee, kookbeurten, carpool, kamer | Status per onderdeel, "Boodschappen definitief" |
 | Weekend | Programma van vandaag, knop "Uitgave toevoegen" | Hetzelfde plus programma beheren |
 | Afrekenen | Wat jij moet betalen of krijgt | Openstaande betalingen van iedereen |
-| Afgerond | Samenvatting en archief | Samenvatting, "Nieuwe editie" |
+| Afgerond | Samenvatting en de sectie Afgelopen weekenden (open) | Samenvatting, "Nieuwe editie", sectie Afgelopen weekenden |
 
 Vanaf de stap Accommodatie zijn alle onderdelen bereikbaar via het menu (AAN-12). De
 organisator ziet bovenaan altijd zijn eerstvolgende actie.
@@ -563,7 +565,7 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **STA-3** Het startscherm van deelnemer en organisator volgt de tabel in §7.14.
 - **STA-4** Het startscherm van de organisator toont zijn eerstvolgende actie als knop.
 - **STA-5** Zodra het weekend vastligt, toont het startscherm een aftelteller in dagen tot de vrijdag, op de dag zelf "Vandaag!".
-- **STA-6** Het menu geeft vanaf de stap Accommodatie toegang tot alle onderdelen; daarvoor alleen tot formulier, voortgang en archief.
+- **STA-6** Het hoofdmenu geeft vanaf de stap Accommodatie toegang tot alle onderdelen; daarvoor alleen tot formulier en voortgang. Archief en Uitleg staan er niet in (NAV-1).
 
 ### Kalender (KAL)
 - **KAL-1** De kalender toont alle weekenden in de periode per maand, blanco bij de start.
@@ -579,7 +581,7 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **FRM-2** Budget verblijf en budget weekend zijn schuifjes met de schijven uit §7.4.3, met het gekozen bereik als tekst erbij.
 - **FRM-3** Reistijd en woonplaats volgen §7.4.4.
 - **FRM-4** Het blok Verblijf heeft de acht wensen uit §5.2 met de toelichting uit §7.4.5.
-- **FRM-5** Activiteiten, programma en sfeer en eten en drinken zijn vinkjeslijsten uit de editielijsten, elk met een vrij veld.
+- **FRM-5** Activiteiten, programma en sfeer en eten en drinken zijn vinkjeslijsten uit de editielijsten, elk met een taginvoer voor wat de lijst niet noemt.
 - **FRM-6** Het blok Samenwerken op vrijdag verschijnt alleen als de organisator het aanzet.
 - **FRM-7** Eigen vragen worden getoond met het invoerelement dat bij hun type hoort.
 - **FRM-8** Opslaan bewaart alles, toont "Opgeslagen" en de status ingevuld volgens §7.4.8.
@@ -643,16 +645,38 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **GELD-11** Afhaken volgt §7.13.9.
 
 ### Archief (ARC)
-- **ARC-1** Het archief toont alle edities van de groep volgens §7.15, nieuwste bovenaan.
+- **ARC-1** De sectie "Afgelopen weekenden" op de startpagina toont de afgeronde edities van de groep volgens §7.15, nieuwste bovenaan, elk met een link "Bekijk" (NAV-4). Het scherm `#/archief` blijft bestaan voor bestaande links en toont alle edities.
 - **ARC-2** Vanuit een afgeronde editie maakt de organisator een nieuwe editie die leden, lijsten en blokinstellingen overneemt.
 
 ### Rondleiding en installatie (RON)
 - **RON-1** Bij eerste gebruik op een apparaat volgt een rondleiding van hooguit vijf schermen: welkom, pincode bewaren, op het beginscherm zetten, de stappenbalk, waar je begint.
 - **RON-2** De installatie-uitleg herkent iOS Safari, iOS met een andere browser, Android Chrome en desktop Chrome of Edge, en toont de passende stappen; op iOS met de volgorde uit §7.1.8 en een knop "Kopieer mijn link"; andere browsers krijgen "Zet een bladwijzer".
 - **RON-3** Op Android en desktop Chromium toont de app een knop "Installeren" via `beforeinstallprompt`.
-- **RON-4** De rondleiding is later terug te vinden in het menu onder "Uitleg".
+- **RON-4** De rondleiding is later terug te vinden in het profielmenu onder "Uitleg".
 - **RON-5** De opzetwizard (GRP-2) begint met een rondleiding voor de eigenaar: sjabloon kopiëren, script implementeren, URL plakken, setupcode.
 - **RON-6** De app is installeerbaar: manifest met naam, iconen 192 en 512 pixels en maskable, `display: standalone`, en een service worker die alleen de app-schil cachet.
+
+### Taginvoer (TAG)
+- **TAG-1** De velden `activiteitenEigen`, `programmaEigen` en `etenDrinkenEigen` zijn taginvoer.
+- **TAG-2** Toevoegen met Enter, komma of de knop Toevoegen; het veld verlaten voegt de typende tekst toe; Tab maakt geen tag.
+- **TAG-3** Elke tag heeft een kruisje; Backspace in een leeg veld verwijdert de laatste.
+- **TAG-4** Plakken splitst op komma, puntkomma en regeleinde.
+- **TAG-5** Trimmen, ontdubbelen op genormaliseerde waarde, 40 tekens, 20 tags; in het veld en in het script.
+- **TAG-6** Suggesties uit de niet aangevinkte vinkjes; een term gelijk aan een vinkje zet dat vinkje aan.
+- **TAG-7** Opslag als lijst per veld onder dezelfde sleutels.
+- **TAG-8** Oude tekst wordt bij lezen als lijst gelezen zonder verlies van inhoud.
+- **TAG-9** Organisator-detail en koks tonen de losse tags; KOK-4 blijft anoniem.
+- **TAG-10** (nog niet gebouwd) De opties van een eigen vraag worden taginvoer.
+
+### Navigatie (NAV)
+- **NAV-1** Het hoofdmenu bevat alleen onderdelen van de lopende editie volgens STA-6, zonder Archief en Uitleg.
+- **NAV-2** Een profielknop in de kopregel, rechts, op dezelfde plek op mobiel en desktop, opent een menu met rol, Uitleg, Installeren (alleen als de browser dat toestaat) en Uitloggen.
+- **NAV-3** Het profielmenu sluit met Escape, met een tik buiten het menu en na een keuze; de focus keert terug naar de knop; aanraakdoelen zijn minstens `--tap-min`.
+- **NAV-4** De startpagina heeft een uitklapbare sectie "Afgelopen weekenden" met afgeronde edities: dicht bij een lopende editie, open bij een afgeronde.
+- **NAV-5** De editiekiezer bevat alleen edities die niet zijn afgerond, plus de gekozen editie.
+- **NAV-6** De rondleiding van RON-1 blijft ongewijzigd en opent via Uitleg in het profielmenu.
+- **NAV-7** Vraagtekens met hints (hooguit 200 tekens, geen hover) bij Kalender, Budget, de drie tagblokken, Wie neemt wat mee, Boodschappen, Kookbeurten en Uitgaven. De stappenbalk heeft er nog geen.
+- **NAV-8** Uitloggen is vanaf elk scherm bereikbaar via het profielmenu.
 
 ## 9. Design
 

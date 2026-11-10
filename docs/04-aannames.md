@@ -1,7 +1,7 @@
 # Aannameregister Weekendje weg
 
 Versie 0.20, 9 november 2026: AAN-31 kreeg zijn codeplek; een check telt de tests per aanname (fase 19).
-Versie 0.19, 9 november 2026: AAN-72 en AAN-73 (fase 18).
+Versie 0.20, 10 november 2026: AAN-74 t/m AAN-76 (fase 21, taginvoer).
 Versie 0.18, 9 november 2026: AAN-71 (fase 17).
 Versie 0.17, 9 november 2026: AAN-70 (fase 16).
 Versie 0.16, 9 november 2026: AAN-68 en AAN-69 (fase 15).
@@ -107,6 +107,9 @@ die test aan en werk je hier de status bij.
 | AAN-71 | Menu en nieuwe editie | Flow | `src/shared/start.js` (`MENU_VANAF`), `src/server/acties/editie.js` (`bronEditie`) | het menu kent alleen de stap van de nieuwste editie van de organisator (een deelnemer heeft er één) en haalt die op bij elke navigatie; Overzicht staat vanaf de stap Overzicht in het menu, de overige deelnemersschermen vanaf Accommodatie, de beheerschermen van de organisator altijd; Nieuwe editie (`editieAanmaken` met `vanEditieId`) kan alleen vanuit een afgeronde editie waar de maker organisator van is, neemt blokken, voorkeursmaanden en lijsten over en zet leden en rollen als voorinvulling in het formulier (lege keuze op de server neemt alle actieve leden van de bron over); de aftelteller verdwijnt na de vrijdag | laag | open |
 | AAN-72 | Kopieer mijn link | Regel | `src/web/app.js` (`onthoudenLink`), `src/web/screens/rondleiding.js` (`kopieerKnop`) | de app bewaart de persoonlijke link niet (NFR-1); "Kopieer mijn link" werkt daarom alleen in de rondleiding direct na het inloggen met een link, uit het geheugen. Later onder Uitleg verwijst de rondleiding naar het bericht van de organisator. De knop staat bij de iOS-uitleg (Safari en andere browsers) | laag | open |
 | AAN-73 | Rondleiding eerste keer | Flow | `src/web/screens/rondleiding.js` (`rondleidingGezien`), `src/web/app.js` (`kies`) | de rondleiding opent vanzelf voor een deelnemer zolang `ww-rondleiding` in localStorage ontbreekt, ook bij een bestaande sessie; Klaar en Overslaan zetten de vlag, een beheersessie krijgt hem niet vanzelf; de volgorde volgt de spec (installatie als derde van vijf schermen, het bord noemt hem vierde); een apparaat dat niet bij de herkenning past, kiest de uitleg met de apparaatknoppen | laag | open |
+| AAN-74 | Tags ontdubbelen | Regel | `src/shared/tags.js` (`tagSleutel`) | een tag is dubbel op kleine letters, zonder accenten, spaties en leestekens ("Escape room" en "escaperoom"); de schrijfwijze van de eerste invoer blijft; Tab verplaatst alleen de focus en maakt geen tag; 40 tekens per tag, 20 per veld | laag | open |
+| AAN-75 | Tagsuggesties | Regel | `src/web/components/tagveld.js` (`suggesties`) | suggesties komen alleen uit de nog niet aangevinkte vinkjes van het blok, nooit uit tags van anderen (allergieën, KOK-4); een term gelijk aan een vinkje zet dat vinkje aan | laag | open |
+| AAN-76 | Oude tekst als tags | Regel | `src/shared/tags.js` (`tagsUitTekst`) | oude tekst in `...Eigen` wordt bij lezen gesplitst op komma, puntkomma en regeleinde en bij een spatie geknipt tot 40 tekens; de Sheet blijft ongewijzigd tot de eerstvolgende keer opslaan | laag | open |
 
 ## Volgorde voor het gesprek
 
@@ -136,3 +139,4 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-09: AAN-71 toegevoegd in fase 17 (startschermen en archief); AAN-12, AAN-29 en AAN-30 kregen hun codeplek.
 - 2026-11-09: AAN-72 en AAN-73 toegevoegd in fase 18 (rondleiding en installatie).
 - 2026-11-09: fase 19 (eindtest): AAN-31 kreeg zijn codeplek; AAN-42, AAN-45 en AAN-68 kregen een test met hun ID; `scripts/check-aannames.mjs` telt ze in `npm run check`.
+- 2026-11-10: AAN-74 t/m AAN-76 toegevoegd in fase 21 (taginvoer).

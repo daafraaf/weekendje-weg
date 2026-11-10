@@ -169,7 +169,8 @@ test('RON-2 AAN-72 AAN-73: na inloggen volgt de rondleiding met Kopieer mijn lin
   await expect(page.getByRole('button', { name: 'Kopieer mijn link' })).toBeVisible();
   await page.getByRole('button', { name: 'Overslaan' }).click();
   await page.reload();
-  await page.getByRole('navigation', { name: 'Menu' }).getByRole('link', { name: 'Uitleg' }).click();
+  await page.getByRole('button', { name: 'Profiel en uitleg' }).click();
+  await page.getByRole('link', { name: 'Uitleg' }).click(); // NAV-2, NAV-6
   await page.getByRole('button', { name: 'Volgende' }).click();
   await page.getByRole('button', { name: 'Volgende' }).click();
   await expect(page.getByRole('button', { name: 'Kopieer mijn link' })).toHaveCount(0);
