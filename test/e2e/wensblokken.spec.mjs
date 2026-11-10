@@ -62,7 +62,12 @@ test('FRM-5 FRM-6 FRM-7 EDI-2 EDI-3 AAN-75: organisator voegt activiteit en keuz
   await page.getByRole('checkbox', { name: 'Wandelen' }).check();
   const zelf = page.getByRole('combobox', { name: 'Zelf iets bedacht?' });
   await zelf.fill('Zwemmen in het meer'); // TAG-1, TAG-2
+  // Tijdens het typen verschijnt de knop Toevoegen naast het veld; het veld blijft breed genoeg om te lezen wat je typt.
+  await expect(page.getByRole('button', { name: 'Toevoegen' })).toBeVisible();
+  expect((await zelf.boundingBox()).width).toBeGreaterThan(150);
   await zelf.press('Enter');
+  // Een tag is een ronde pil in de accentkleur, niet het kleine grijze label van andere schermen.
+  expect(await page.getByRole('list', { name: /ingevoerde onderdelen/ }).getByRole('listitem').first().evaluate((el) => getComputedStyle(el).borderRadius)).toBe('999px');
   await zelf.fill('zwemmen in het MEER'); // AAN-74: dubbel
   await zelf.press('Enter');
   await zelf.fill('Wandelen'); // AAN-75: gelijk aan een vinkje, geen tag

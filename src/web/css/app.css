@@ -113,11 +113,12 @@ a:hover { text-decoration: underline; }
 
 /* Taginvoer (TAG-1 t/m TAG-6) */
 .tagveld { display: flex; flex-direction: column; gap: 8px; }
-.tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-.tag { display: inline-flex; align-items: center; gap: 2px; min-height: var(--tap-min); padding: 0 4px 0 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 15px; font-weight: 600; }
+/* Met .tagveld ervoor: verderop staan .tags en .tag van de kleine labels, die anders winnen. */
+.tagveld .tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.tagveld .tag { display: inline-flex; align-items: center; gap: 2px; min-height: var(--tap-min); padding: 0 4px 0 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 15px; font-weight: 600; }
 .tag-x { width: var(--tap-min); height: var(--tap-min); border: 0; background: transparent; color: inherit; font-size: 22px; line-height: 1; border-radius: 50%; }
 .tag-rij { display: flex; gap: 8px; align-items: center; }
-.tag-plus { flex: 0 0 auto; min-height: var(--tap-min); padding: 0 14px; }
+.tag-rij .tag-plus { flex: 0 0 auto; width: auto; min-height: var(--tap-min); padding: 0 14px; } /* .btn is 100% breed en drukte het invoerveld weg */
 .tag-rij .field { flex: 1 1 auto; min-width: 0; }
 
 @media (min-width: 768px) {
