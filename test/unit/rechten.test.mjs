@@ -92,6 +92,12 @@ test('TOE-7 §6 accommodaties beheren, datum vastleggen: alleen organisator', ()
   alleenOrganisator(['weekendVastleggen', 'accommodatieOpslaan', 'accommodatieVerwijderen', 'deelvormZetten'], { stap: 'accommodatie' });
 });
 
+test('ACC-7 AAN-81 weekend losmaken: organisator in Weekendje prikker en Accommodatie, daarna niet', () => {
+  for (const stap of ['overzicht', 'accommodatie']) assert.ok(mag('organisator', 'weekendLosmaken', { ...ORG, stap }));
+  for (const stap of ['invullen', 'voorbereiding', 'afgerond']) assert.equal(R('organisator', 'weekendLosmaken', { ...ORG, stap }), 'gesloten');
+  assert.ok(!mag('deelnemer', 'weekendLosmaken', { ...DN, stap: 'accommodatie' }));
+});
+
 test('TOE-7 §6 stemmen: deelnemer als deelvorm stemmen, organisator ja', () => {
   const c = { ...DN, stap: 'accommodatie' };
   assert.ok(mag('deelnemer', 'stemmen', { ...c, deelvorm: 'stemmen' }));

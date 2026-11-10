@@ -1,5 +1,6 @@
 # Bouwspecificatie Weekendje weg
 
+Versie 0.7, 10 november 2026: één vastgelegd weekend met uitweg, feedbackronde fase 25 (§5.3, ACC-6, ACC-7).
 Versie 0.6, 10 november 2026: onderdelen uit en invullen vrijer, feedbackronde fase 24 (§7.2.3, §7.2.4, §7.2.6, §7.4.8, OND-1, OND-2, OND-3, FRM-8, FRM-9, FRM-11, DDL-1, OVZ-1, STA-1, EDI-7, EDI-8, EDI-10).
 Versie 0.5, 10 november 2026: stappenbalk met één bron en menu in stapvolgorde, feedbackronde fase 23 (§7.2.1, §7.2.6, §7.14, STA-1, STA-6, STA-8, NAV-1, NAV-9, NAV-10, NAV-11).
 Versie 0.4, 10 november 2026: groep opzetten met één opzetlink uit het Sheet-menu, op verzoek van David (§7.1.9, §7.1.10, §7.18, GRP-1, GRP-6, GRP-7, GRP-8, RON-5).
@@ -217,7 +218,7 @@ opnieuw proberen zinvol), `api_versie`, `fout` (onverwacht).
 | Leden | `ledenBeheren` (toevoegen, woonplaats wijzigen, inactief) |
 | Editie | `editieAanmaken`, `editieBijwerken`, `deelnemersBeheren`, `linksMaken` (geeft eenmalig links en pincodes terug), `linkVernieuwen`, `pincodeVernieuwen`, `beheerlinkMaken` (voor een lid), `stapZetten`, `afhakenMarkeren`, `vragenBeheren` |
 | Invullen | `antwoordenOpslaan` (met versie) |
-| Accommodatie | `weekendVastleggen`, `accommodatieOpslaan`, `accommodatieVerwijderen`, `deelvormZetten`, `stemmen` |
+| Accommodatie | `weekendVastleggen`, `weekendLosmaken`, `accommodatieOpslaan`, `accommodatieVerwijderen`, `deelvormZetten`, `stemmen` |
 | Voorbereiding | `itemOpslaan`, `itemVerwijderen`, `claimen`, `claimIntrekken` (eigen, of als organisator die van een ander), `afvinken`, `boodschappenDefinitief`, `maaltijdOpslaan`, `kokWorden`, `kokStoppen`, `programmaOpslaan`, `programmaVerwijderen`, `kamersOpslaan`, `kamerIndelen`, `ritOpslaan`, `meerijden`, `meerijdenStoppen` |
 | Geld | `postOpslaan`, `postVerwijderen`, `betalingMarkeren`, `betalingTerugdraaien` |
 
@@ -654,6 +655,8 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 
 ### Accommodatie (ACC)
 - **ACC-1** De organisator legt het weekend vast vanuit de top 5 of uit de kalender.
+- **ACC-6** Er staat maar één weekend vast. Daarna is het gekozen weekend gemarkeerd, zijn de andere vastlegknoppen uitgeschakeld en weigert de server een tweede vastlegging met `gesloten`.
+- **ACC-7** "Ander weekend kiezen" maakt het weekend los (`weekendLosmaken`, stappen Weekendje prikker en Accommodatie) na een bevestiging die toont wat het raakt: de aftelteller en een geboekte accommodatie, die bij de oude datum blijft horen (AAN-81).
 - **ACC-2** De organisator voegt accommodaties toe, wijzigt en verwijdert ze (naam, plaats, link, totaalprijs, notitie).
 - **ACC-3** De organisator kiest de deelvorm `info`, `stemmen` of `geboekt`.
 - **ACC-4** Bij `stemmen` kiest elke deelnemer één favoriet en kan die wijzigen; iedereen ziet de aantallen.

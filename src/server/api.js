@@ -23,7 +23,7 @@ export const ACTIES = {
   editieAanmaken: SG, editieBijwerken: S, deelnemersBeheren: S, linksMaken: S, linkVernieuwen: S,
   pincodeVernieuwen: S, beheerlinkMaken: SG, stapZetten: S, afhakenMarkeren: S, vragenBeheren: S,
   antwoordenOpslaan: S,
-  weekendVastleggen: S, accommodatieOpslaan: S, accommodatieVerwijderen: S, deelvormZetten: S, stemmen: S,
+  weekendVastleggen: S, weekendLosmaken: S, accommodatieOpslaan: S, accommodatieVerwijderen: S, deelvormZetten: S, stemmen: S,
   itemOpslaan: S, itemVerwijderen: S, claimen: S, claimIntrekken: S, afvinken: S,
   boodschappenDefinitief: S, maaltijdOpslaan: S, kokWorden: S, kokStoppen: S, programmaOpslaan: S,
   programmaVerwijderen: S, kamersOpslaan: S, kamerIndelen: S, ritOpslaan: S, meerijden: S, meerijdenStoppen: S,

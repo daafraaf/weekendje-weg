@@ -19,15 +19,28 @@ function bestaande(store, editieId, id) {
   return a;
 }
 
-// ACC-1, AAN-63: een weekend is een vrijdag binnen de periode van de editie; opnieuw vastleggen vervangt het eerdere weekend.
+// ACC-1, ACC-6, AAN-63: een weekend is een vrijdag binnen de periode van de editie; er staat er maar één vast,
+// een tweede vastlegging is `gesloten` tot het weekend is losgemaakt.
 export const weekendVastleggen = {
   schema: v.object({ vrijdag: v.datum() }),
   uitvoeren({ store, editie, data }) {
+    if (editie.vastgelegdWeekend) throw new ApiFout('gesloten', 'Er staat al een weekend vast. Kies eerst een ander weekend.');
     const toegestaan = editie.periodeVan && editie.periodeTot ? vrijdagen(editie.periodeVan, editie.periodeTot) : [];
     if (!toegestaan.includes(data.vrijdag)) throw new ApiFout('ongeldig', 'Kies een vrijdag binnen de periode van de editie.');
     store.werkBij('Edities', editie.id, { vastgelegdWeekend: data.vrijdag }, editie.versie);
     const maaltijden = maakStandaardMaaltijden(store, editie.id); // KOK-1
     return { vastgelegdWeekend: data.vrijdag, maaltijden };
+  },
+};
+
+// ACC-7, AAN-81, besluit K3: losmaken wist alleen het vastgelegde weekend. Een geboekte accommodatie, de maaltijden
+// en de stemmen blijven staan; de boeking hoort dan bij de oude datum (de bevestiging in de UI zegt dat).
+export const weekendLosmaken = {
+  schema: v.object({}),
+  uitvoeren({ store, editie }) {
+    if (!editie.vastgelegdWeekend) throw new ApiFout('gewijzigd', 'Er staat geen weekend vast.');
+    store.werkBij('Edities', editie.id, { vastgelegdWeekend: '' }, editie.versie);
+    return { vastgelegdWeekend: '' };
   },
 };
 
@@ -128,6 +141,7 @@ export function accommodatiesScherm(h) {
     alleenLezen: editie.stap === 'afgerond', // na Afgerond alleen lezen (rechten.js)
     deelvorm: editie.deelvorm || 'info',
     vastgelegdWeekend: editie.vastgelegdWeekend || '',
+    losmakenMogelijk: ['overzicht', 'accommodatie'].includes(editie.stap), // AAN-81
     geboektId: editie.geboektAccommodatieId || '',
     aantal,
     mijnStem: (stemmenLijst.find((s) => ik && s.deelnemerId === ik) || {}).accommodatieId || '',
@@ -141,4 +155,4 @@ export function accommodatiesScherm(h) {
   return uit;
 }
 
-export const accommodatieHandlers = { weekendVastleggen, accommodatieOpslaan, accommodatieVerwijderen, deelvormZetten, stemmen };
+export const accommodatieHandlers = { weekendVastleggen, weekendLosmaken, accommodatieOpslaan, accommodatieVerwijderen, deelvormZetten, stemmen };

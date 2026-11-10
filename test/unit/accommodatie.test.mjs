@@ -49,12 +49,43 @@ test('ACC-1 AAN-63: de organisator legt een vrijdag binnen de periode vast, een 
   assert.ok(s.weekenden.length > 40);
   assert.equal(org('weekendVastleggen', { vrijdag: s.top[0].vrijdag }).ok, true);
   assert.equal(editie().vastgelegdWeekend, s.top[0].vrijdag);
-  assert.equal(org('weekendVastleggen', { vrijdag: s.weekenden[3] }).ok, true); // vervangt het eerdere weekend
-  assert.equal(editie().vastgelegdWeekend, s.weekenden[3]);
+  assert.equal(nep.store.lees('Edities').length, 1);
+});
+
+test('ACC-1 AAN-63: een andere dag of een datum buiten de periode wordt geweigerd', () => {
+  const { org, editie, scherm, beheer } = opzet();
+  const s = scherm(beheer).data;
   assert.equal(org('weekendVastleggen', { vrijdag: '2027-06-12' }).fout, 'ongeldig'); // zaterdag
   assert.equal(org('weekendVastleggen', { vrijdag: '2028-06-09' }).fout, 'ongeldig'); // buiten de periode
-  assert.equal(editie().vastgelegdWeekend, s.weekenden[3]);
-  assert.equal(nep.store.lees('Edities').length, 1);
+  assert.equal(editie().vastgelegdWeekend, '');
+  assert.equal(org('weekendVastleggen', { vrijdag: s.weekenden[3] }).ok, true);
+});
+
+test('ACC-6 AAN-63: een tweede weekendVastleggen geeft gesloten en laat het weekend staan', () => {
+  const { org, editie, scherm, beheer } = opzet();
+  const s = scherm(beheer).data;
+  assert.equal(org('weekendVastleggen', { vrijdag: s.weekenden[2] }).ok, true);
+  assert.equal(org('weekendVastleggen', { vrijdag: s.weekenden[3] }).fout, 'gesloten');
+  assert.equal(editie().vastgelegdWeekend, s.weekenden[2]);
+});
+
+test('ACC-7 AAN-81: losmaken wist alleen het weekend, laat een geboekte accommodatie staan en kan alleen in Weekendje prikker of Accommodatie', () => {
+  const { org, editie, scherm, beheer, nep } = opzet();
+  const s = scherm(beheer).data;
+  assert.equal(org('weekendLosmaken', {}).fout, 'gewijzigd'); // er staat niets vast
+  assert.equal(org('weekendVastleggen', { vrijdag: s.weekenden[2] }).ok, true);
+  const acc = org('accommodatieOpslaan', { naam: 'Hoeve', plaats: 'Dwingeloo', link: '', prijsTotaal: 100000, notitie: '' }).data;
+  assert.equal(org('deelvormZetten', { deelvorm: 'geboekt', accommodatieId: acc.id }).ok, true);
+  assert.equal(scherm(beheer).data.losmakenMogelijk, true);
+  assert.equal(org('weekendLosmaken', {}).ok, true);
+  assert.equal(editie().vastgelegdWeekend, '');
+  assert.equal(editie().geboektAccommodatieId, acc.id); // K3
+  assert.equal(editie().deelvorm, 'geboekt');
+  assert.equal(org('weekendVastleggen', { vrijdag: s.weekenden[4] }).ok, true); // daarna kan vastleggen weer
+  nep.store.werkBij('Edities', editie().id, { stap: 'voorbereiding' }, editie().versie);
+  assert.equal(scherm(beheer).data.losmakenMogelijk, false);
+  assert.equal(org('weekendLosmaken', {}).fout, 'gesloten');
+  assert.equal(editie().vastgelegdWeekend, s.weekenden[4]);
 });
 
 test('ACC-2 AAN-64: toevoegen, wijzigen en verwijderen met grenzen en versiecontrole', () => {

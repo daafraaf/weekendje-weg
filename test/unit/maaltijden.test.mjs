@@ -44,7 +44,9 @@ test('KOK-1 AAN-18: bij het vastleggen van het weekend staan zes maaltijden klaa
   assert.deepEqual(s.maaltijden.map((m) => m.naam), ['Vrijdag diner', 'Zaterdag ontbijt', 'Zaterdag lunch', 'Zaterdag diner', 'Zondag ontbijt', 'Zondag lunch']);
   assert.deepEqual(STANDAARD_MAALTIJDEN.length, 6);
   assert.equal(s.maaltijden[1].datum, '2027-06-12');
-  // Opnieuw vastleggen maakt geen tweede set.
+  // Na losmaken en opnieuw vastleggen komt er geen tweede set.
+  nep.store.werkBij('Edities', DEMO_EDITIE_ID, { stap: 'accommodatie' }, nep.store.vind('Edities', DEMO_EDITIE_ID).versie); // losmaken kan alleen in Weekendje prikker of Accommodatie (AAN-81)
+  assert.equal(org('weekendLosmaken', {}).ok, true);
   org('weekendVastleggen', { vrijdag: '2027-06-18' });
   assert.equal(scherm('anna').maaltijden.length, 6);
   assert.equal(scherm('anna').maaltijden[0].datum, '2027-06-18');

@@ -99,3 +99,33 @@ test('ACC-1 ACC-2 ACC-3 ACC-4 ACC-5: weekend vastleggen, drie accommodaties op s
   await expect(page.getByText('Prijs per persoon is het totaal gedeeld door 4.')).toBeVisible();
   await context.close();
 });
+
+test('ACC-6 ACC-7 AAN-81: na vastleggen zijn de andere knoppen uit; Ander weekend kiezen vraagt bevestiging en maakt los, de boeking blijft', async ({ browser, nep }) => {
+  const { page } = await organisatorPagina(browser, nep);
+  const lijst = page.getByRole('list', { name: 'Top weekenden' });
+  await lijst.getByRole('listitem').first().getByRole('button', { name: /^Leg .* vast$/ }).click();
+  await expect(page.getByText(/^Het weekend is vastgelegd:/)).toBeVisible();
+  // Alle vastlegknoppen uit, de keuzelijst ook.
+  for (const k of await lijst.getByRole('button').all()) await expect(k).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Leg dit weekend vast' })).toBeDisabled();
+  await expect(page.locator('#acc-weekend')).toBeDisabled();
+  await expect(lijst.getByRole('button', { name: / is vastgelegd$/ })).toHaveCount(1);
+
+  // Een boeking, dan losmaken met bevestiging (K3).
+  await voegToe(page, 'Hoeve de Kraanvogel', 'Dwingeloo', '1380');
+  await page.getByRole('button', { name: /^Zet Hoeve de Kraanvogel op geboekt$/ }).click();
+  await expect(page.getByText('Hoeve de Kraanvogel staat op geboekt.')).toBeVisible();
+  await page.getByRole('button', { name: 'Ander weekend kiezen' }).click();
+  const dialoog = page.getByRole('group', { name: 'Ander weekend kiezen' });
+  await expect(dialoog).toContainText('hoort bij');
+  await dialoog.getByRole('button', { name: 'Annuleren' }).click();
+  expect(nep.store.vind('Edities', 'demo-editie-2027').vastgelegdWeekend).not.toBe('');
+  await page.getByRole('button', { name: 'Ander weekend kiezen' }).click();
+  await page.getByRole('button', { name: 'Ja, maak los' }).click();
+  await expect(page.getByText(/^Het weekend is losgemaakt/)).toBeVisible();
+  nep.store.nieuwVerzoek();
+  const e = nep.store.vind('Edities', 'demo-editie-2027');
+  expect(e.vastgelegdWeekend).toBe('');
+  expect(e.deelvorm).toBe('geboekt');
+  await expect(lijst.getByRole('listitem').first().getByRole('button', { name: /^Leg .* vast$/ })).toBeEnabled();
+});

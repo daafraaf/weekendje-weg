@@ -88,6 +88,8 @@ export const REGELS = {
   antwoordenOpslaan: { deelnemer: eigenAntwoorden, organisator: eigenAntwoorden },
   overzichtDetail: alleenOrganisator,
   weekendVastleggen: alleenOrganisator,
+  // AAN-81: losmaken kan alleen in de stappen Weekendje prikker en Accommodatie.
+  weekendLosmaken: { organisator: (c) => als(c.stap === 'overzicht' || c.stap === 'accommodatie') },
   accommodatieOpslaan: alleenOrganisator,
   accommodatieVerwijderen: alleenOrganisator,
   deelvormZetten: alleenOrganisator,

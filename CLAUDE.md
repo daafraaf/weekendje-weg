@@ -106,6 +106,9 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 - Onderdelen aan of uit: `ONDERDELEN` in `src/shared/onderdelen.js` (alle vijf uit, AAN-80). Nieuwe plekken die naar boodschappen, kookbeurten, programma, kamers of carpool verwijzen vragen `onderdeelAan(naam)`. e2e zet ze aan door de bundel te herschrijven: `zetOnderdelen(context, 'alle' | 'standaard' | [namen])` in `hulp.mjs`; `koppelNep` doet standaard 'alle', een test met een eigen `context.route` roept het zelf aan.
 - De deadline is informatief (DDL-1) en `stapData` bestaat niet meer in de logica; gebruik geen verwachte datums per stap.
 
+- Weekend vastleggen: één per editie; wijzigen alleen via `weekendLosmaken` (stap overzicht of accommodatie). Unit-tests die opnieuw vastleggen moeten eerst losmaken, in een latere stap via `store.werkBij` op de stap.
+- `npx playwright test` los gebruikt de oude bundel; draai eerst `npm run build` of gebruik `npm run check`.
+
 ## Valkuilen
 
 Leeg bij de start. Elke fout die twee keer gebeurt, komt hier.

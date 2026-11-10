@@ -1,5 +1,6 @@
 # Aannameregister Weekendje weg
 
+Versie 0.24, 10 november 2026: fase 25: AAN-63 aangepast (één vastgelegd weekend), AAN-81 toegevoegd.
 Versie 0.23, 10 november 2026: fase 23: AAN-40 vervallen, AAN-12 en AAN-71 herschreven.
 Versie 0.22, 10 november 2026: AAN-46 aangepast: de maker hoeft geen organisator te zijn.
 Versie 0.22, 10 november 2026: AAN-80 (fase 24, onderdelen uit); AAN-04, AAN-33, AAN-39 en AAN-57 aangepast.
@@ -99,7 +100,7 @@ die test aan en werk je hier de status bij.
 | AAN-60 | Totalen en jouw deel netto | Regel | `src/shared/saldo.js` (`totalen`) | GELD-6 noemt totalen per categorie; een ontvangst gaat van de uitgaven in zijn categorie af, het totaal bovenaan is netto en "jouw deel" is je aandeel in uitgaven min je aandeel in ontvangsten | laag | open |
 | AAN-61 | Knop "Iedereen" | Regel | `src/shared/verdeling.js` (`iedereen`) | "Iedereen" vinkt net als de standaardverdeling (§7.13.5) alle niet-afgehaakte deelnemers aan; een afgehaakte komt er alleen bij met een eigen vinkje (§7.13.9) | laag | open |
 | AAN-62 | Welke betaling je als betaald markeert | Regel | `src/server/acties/afrekening.js` (`betalingMarkeren`) | alleen een betaling die op dat moment open staat in de afrekening (zelfde van, naar en bedrag); is de afrekening intussen veranderd, dan krijg je "gewijzigd" en laad je opnieuw. Een los bedrag buiten de afrekening om kan niet | laag | open |
-| AAN-63 | Weekend kiezen uit de kalender | Regel | `src/server/acties/accommodatie.js` (`weekendVastleggen`) | "uit de kalender" (ACC-1) is een keuzelijst van alle weekenden (vrijdagen) in de periode van de editie, naast de top 5; het weekend kan opnieuw worden vastgelegd en vervangt het eerdere, het kan niet worden leeggemaakt | laag | open |
+| AAN-63 | Weekend kiezen uit de kalender | Regel | `src/server/acties/accommodatie.js` (`weekendVastleggen`) | "uit de kalender" (ACC-1) is een keuzelijst van alle weekenden (vrijdagen) in de periode van de editie, naast de top 5; er staat maar één weekend vast: een tweede `weekendVastleggen` geeft `gesloten`; wijzigen gaat alleen via `weekendLosmaken` (AAN-81) | laag | open |
 | AAN-64 | Grenzen van een accommodatie | Regel | `src/shared/accommodatie.js` (`ACC_GRENZEN`) | naam 1 tot 80 tekens, plaats tot 80, link leeg of https:// tot 300, notitie tot 300, totaalprijs 0 tot € 100.000 (0 betekent prijs nog niet bekend, dan staat er geen prijsregel) en hooguit 12 accommodaties per editie; de prijs per persoon deelt over de niet-afgehaakte deelnemers | laag | open |
 | AAN-65 | Geboekt hoort bij één accommodatie | Regel | `src/server/acties/accommodatie.js` (`deelvormZetten`) | `geboekt` kiezen vraagt de accommodatie (of de al geboekte); een andere deelvorm wist de geboekte; verwijderen van de geboekte zet de deelvorm terug op `info`; een verwijderde accommodatie neemt zijn stemmen mee; de groep ziet bij `geboekt` alleen die ene accommodatie | laag | open |
 
@@ -117,6 +118,7 @@ die test aan en werk je hier de status bij.
 | AAN-77 | Uitrolinstellingen | Regel | `src/shared/uitrol.js` (`APP_ADRES`, `SJABLOON_KOPIE`) | `APP_ADRES` en `SJABLOON_KOPIE` staan in `src/shared/uitrol.js`; leeg betekent het gedrag van spec 0.3; een ingevulde waarde met een andere vorm faalt de check | laag | open |
 | AAN-78 | Opzetlink | Flow | `src/web/sessie.js` (`leesOpzetlink`) | `#/opzetten?b=<webappId>&code=<setupcode>`; de setupcode mag in het fragment omdat hij eenmalig en 30 minuten geldig is; de app haalt het fragment direct uit de adresbalk | laag | open |
 | AAN-79 | Webapp-ID in het menu | Flow | `src/server/gas/menu.js` (`webappId`) | eerst `getUrl()` als die op `/exec` eindigt, dan de eigenschap `webappId`, dan één keer vragen; reden: het is niet zeker wat `getUrl()` in de nieuwe Apps Script-editor teruggeeft | midden | open |
+| AAN-81 | Weekend losmaken | Regel | `src/server/acties/accommodatie.js` (`weekendLosmaken`) | losmaken kan alleen in de stappen Weekendje prikker en Accommodatie (anders `gesloten`, na Afgerond ook) en alleen als er een weekend vastligt; het wist alleen `vastgelegdWeekend`: de aftelteller en de datums bij maaltijden en programma verdwijnen, een geboekte accommodatie, maaltijden en stemmen blijven staan (besluit K3); de bevestiging in de UI zegt dat de boeking bij de oude datum hoort | laag | open |
 | AAN-80 | Onderdelen uit | Instelling | `src/shared/onderdelen.js` (`ONDERDELEN`) | boodschappen, kookbeurten, programma, kamers en carpool staan uit met één vlag per onderdeel; uit betekent weg uit route, menu, start, eersteActie en status (geen grijs item); acties en tabs blijven bestaan | midden | open |
 
 ## Volgorde voor het gesprek
@@ -150,5 +152,6 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-10: AAN-74 t/m AAN-76 toegevoegd in fase 21 (taginvoer).
 - 2026-11-10: AAN-77 t/m AAN-79 toegevoegd in fase 22 (groep opzetten met een opzetlink); AAN-45 bijgewerkt: met `APP_ADRES` toont het menu de volledige beheerlink.
 - 2026-11-10: AAN-46 aangepast op verzoek van David: de maker van een editie kan de organisatie aan een ander lid geven.
+- 2026-11-10: fase 25 (één vastgelegd weekend): AAN-63 aangepast, AAN-81 toegevoegd.
 - 2026-11-10: fase 24 (onderdelen uit, invullen vrijer): AAN-80 toegevoegd; AAN-04, AAN-33, AAN-39 en AAN-57 aangepast.
 - 2026-11-10: fase 23 (stappenbalk één bron, menu in stapvolgorde): AAN-40 vervallen; AAN-12 en AAN-71 herschreven.
