@@ -1,10 +1,10 @@
 # MEMORY.md — Weekendje weg
 
-Laatst bijgewerkt: 2026-11-11 (fase 33: teksten, onderdelen en details)
+Laatst bijgewerkt: 2026-11-11 (feedbackronde 2 afgerond)
 
 ## Status
 
-Fase 23 (stappenbalk en menu) klaar; open staat de uitrol met David (fase 20) en de proef uit `docs/fasen/fase-22.md`. De repo bevat naast de opzet de docs uit de Werkplaats: spec v0.3, aannames
+Feedbackronde 2 (fase 29 t/m 33) klaar en groen, nog niet uitgerold; spec 0.11, aannames 0.28. Eerder: fase 23 (stappenbalk en menu) klaar; open staat de uitrol met David (fase 20) en de proef uit `docs/fasen/fase-22.md`. De repo bevat naast de opzet de docs uit de Werkplaats: spec v0.3, aannames
 v0.2 (45), 21 fasen (0 tot en met 20), designbrief v0.3 en het ontwerp in `docs/design/`
 (README, tokens.css, iconen en 37 artboards, stand 9 november 2026).
 
@@ -14,7 +14,8 @@ zodra fase 0 `package.json` heeft neergezet.
 ## Open punten
 
 - BV-32 (beslissing David): de rangorde volgens AAN-06 zet een weekend met 0 ja en 0 nee boven weekenden met 3 ja en 1 nee. Voorstel: niet-ingevuld als onzeker tellen, of sorteren op ja min nee en dan misschien. AAN-06 blijft tot dan ongewijzigd.
-- Feedbackronde 2 (fase 29 t/m 33, `docs/fasen/`): in uitvoering.
+- Feedbackronde 2 gebouwd (fase 29 t/m 33, alle groen; overdracht `docs/overdracht/feedbackronde-2.md`). Open: uitrol met Claude (API_VERSIE 2: push, dan sjabloon en "Leid0n Test" met build, clasp push en deploy op de bestaande implementatie, kort na elkaar), daarna test op toestel.
+- Kleine restpunten uit ronde 2: AAN-89 stelt in november nog het lopende jaar voor; melding "Boodschappen zijn definitief" onder Uit eigen keuken bij Boodschappen uit; afkorten stapnamen 768-1199 px.
 
 - Feedbackronde gebouwd (fase 23 t/m 28, `docs/plan-feedbackronde.md`). Open: Davids test op toestel (telefoon en laptop), lijst in `docs/overdracht/fase-28.md`; daarna uitrol (fase 20) en proef (fase 22).
 
