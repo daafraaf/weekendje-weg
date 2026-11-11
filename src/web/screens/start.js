@@ -9,6 +9,8 @@ import { editieKeuze } from './voortgang.js';
 import { lokaalNu, maakProgrammaVandaag } from './programma.js';
 import { startOrganisator } from './start-organisator.js';
 import { maakAfgelopen } from './archief.js';
+import { maakRoute } from '../components/route.js';
+import { routeGezien, zetRouteGezien } from '../uitleg.js';
 import { knop, kaart, tekst, klein, rij, lijst, aftelBlok, accommodatieRegel, weekendRegel, voorbereidingRijen, betalingRijen, samenvatting } from '../components/startblokken.js';
 
 function programmaVandaag(ctx) {
@@ -52,6 +54,8 @@ export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStan
   const inhoud = h('div', { class: 'beheer' });
   const fout = h('p', { class: 't-small t-sec', hidden: true });
   const anroep = maakBeheerApi({ sessie, editieId: () => editieId, bijVerlopen, toonMelding: (t) => { fout.textContent = t || ''; fout.hidden = !t; }, fetchFn });
+  // UIT-1, UIT-3: de route staat open zolang `ww-route-gezien` ontbreekt (AAN-85); "Hoe werkt het" haalt hem terug.
+  let routeOpen = !routeGezien(window.localStorage);
   const onder = h('div', { class: 'start-acties' }, h('button', { class: 'btn btn-ghost', type: 'button', onclick: uitloggen }, 'Uitloggen'));
   wortel.append(inhoud, fout, klein('Je bent ingelogd.'), onder);
 
@@ -64,9 +68,14 @@ export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStan
     const e = g.editie;
     const ctx = { sessie: { ...sessie, editieId: e.id }, bijVerlopen, fetchFn, nu };
     const boven = g.organisator ? startOrganisator(g, ctx) : startDeelnemer(g, ctx);
+    const opnieuw = () => teken(g);
+    const sluitRoute = () => { zetRouteGezien(window.localStorage); routeOpen = false; opnieuw(); };
+    const toonRoute = () => { routeOpen = true; opnieuw(); };
     inhoud.replaceChildren(
       h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN[e.stap]), h('h1', { class: 't-title' }, e.titel),
-        e.deadline && e.stap === 'invullen' ? klein(`Deadline ${datumLang(e.deadline.slice(0, 10))}.`) : null),
+        e.deadline && e.stap === 'invullen' ? klein(`Deadline ${datumLang(e.deadline.slice(0, 10))}.`) : null,
+        routeOpen ? null : h('button', { class: 'btn btn-ghost route-terug', type: 'button', onclick: toonRoute }, 'Hoe werkt het?')),
+      routeOpen ? maakRoute({ organisator: Boolean(g.organisator), bijSluiten: sluitRoute }) : null,
       editieKeuze(g.edities, e.id, (id) => { editieId = id; gekozen = true; laad(); }, 'start-editie'),
       aftelBlok(g, nu().datum),
       h('div', { class: 'beheer', 'data-boven': e.stap }, boven),

@@ -1,6 +1,6 @@
 # MEMORY.md — Weekendje weg
 
-Laatst bijgewerkt: 2026-11-11 (fase 27: accommodatie verrassing of samen kiezen)
+Laatst bijgewerkt: 2026-11-11 (fase 28: uitleg van de stappen)
 
 ## Status
 
@@ -13,13 +13,13 @@ zodra fase 0 `package.json` heeft neergezet.
 
 ## Open punten
 
-- Feedbackronde: fase 27 af, volgende is fase 28; fase 23 t/m 28 (`docs/plan-feedbackronde.md`). Keuzes K1 t/m K4 bevestigd (alle a), zie plan.
+- Feedbackronde gebouwd (fase 23 t/m 28, `docs/plan-feedbackronde.md`). Open: Davids test op toestel (telefoon en laptop), lijst in `docs/overdracht/fase-28.md`; daarna uitrol (fase 20) en proef (fase 22).
 
 ## Sessielog
 
 Nieuwste bovenaan. Houd hier de laatste drie fasen; oudere regels naar
 `docs/sessielog-archief.md`.
 
+- 2026-11-11 fase 28: uitleg van de stappen: route op Start (sluitbaar, vlag `ww-route-gezien`), Hoe werkt het?, info-icoon bij de stappenbalk, teksten per rol in `web/uitleg.js` (UIT-1 t/m UIT-4, NAV-7, AAN-85); check groen; eindlijst voor David in `docs/overdracht/fase-28.md`.
 - 2026-11-11 fase 27: accommodatie Verrassing of Samen kiezen, top 3 via de wachtrij, boeken, onthullen (nooit vanzelf), geen lek naar deelnemers, bedden en eigen kamers (ACC-8 t/m ACC-14, AAN-84, AAN-86, AAN-87; AAN-08, AAN-64, AAN-65 aangepast); check groen; zie `docs/overdracht/fase-27.md`.
 - 2026-11-10 fase 26: synchronisatielaag: wachtrij met debounce, localStorage en terugdraaien, actie `bundel`, `antwoordZetten` per veld, formulier zonder Opslaan (K4), indicator in de kopregel (SYNC-1 t/m SYNC-8, AAN-82, AAN-83); check groen; zie `docs/overdracht/fase-26.md`.
-- 2026-11-10 fase 25: één vastgelegd weekend (tweede vastlegging `gesloten`), `weekendLosmaken` met bevestiging, boeking blijft (K3) (ACC-6, ACC-7, AAN-81, AAN-63 aangepast); check groen; zie `docs/overdracht/fase-25.md`.

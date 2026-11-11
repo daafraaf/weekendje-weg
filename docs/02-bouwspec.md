@@ -1,5 +1,6 @@
 # Bouwspecificatie Weekendje weg
 
+Versie 0.10, 11 november 2026: uitleg van de stappen, feedbackronde fase 28 (UIT-1 t/m UIT-4, NAV-7).
 Versie 0.9, 11 november 2026: accommodatie verrassing of samen kiezen, feedbackronde fase 27 (§5.1, §5.3, §7.6, §11, ACC-3 t/m ACC-5 vervangen door ACC-8 t/m ACC-14).
 Versie 0.8, 10 november 2026: synchronisatielaag met wachtrij, feedbackronde fase 26 (§5.3, §7.4.8, §7.4.9, §7.16.5, SYNC-1 t/m SYNC-8, FRM-8, FRM-10, NFR-8, NFR-12).
 Versie 0.7, 10 november 2026: één vastgelegd weekend met uitweg, feedbackronde fase 25 (§5.3, ACC-6, ACC-7).
@@ -658,6 +659,12 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **STA-6** Het hoofdmenu hangt niet meer af van de stap: het heeft altijd de items van NAV-10. Archief en Uitleg staan er niet in (NAV-1).
 - **STA-8** De stap van een editie heeft één bron, de editie in de Sheet (§7.2.6). Na een stapwijziging in beheer tonen stappenbalk, menu en startscherm bij elke rol en op elk scherm na verversen dezelfde stap; een test met twee contexten bewijst dit.
 
+### Uitleg van de stappen (UIT)
+- **UIT-1** Bij het eerste bezoek aan Start op een apparaat staat bovenaan de kaart "Zo gaat het weekend": een kleine tijdlijn van de zes stappen tot en met Afrekening. De kaart is te sluiten; daarna blijft hij weg (vlag `ww-route-gezien` in localStorage, AAN-85).
+- **UIT-2** Per stap staan de naam (uit STAPNAMEN), wat er gebeurt, wat het oplevert en wat jij doet, met een eigen tekst voor deelnemer en organisator. De teksten staan in `src/web/uitleg.js`, noemen geen uitgezette onderdelen (OND-1) en noemen de deadline alleen bij Invullen.
+- **UIT-3** Op Start haalt de knop "Hoe werkt het?" de route terug.
+- **UIT-4** Bij de stappenbalk staat een info-icoon dat de uitleg van de huidige stap opent (NAV-7).
+
 ### Kalender (KAL)
 - **KAL-1** De kalender toont alle weekenden in de periode per maand, blanco bij de start.
 - **KAL-2** Tikken of toetsenbord wisselt een weekend volgens §7.3.2, met kleur én symbool per waarde.
@@ -790,7 +797,7 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **NAV-4** De startpagina heeft een uitklapbare sectie "Afgelopen weekenden" met afgeronde edities: dicht bij een lopende editie, open bij een afgeronde.
 - **NAV-5** De editiekiezer bevat alleen edities die niet zijn afgerond, plus de gekozen editie.
 - **NAV-6** De rondleiding van RON-1 blijft ongewijzigd en opent via Uitleg in het profielmenu.
-- **NAV-7** Vraagtekens met hints (hooguit 200 tekens, geen hover) bij Kalender, Budget, de drie tagblokken, Wie neemt wat mee, Boodschappen, Kookbeurten en Uitgaven. De stappenbalk heeft er nog geen.
+- **NAV-7** Vraagtekens met hints (hooguit 200 tekens, geen hover) bij Kalender, Budget, de drie tagblokken, Wie neemt wat mee, Boodschappen, Kookbeurten en Uitgaven. De stappenbalk heeft er een (UIT-4).
 - **NAV-8** Uitloggen is vanaf elk scherm bereikbaar via het profielmenu.
 - **NAV-9** In een beheersessie staan de beheerschermen (Leden, Nieuwe editie, Uitnodigen, Lijsten, Vragen, Per persoon, Stappen, Accommodaties beheren) achter één menu-item Beheren met een overzicht, los van de zeven items na een scheidingslijn; het item is actief op elk beheerscherm.
 - **NAV-10** Het hoofdmenu toont altijd Start, Invullen, Voortgang, Weekendje prikker, Accommodatie, Meenemen en Afrekening, in die volgorde en met de namen van de stappenbalk; het item van de huidige stap heeft een stip. Een beheersessie heeft geen Invullen. Een scherm dat nog niet aan de beurt is, toont "Komt in stap ...". Route `#/overzicht` blijft werken.

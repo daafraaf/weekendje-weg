@@ -360,7 +360,7 @@ function toonMenu(actief = menuActief) {
 function toonBalk() {
   if (standBekend && !editieStand) { balkPlek.replaceChildren(); return; } // zonder editie geen balk
   const s = editieStand || { stap: null, titel: '' };
-  balkPlek.replaceChildren(maakStappenbalk({ stap: s.stap, titel: s.titel }));
+  balkPlek.replaceChildren(maakStappenbalk({ stap: s.stap, titel: s.titel, organisator: soortNu() === 'beheer' }));
 }
 
 function zetStand(editie) {

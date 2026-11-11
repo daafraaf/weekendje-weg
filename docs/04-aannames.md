@@ -1,6 +1,7 @@
 # Aannameregister Weekendje weg
 
-Versie 0.26, 11 november 2026: fase 27: AAN-08, AAN-64 en AAN-65 aangepast; AAN-84, AAN-86 en AAN-87 toegevoegd (accommodatie verrassing of samen kiezen). AAN-85 is gereserveerd voor fase 28.
+Versie 0.27, 11 november 2026: fase 28: AAN-85 toegevoegd (route op Start, uitleg van de stappen).
+Versie 0.26, 11 november 2026: fase 27: AAN-08, AAN-64 en AAN-65 aangepast; AAN-84, AAN-86 en AAN-87 toegevoegd (accommodatie verrassing of samen kiezen).
 Versie 0.25, 10 november 2026: fase 26: AAN-82 en AAN-83 toegevoegd (synchronisatielaag).
 Versie 0.24, 10 november 2026: fase 25: AAN-63 aangepast (één vastgelegd weekend), AAN-81 toegevoegd.
 Versie 0.23, 10 november 2026: fase 23: AAN-40 vervallen, AAN-12 en AAN-71 herschreven.
@@ -125,6 +126,7 @@ die test aan en werk je hier de status bij.
 | AAN-82 | Wachtrij: tijden en grootte | Instelling | `src/shared/synchronisatie.js` (`DEBOUNCE_MS`, `WACHTTIJDEN_MS`, `BUNDEL_MAX`) | de wachtrij verstuurt 1 seconde na de laatste kleine handeling; bij een netwerkfout of `druk` opnieuw na 2, 4, 8, 16 en 30 seconden, daarna terugdraaien met melding en Opnieuw; zonder verbinding wacht ze op `online` zonder pogingen te tellen; hooguit 25 acties per `bundel`, de rest gaat in de volgende; een bundel gaat naar één editie | laag | open |
 | AAN-83 | Welke handelingen optimistisch zijn | Regel | `src/shared/synchronisatie.js` (`BUNDEL_ACTIES`) | optimistisch en in de wachtrij: claimen, claim intrekken, afvinken en formuliervelden met tags (`antwoordZetten`, één veld per actie), vanaf fase 27 de top 3; de laatste schrijfactie wint zonder versiecheck, per item, claim of veld; alle andere acties wachten op de Sheet; een weigering van het script (`gesloten`, `ongeldig`, `geen_toegang`) draait meteen terug; een verlopen sessie bewaart de wachtrij tot opnieuw inloggen | midden | open |
 | AAN-84 | Ontbrekende kolommen | Regel | `src/server/store.js` (`tabel`, `zorgVoorKop`) | mist een kolom uit `TABS` in de kop van een bestaande Sheet, dan voegt de Store haar in het geheugen achteraan de kop toe en leest hij een lege cel; de kop gaat pas de Sheet in bij de eerste schrijfactie op die tab (lezen schrijft nooit); is het blad te smal, dan komen er kolommen bij; onbekende kolommen in de Sheet blijven staan | midden | open |
+| AAN-85 | Route eerste keer | Flow | `src/web/uitleg.js` (`routeGezien`, `zetRouteGezien`), `src/web/screens/start.js` | de route "Zo gaat het weekend" staat bovenaan Start zolang `ww-route-gezien` in localStorage ontbreekt; Sluiten zet de vlag; de vlag geldt per apparaat en staat los van de rondleiding (AAN-73, `ww-rondleiding`); lezen en schrijven staan in try/catch, zonder opslag blijft de route elke keer staan en sluiten geldt voor het scherm; de knop Hoe werkt het? haalt de route terug; de tekst in het info-icoon van de stappenbalk volgt de rol van de sessie (beheersessie = organisator) | laag | open |
 | AAN-86 | Omzetting van oude deelvormen | Regel | `src/shared/accommodatie.js` (`deelvormVan`, `rangVan`) | bij lezen worden `info`, `stemmen`, `geboekt` en een lege cel `samen`; een geboekte blijft geboekt via `geboektAccommodatieId`; een stem zonder rang telt als rang 1; de Sheet verandert pas bij de volgende schrijfactie op de editie (boeken, verwijderen van de geboekte, wisselen), die de nieuwe vorm wegschrijft; een nieuwe editie begint met `samen` | laag | open |
 | AAN-87 | Onthullen | Regel | `src/server/acties/accommodatie.js` (`verrassingOnthullen`) | alleen de organisator onthult, alleen bij een geboekte verrassing (anders `gesloten` of `ongeldig`), vanaf de stap Accommodatie en ook na Afgerond (uitzondering op AAN-29, het raakt de afrekening niet); nog eens onthullen is geen fout; er is geen actie om terug te draaien; alleen als de geboekte accommodatie wordt verwijderd, wordt `onthuld` weer onwaar, zodat een nieuwe boeking weer een verrassing is; besluit David: nooit automatisch, ook niet na het weekend | laag | open |
 
@@ -161,6 +163,7 @@ AAN-24, AAN-30. Dan de regel met impact midden: AAN-06.
 - 2026-11-10: AAN-46 aangepast op verzoek van David: de maker van een editie kan de organisatie aan een ander lid geven.
 - 2026-11-10: fase 25 (één vastgelegd weekend): AAN-63 aangepast, AAN-81 toegevoegd.
 - 2026-11-10: fase 26 (synchronisatielaag met wachtrij): AAN-82 en AAN-83 toegevoegd.
+- 2026-11-11: fase 28 (uitleg van de stappen): AAN-85 toegevoegd.
 - 2026-11-11: fase 27 (accommodatie verrassing of samen kiezen): AAN-08, AAN-64 en AAN-65 aangepast; AAN-84, AAN-86 en AAN-87 toegevoegd.
 - 2026-11-10: fase 24 (onderdelen uit, invullen vrijer): AAN-80 toegevoegd; AAN-04, AAN-33, AAN-39 en AAN-57 aangepast.
 - 2026-11-10: fase 23 (stappenbalk één bron, menu in stapvolgorde): AAN-40 vervallen; AAN-12 en AAN-71 herschreven.

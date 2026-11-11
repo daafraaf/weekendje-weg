@@ -6,11 +6,13 @@ import { hashToken } from '../../src/server/crypto.js';
 import { nodeSha256 } from '../mock-backend/memorystore.mjs';
 
 // Zet een geldige sessie in de opslag voordat de pagina laadt (de schil leest de sessie lokaal).
-export async function logIn(context, { rondleidingGezien = true, soort = 'deelnemer', token = 'lokaal', editieId = 'demo-editie-2027' } = {}) {
+export async function logIn(context, { rondleidingGezien = true, routeGezien = true, soort = 'deelnemer', token = 'lokaal', editieId = 'demo-editie-2027' } = {}) {
   const sessie = { scriptId: 'demo-weekendje-weg-0001', sessie: token, soort, verloopt: '2099-01-01T00:00:00.000Z', editieId };
   await context.addInitScript(([sleutel, waarde]) => { if (!localStorage.getItem(sleutel)) localStorage.setItem(sleutel, waarde); }, [OPSLAG_SLEUTEL, JSON.stringify(sessie)]);
   // De rondleiding (RON-1) verschijnt bij eerste gebruik; de meeste tests slaan hem over.
   if (rondleidingGezien) await context.addInitScript(() => localStorage.setItem('ww-rondleiding', '1'));
+  // UIT-1: de route op Start (AAN-85) is ook alleen voor nieuwe gebruikers; de meeste tests slaan hem over.
+  if (routeGezien) await context.addInitScript(() => localStorage.setItem('ww-route-gezien', '1'));
 }
 
 // OND-1: de vlaggen staan in de bundel (src/shared/onderdelen.js). De tests herschrijven die ene letterlijke in app.js:
@@ -49,7 +51,7 @@ export async function beheerNaar(page, naam) {
   await page.getByRole('main').getByRole('link', { name: new RegExp(`^${naam}`) }).click();
 }
 
-export async function startDemo(context, { stap = 'weekend', als = 'Bas', beheer = false, aanpassen, onderdelen } = {}) {
+export async function startDemo(context, { stap = 'weekend', als = 'Bas', beheer = false, aanpassen, onderdelen, routeGezien = true } = {}) {
   const demo = maakVolledigeDemo({ stap });
   if (aanpassen) aanpassen(demo.seed, demo);
   const nep = await startServer({ port: 0, seed: demo.seed });
@@ -63,7 +65,7 @@ export async function startDemo(context, { stap = 'weekend', als = 'Bas', beheer
   nep.store.nieuwVerzoek();
   nep.store.voegToe('Sessies', { tokenHash: hashToken(nodeSha256, token), soort: beheer ? 'beheer' : 'deelnemer', subjectId, verloopt: '2099-01-01T00:00:00.000Z' });
   nep.store.flush();
-  await koppelNep(context, nep, beheer ? { soort: 'beheer', token, editieId: '', onderdelen } : { token, onderdelen });
+  await koppelNep(context, nep, beheer ? { soort: 'beheer', token, editieId: '', onderdelen, routeGezien } : { token, onderdelen, routeGezien });
   return { nep, demo };
 }
 

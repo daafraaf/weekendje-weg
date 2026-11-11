@@ -28,3 +28,4 @@ Oudere regels uit het sessielog van MEMORY.md.
 - 2026-11-09 fase 14: boodschappenlijst af (MEE-5 t/m 9), check groen, AAN-67 toegevoegd, AAN-27 heeft zijn codeplek; zie `docs/overdracht/fase-14.md`.
 - 2026-11-09 fase 15: kookbeurten en programma af (KOK-1 t/m 4, PRG-1 t/m 3), check groen, AAN-68 en AAN-69 toegevoegd, AAN-18, 25, 34 hebben hun codeplek; zie `docs/overdracht/fase-15.md`.
 - 2026-11-10 fase 22 (opzetlink): Sheet-menu Groep opzetten met opzetlink en dialoog, wizard met ingevulde stap 1, rondleiding in drie stappen, uitrolinstellingen (GRP-1, GRP-6, GRP-7, GRP-8, RON-5), check groen, AAN-77 t/m 79 toegevoegd; zie `docs/overdracht/fase-22.md`.
+- 2026-11-10 fase 25: één vastgelegd weekend (tweede vastlegging `gesloten`), `weekendLosmaken` met bevestiging, boeking blijft (K3) (ACC-6, ACC-7, AAN-81, AAN-63 aangepast); check groen; zie `docs/overdracht/fase-25.md`.

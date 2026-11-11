@@ -113,6 +113,8 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 - e2e met de wachtrij: wacht op `page.locator('.sync')` met "Opgeslagen" voordat een andere context of de Store het ziet; `nep.aanroepen(actie)` en `nep.zetStoring([...])` uit `startServer`; wachttijden overslaan met `page.clock.install()` en `fastForward`.
 - Accommodatie (fase 27): vorm via `deelvormVan` en stemrang via `rangVan` (`shared/accommodatie.js`), nooit de ruwe kolom; geboekt is `geboektAccommodatieId` gevuld. Een leesscherm dat een accommodatie teruggeeft, vraagt `verborgenVoor`/`geboekteVoor` in `acties/geheim.js` (ACC-9) en krijgt een geval in de lektest `geheimLekt` (`accommodatie.test.mjs`). Nieuwe kolommen gewoon achteraan in `TABS`: de Store vult een oude kop aan (AAN-84).
 
+- Uitleg (UIT): alle teksten in `src/web/uitleg.js` (`UITLEG`, `uitlegVoor(stap, organisator)`); een nieuw onderdeel of stap eerst daar aanpassen. e2e: `logIn` en `startDemo` zetten `ww-route-gezien`, geef `routeGezien: false` voor de route op Start. De info-knop in de stappenbalk bestaat twee keer (mobiel en desktop), CSS toont er één.
+
 ## Valkuilen
 
 Leeg bij de start. Elke fout die twee keer gebeurt, komt hier.
