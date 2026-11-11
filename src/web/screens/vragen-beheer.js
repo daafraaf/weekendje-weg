@@ -28,11 +28,15 @@ export function maakVragenBeheer({ sessie, params = {}, bijVerlopen, fetchFn }) 
     teken();
   }
 
+  let bevestiging = ''; // SYNC-8: de bevestiging staat bij het formulier, niet boven de sectie
+  const BEVESTIG = { toevoegen: 'Vraag toegevoegd.', wijzigen: 'Vraag opgeslagen.', verwijderen: 'Vraag verwijderd.' };
+
   async function verstuur(data) {
-    toonMelding('');
+    toonMelding(''); // EDI-12: een nieuwe poging wist de vorige melding
     const r = await anroep('vragenBeheren', data, true);
     if (!r) return;
     bewerk = null;
+    bevestiging = BEVESTIG[data.actie];
     await laad();
   }
 
@@ -53,20 +57,26 @@ export function maakVragenBeheer({ sessie, params = {}, bijVerlopen, fetchFn }) 
     zichtbaar();
     const opslaan = () => {
       const lijst = optiesBlok.hidden ? [] : optieTags;
+      // EDI-12, BV-12: een keuzevraag heeft minstens twee opties; de melding vervangt de vorige.
+      if (!optiesBlok.hidden && !slotTekst && lijst.length < VRAAG_OPTIES.min) { toonMelding('Geef minstens twee antwoordopties.'); return; }
       const bestaand = vraag ? vraag.opties : [];
       const opties = lijst.map((label, i) => (bestaand[i] && bestaand[i].label === label ? { sleutel: bestaand[i].sleutel, label } : { label }));
       if (vraag) verstuur({ actie: 'wijzigen', id: vraag.id, tekst: tekst.value, ...(slotTekst ? {} : { type: type.value, opties }) });
       else verstuur({ actie: 'toevoegen', type: type.value, tekst: tekst.value, opties });
     };
-    return h('section', { class: 'solid panel beheer-blok' },
+    const klaar = bevestiging ? h('p', { class: 'form-toast t-small', role: 'status' }, bevestiging) : null;
+    bevestiging = '';
+    return h('section', { class: 'solid panel beheer-blok vb-formulier' },
       h('h2', { class: 't-h2' }, vraag ? 'Vraag wijzigen' : 'Vraag toevoegen'),
       slotTekst ? h('p', { class: 't-small t-sec' }, 'Deze vraag heeft al antwoorden: je kunt alleen de tekst nog wijzigen of de vraag verwijderen.') : null,
       h('div', {}, h('label', { class: 'label', for: 'vb-tekst' }, 'Vraag'), tekst),
       h('div', {}, h('label', { class: 'label', for: 'vb-type' }, 'Type'), type),
       optiesBlok,
       h('div', { class: 'dl-knoppen' },
-        h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, disabled: vast, onclick: opslaan }, vraag ? 'Opslaan' : 'Toevoegen'),
-        vraag ? h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => { bewerk = null; teken(); } }, 'Annuleren') : null));
+        // BV-12: "Vraag toevoegen", zodat de knop niet te verwarren is met Toevoegen van het optieveld.
+        h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, disabled: vast, onclick: opslaan }, vraag ? 'Opslaan' : 'Vraag toevoegen'),
+        vraag ? h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => { bewerk = null; teken(); } }, 'Annuleren') : null),
+      klaar);
   }
 
   function rij(q, vast) {

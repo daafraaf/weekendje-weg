@@ -66,7 +66,7 @@ test('MEE-6: na definitief toont de lijst Definitief, toevoegen geeft gesloten e
   await expect(page.getByText('Definitief', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: /definitief/i })).toHaveCount(0); // Anna is geen organisator
   const toevoegen = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ apiVersie: 1, editieId: 'demo-editie-2027', actie: 'itemOpslaan', sessie: 'lokaal', data: { soort: 'boodschap', naam: 'Chips' } }) }).then((r) => r.json());
+    body: JSON.stringify({ apiVersie: 2, editieId: 'demo-editie-2027', actie: 'itemOpslaan', sessie: 'lokaal', data: { soort: 'boodschap', naam: 'Chips' } }) }).then((r) => r.json());
   expect(toevoegen.ok).toBe(false);
   expect(toevoegen.fout).toBe('gesloten');
   await page.getByRole('checkbox', { name: 'Bananen' }).check();

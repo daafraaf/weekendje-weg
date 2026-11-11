@@ -26,6 +26,9 @@ let soortVan = () => undefined;
 export function ververs() {
   if (!doel) return;
   const { naam, params } = lees(location.hash, soortVan());
+  // NAV-13: een onbekende route (of een scherm van de andere rol) gaat naar #/start zonder het foute adres te bewaren.
+  const pad = location.hash.replace(/^#\/?/, '').split('?')[0];
+  if (pad && pad !== naam) history.replaceState(null, '', `${location.pathname}${location.search}#/start`);
   doel.replaceChildren(routes.get(naam).render(params));
   bijWissel(naam, params);
 }

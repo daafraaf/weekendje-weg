@@ -114,6 +114,9 @@ a:hover { text-decoration: underline; }
 /* Grote actie bezig: de knop zelf draait (SYNC-8). */
 [data-schrijft][aria-busy="true"] { opacity: 1; position: relative; }
 [data-schrijft][aria-busy="true"]::after { content: ""; display: inline-block; width: 14px; height: 14px; margin-left: 8px; vertical-align: -2px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: lader-draai .8s linear infinite; }
+/* De knop toont "Opslaan…" (BV-13, BV-35); een icoonknop wordt daarvoor even breder. */
+.icon-btn[aria-busy="true"] { width: auto; padding: 0 12px; white-space: nowrap; font-size: 14px; font-weight: 600; }
+.knop-bezig { white-space: nowrap; }
 
 /* Synchronisatie: één rustige indicator in de kopregel (SYNC-4) en de melding na terugdraaien (SYNC-5). */
 .sync { display: inline-flex; align-items: center; gap: 8px; margin: 0 12px 0 0; min-height: var(--tap-min); color: var(--text-secondary); font-weight: 550; }

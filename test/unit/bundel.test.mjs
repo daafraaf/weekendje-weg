@@ -81,7 +81,7 @@ function gasOmgeving({ kapot = false, antwoord = '1', url = EXEC, prompts = [] }
 
 // De setupcode uit de dialoog van Groep opzetten: in de opzetlink, of zonder APP_ADRES in het veld Setupcode.
 const codeUit = (dialoog) => (/code=([A-Z2-9]{8})/.exec(dialoog.html) || /id="code"[^>]*value="([A-Z2-9]{8})"/.exec(dialoog.html))?.[1];
-const opzetVerzoek = (code, eigenaar = 0) => JSON.stringify({ actie: 'groepOpzetten', apiVersie: 1, data: { setupcode: code, groepsnaam: 'Test', leden: [{ voornaam: 'A', woonplaats: '' }, { voornaam: 'B', woonplaats: '' }], eigenaar, wachtwoord: 'lang-genoeg-wachtwoord' } });
+const opzetVerzoek = (code, eigenaar = 0) => JSON.stringify({ actie: 'groepOpzetten', apiVersie: 2, data: { setupcode: code, groepsnaam: 'Test', leden: [{ voornaam: 'A', woonplaats: '' }, { voornaam: 'B', woonplaats: '' }], eigenaar, wachtwoord: 'lang-genoeg-wachtwoord' } });
 
 async function laad(opties) {
   const omg = gasOmgeving(opties);
@@ -120,7 +120,7 @@ test('NFR-20: doPost en doGet in de bundel geven JSON via ContentService', async
   const { ctx } = await laad();
   const post = vm.runInContext('doPost({ postData: { contents: \'{"actie":"status"}\' } })', ctx);
   assert.equal(post.mime, 'application/json');
-  assert.deepEqual(JSON.parse(post.tekst), { ok: true, data: { apiVersie: 1, opgezet: false } });
+  assert.deepEqual(JSON.parse(post.tekst), { ok: true, data: { apiVersie: 2, opgezet: false } });
   const get = vm.runInContext('doGet({})', ctx);
   assert.equal(JSON.parse(get.tekst).ok, true);
   assert.equal(JSON.parse(vm.runInContext('doPost(undefined)', ctx).tekst).fout, 'ongeldig');

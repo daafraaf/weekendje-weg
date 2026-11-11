@@ -115,6 +115,8 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 
 - Uitleg (UIT): alle teksten in `src/web/uitleg.js` (`UITLEG`, `uitlegVoor(stap, organisator)`); een nieuw onderdeel of stap eerst daar aanpassen. e2e: `logIn` en `startDemo` zetten `ww-route-gezien`, geef `routeGezien: false` voor de route op Start. De info-knop in de stappenbalk bestaat twee keer (mobiel en desktop), CSS toont er één.
 
+- Versie en fouten (fase 29): een nieuwe of vervallen actie in `ACTIES` vraagt `API_VERSIE` +1 in `server/api.js` en `web/api.js` plus een nieuwe snapshot in `test/unit/foutafhandeling.test.mjs`; de unit- en e2e-tests met een vaste `apiVersie` moeten mee. Foutteksten voor de gebruiker alleen via `leesbareMelding` (`web/foutteksten.js`). Een grote actie krijgt "Opslaan…" in de knop vanzelf via `data-schrijft`; zet de bevestiging bij het veld.
+
 ## Valkuilen
 
 Leeg bij de start. Elke fout die twee keer gebeurt, komt hier.

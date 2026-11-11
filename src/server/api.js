@@ -7,7 +7,9 @@ import { hashToken } from './crypto.js';
 import { bundelSchema, voerBundelUit } from './acties/bundel.js';
 import { deelvormVan } from '../shared/accommodatie.js';
 
-export const API_VERSIE = 1;
+// NFR-22, §7.17: elke wijziging van ACTIES verhoogt de versie hier en in src/web/api.js; de snapshot in
+// test/unit/foutafhandeling.test.mjs faalt anders.
+export const API_VERSIE = 2;
 export const SLOT_WACHTTIJD_MS = 10000;
 const MAX_VERZOEK = 200000;
 
@@ -47,9 +49,9 @@ const ENVELOP = v.object({
 const STANDAARD = {
   status: {
     schema: v.object({}),
-    uitvoeren: ({ store }) => {
-      const groep = store.lees('Groep')[0];
-      return { apiVersie: API_VERSIE, opgezet: Boolean(groep && groep.opgezet) };
+    uitvoeren: (h) => {
+      const groep = h.store.lees('Groep')[0];
+      return { apiVersie: h.versie, opgezet: Boolean(groep && groep.opgezet) };
     },
   },
   bundel: {
@@ -61,15 +63,17 @@ const STANDAARD = {
 export function maakApi(deps) {
   const { store, lock, sha256, nu } = deps;
   const handlers = { ...STANDAARD, ...(deps.handlers || {}) };
+  const versie = deps.apiVersie ?? API_VERSIE; // de nepbackend kan een oud script nabootsen
   const logFout = deps.logFout || (() => {});
 
   function leesVerzoek(tekst) {
     if (typeof tekst !== 'string' || tekst.length === 0 || tekst.length > MAX_VERZOEK) throw new ApiFout('ongeldig');
     let ruw;
     try { ruw = JSON.parse(tekst); } catch { throw new ApiFout('ongeldig'); }
+    // §7.17: de versie eerst, zodat een voorkant met een actie die dit script niet kent api_versie krijgt.
+    if (ruw && typeof ruw.apiVersie === 'number' && ruw.apiVersie !== versie) throw new ApiFout('api_versie');
     const verzoek = valideer(ENVELOP, ruw, 'verzoek');
     if (verzoek.apiVersie === undefined && verzoek.actie !== 'status') throw new ApiFout('ongeldig', 'Veld verzoek.apiVersie: ontbreekt.');
-    if (verzoek.apiVersie !== undefined && verzoek.apiVersie !== API_VERSIE) throw new ApiFout('api_versie');
     return verzoek;
   }
 
@@ -139,7 +143,7 @@ export function maakApi(deps) {
       const rol = rolReden(sessie.rol, actie, c);
       if (rol) throw new ApiFout(rol);
       const data = impl && impl.schema ? valideer(impl.schema, ruweData) : ruweData;
-      const h = { store, sessie, editie, editieId, data, ctx: c, deps, voerUit };
+      const h = { store, sessie, editie, editieId, data, ctx: c, deps, voerUit, versie };
       if (impl && impl.context) Object.assign(c, impl.context(h));
 
       const r = reden(sessie.rol, actie, c);

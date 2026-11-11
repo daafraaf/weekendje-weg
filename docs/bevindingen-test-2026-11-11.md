@@ -39,13 +39,13 @@ Actie (met David, CLAUDE.md): `clasp push` en `clasp deploy -i <id>` op de besta
 Eis: SYNC-2, ACC-7, ACC-10, ACC-11, ACC-13, NFR (uitrol).
 Opgelost bij de uitrol van 11 november (script bijgewerkt); geen fase.
 
-### BV-04 (H) API_VERSIE is niet opgehoogd bij nieuwe acties, dus de versiecheck van §7.17 slaat niet aan
+### BV-04 (H) API_VERSIE is niet opgehoogd bij nieuwe acties, dus de versiecheck van §7.17 slaat niet aan (Opgelost in fase 29)
 `src/server/api.js` en `src/web/api.js` staan allebei op `API_VERSIE = 1`, terwijl fase 25 t/m 27 nieuwe acties
 toevoegden. Een verouderd script geeft daardoor geen "Het script van deze groep is verouderd" maar een technische fout
 per handeling (BV-03). Fix: verhoog `API_VERSIE` bij elke contractwijziging (nu naar 2) en voeg een check toe die faalt
 als `ACTIES` wijzigt zonder versieverhoging (bijvoorbeeld een snapshot van de actielijst in een test). Eis: §7.17, AAN-14.
 
-### BV-05 (H) Technische foutteksten komen bij de gebruiker terecht
+### BV-05 (H) Technische foutteksten komen bij de gebruiker terecht (Opgelost in fase 29)
 "Veld verzoek.actie: onbekende keuze." (wachtrij) en "Veld data.tekst: te kort." (Eigen vragen, lege vraag opslaan)
 staan letterlijk in beeld. Verwacht: een Nederlandse zin zonder veldnamen, bijvoorbeeld "Vul een vraag in." of "Deze
 handeling kent het script nog niet. Vraag de eigenaar het script bij te werken." Map de `ongeldig`-meldingen in de
@@ -84,15 +84,15 @@ DDL-1 is de deadline informatief. Maak er bijvoorbeeld "Graag ingevuld vóór ..
 of "Weekendje weg <volgend jaar>", jaar = eerste jaar zonder editie, periode volgens AAN-15 (of pas de spec aan als
 april-oktober bewust is). Bij het wisselen van jaar schuift de periode wel netjes mee.
 
-### BV-12 (K) Keuzevraag met één antwoordoptie: niets gebeurt, oude fout blijft staan
+### BV-12 (K) Keuzevraag met één antwoordoptie: niets gebeurt, oude fout blijft staan (Opgelost in fase 29)
 Eigen vragen, type Eén keuze, één optie, Toevoegen. De vraag wordt niet toegevoegd, er komt geen nieuwe melding en de
 fout van de vorige poging blijft staan. Verwacht: "Geef minstens twee antwoordopties." en de oude melding weg. Eis: EDI-3.
 
-### BV-13 (K) Opslaan van een eigen vraag duurt ongeveer vijf seconden zonder duidelijke bezig-status in de knop
+### BV-13 (K) Opslaan van een eigen vraag duurt ongeveer vijf seconden zonder duidelijke bezig-status in de knop (Opgelost in fase 29)
 Na Toevoegen gebeurt er zichtbaar een tijd niets; het veld blijft gevuld tot het antwoord er is. Controleer SYNC-8
 (`aria-busy` op de knop en "Opslaan…" in de kopregel) op dit scherm.
 
-### BV-14 (K) Onbekende route toont Start maar laat het foute adres staan
+### BV-14 (K) Onbekende route toont Start maar laat het foute adres staan (Opgelost in fase 29)
 `#/vragen` of `#/lijsten` toont Start terwijl de adresbalk het foute adres houdt. Verwacht: doorsturen naar `#/start`
 (of een "Pagina niet gevonden"). Eis: NAV.
 
@@ -143,7 +143,7 @@ debugtekst. Weghalen.
 Bij een groep zonder afgeronde editie staat alleen de kop. Toon een pijltje (uitklapbaar, NAV-4) en bij leeg
 "Nog geen afgelopen weekenden", of verberg de sectie als er niets is.
 
-### BV-24 (K) De melding "Niet opgeslagen…" blijft na verversen staan
+### BV-24 (K) De melding "Niet opgeslagen…" blijft na verversen staan (Opgelost in fase 29)
 Na een mislukte wachtrij staat de balk "Niet opgeslagen. Je wijziging is teruggezet." ook na herladen nog onderaan,
 op elk scherm. Na herladen is er niets meer terug te zetten; de melding hoort weg te zijn of "Opnieuw" moet echt iets
 doen. Eis: SYNC-3, SYNC-5.
@@ -212,7 +212,7 @@ Ook staat bij Afgerond nog "Nog 576 dagen tot het weekend", wat niet past bij ee
 Een post met Gelijk (33,33 / 33,33 / 33,34), daarna Bedrag: alle velden zijn leeg en er staat "nog € 100,00 te
 verdelen". Vul ze voor met de bedragen van de vorige verdeling, dan hoeft alleen het verschil aangepast. Eis: GELD-2.
 
-### BV-35 (K) Trage grote acties zonder zichtbare voortgang bij de knop
+### BV-35 (K) Trage grote acties zonder zichtbare voortgang bij de knop (Opgelost in fase 29)
 Een item toevoegen, een eigen vraag toevoegen of de deelvorm wisselen duurt 5 tot 10 seconden. Alleen bovenaan staat
 "Even geduld…"; de tekst blijft in het veld staan en de bevestiging ("Badminton set staat op de lijst.") verschijnt
 boven de sectie, ver van het veld. Zet de bezig-status op de knop zelf en toon de bevestiging bij het veld. Eis: SYNC-8.

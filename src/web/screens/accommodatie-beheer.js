@@ -19,6 +19,8 @@ export function maakAccommodatieBeheer({ sessie, params = {}, bijVerlopen, fetch
   let editieId = params.editie || '';
   let g = null;
   let bericht = '';
+  let berichtBijVorm = false; // het bericht hoort bij de deelvorm
+  let vormBericht = '';
   let bewerk = null; // null, {} voor een nieuwe of de accommodatie die wordt gewijzigd
   let losmaken = false; // "Ander weekend kiezen" vraagt om bevestiging
   let bevestig = ''; // id van de accommodatie waarvoor "Verwijderen" om bevestiging vraagt
@@ -91,8 +93,9 @@ export function maakAccommodatieBeheer({ sessie, params = {}, bijVerlopen, fetch
       h('h2', { class: 't-h3', id: 'acc-vorm-kop' }, 'Hoe kiezen we?'),
       h('div', { class: 'segm', role: 'group', 'aria-label': 'Hoe kiezen we?' }, DEELVORMEN.map((d) => h('button', { type: 'button', 'aria-pressed': String(g.deelvorm === d),
         disabled: g.alleenLezen || g.geboekt, 'data-schrijft': true,
-        onclick: () => { if (g.deelvorm !== d) schrijf('deelvormZetten', { deelvorm: d }, `We kiezen nu: ${DEELVORM_NAMEN[d].toLowerCase()}.`); } }, DEELVORM_NAMEN[d]))),
-      h('p', { class: 't-small t-sec' }, g.geboekt ? 'Er is geboekt. Wisselen kan alleen zolang er niets geboekt is.' : uitleg[g.deelvorm]));
+        onclick: () => { if (g.deelvorm !== d) schrijf('deelvormZetten', { deelvorm: d }, `We kiezen nu: ${DEELVORM_NAMEN[d].toLowerCase()}.`, () => { berichtBijVorm = true; }); } }, DEELVORM_NAMEN[d]))),
+      h('p', { class: 't-small t-sec' }, g.geboekt ? 'Er is geboekt. Wisselen kan alleen zolang er niets geboekt is.' : uitleg[g.deelvorm]),
+      vormBericht ? h('p', { class: 'form-toast t-small', role: 'status' }, vormBericht) : null); // SYNC-8: bij de knoppen
   }
 
   // ACC-10: onthullen gebeurt nooit vanzelf, is definitief en vraagt een bevestiging. Kan in elke latere stap.
@@ -196,8 +199,11 @@ export function maakAccommodatieBeheer({ sessie, params = {}, bijVerlopen, fetch
     if (!g) return;
     const titel = h('div', { class: 'wz-kop' }, h('p', { class: 't-cap' }, 'Beheren'), h('h1', { class: 't-title' }, 'Accommodaties'));
     if (!g.editie) { zet(titel, melding.el, h('p', { class: 't-body t-sec' }, 'Je hebt nog geen editie.'), h('a', { class: 'btn btn-primary', href: '#/editie-nieuw' }, 'Nieuwe editie maken')); return; }
-    const toast = bericht ? h('p', { class: 'form-toast t-small', role: 'status' }, bericht) : null;
+    // SYNC-8, BV-35: de bevestiging van de deelvorm staat in het blok Hoe kiezen we?, de rest bovenaan.
+    vormBericht = berichtBijVorm ? bericht : '';
+    const toast = bericht && !berichtBijVorm ? h('p', { class: 'form-toast t-small', role: 'status' }, bericht) : null;
     bericht = '';
+    berichtBijVorm = false;
     zet(
       titel,
       h('p', { class: 't-small t-sec' }, STAPNAMEN[g.editie.stap] ? `Nu: ${STAPNAMEN[g.editie.stap]}` : ''),

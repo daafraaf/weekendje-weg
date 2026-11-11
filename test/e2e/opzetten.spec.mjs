@@ -19,7 +19,7 @@ const test = basis.extend({
     await context.route('https://script.google.com/**', async (route) => {
       const body = route.request().postData() || '';
       if (oud && JSON.parse(body).actie === 'status') {
-        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { apiVersie: 2, opgezet: false } }) });
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { apiVersie: 1, opgezet: false } }) });
       }
       // Een gesloten verbinding (ECONNRESET) krijgt één nieuwe poging; is de nepserver al dicht, dan stopt het verzoek.
       const antwoord = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body }).catch(() => fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body })).catch(() => null);
@@ -145,7 +145,7 @@ test('GRP-3 [leeg]: een tweede opzet wordt geweigerd', async ({ page, nep }) => 
   await verbind(page, nep.setupcode());
   await expect(page.getByText('Deze groep is al opgezet')).toBeVisible();
   // En rechtstreeks tegen het script wordt ook een tweede groepOpzetten geweigerd.
-  const direct = nep.api.verwerk(JSON.stringify({ actie: 'groepOpzetten', apiVersie: 1, data: { setupcode: nep.setupcode(), groepsnaam: 'Kaping', leden: [{ voornaam: 'X', woonplaats: '' }, { voornaam: 'Y', woonplaats: '' }], eigenaar: 0, wachtwoord: WACHTWOORD } }));
+  const direct = nep.api.verwerk(JSON.stringify({ actie: 'groepOpzetten', apiVersie: 2, data: { setupcode: nep.setupcode(), groepsnaam: 'Kaping', leden: [{ voornaam: 'X', woonplaats: '' }, { voornaam: 'Y', woonplaats: '' }], eigenaar: 0, wachtwoord: WACHTWOORD } }));
   expect(direct).toMatchObject({ ok: false, fout: 'gesloten' });
 });
 

@@ -12,11 +12,12 @@ import { maakVolledigeDemo } from './demo.mjs';
 
 const MAX_BODY = 256 * 1024;
 
-export function maakNepApi({ seed = {}, handlers = ALLE_HANDLERS, nu = () => new Date() } = {}) {
+// apiVersie (optioneel) bootst een script van een andere versie na (§7.17).
+export function maakNepApi({ seed = {}, handlers = ALLE_HANDLERS, nu = () => new Date(), apiVersie } = {}) {
   const { store, adapter } = maakMemoryStore(seed, { nu });
   const lock = maakMemoryLock();
   const eigenschappen = maakMemoryEigenschappen();
-  const deps = { store, lock, sha256: nodeSha256, random: nodeRandom, nu, handlers, eigenschappen, logFout: (e) => console.error(e) };
+  const deps = { store, lock, sha256: nodeSha256, random: nodeRandom, nu, handlers, eigenschappen, logFout: (e) => console.error(e), ...(apiVersie ? { apiVersie } : {}) };
   const api = maakApi(deps);
   // Het Sheet-menu "Groep opzetten" van de nepbackend: geeft een verse setupcode.
   const setupcode = () => setupcodeMaken(deps);

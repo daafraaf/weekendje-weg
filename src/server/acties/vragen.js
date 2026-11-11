@@ -62,7 +62,8 @@ export const vragenVan = (store, editieId) => store.lees('Vragen').filter((q) =>
 function opties(type, ruw, bestaand) {
   if (type !== 'keuze' && type !== 'meerkeuze') return [];
   const lijstje = maakLijst(ruw || [], bestaand);
-  if (lijstje.length < VRAAG_OPTIES.min || lijstje.length > VRAAG_OPTIES.max) throw new ApiFout('ongeldig', `Geef ${VRAAG_OPTIES.min} tot ${VRAAG_OPTIES.max} antwoordopties.`);
+  if (lijstje.length < VRAAG_OPTIES.min) throw new ApiFout('ongeldig', 'Geef minstens twee antwoordopties.'); // EDI-12
+  if (lijstje.length > VRAAG_OPTIES.max) throw new ApiFout('ongeldig', `Geef ${VRAAG_OPTIES.min} tot ${VRAAG_OPTIES.max} antwoordopties.`);
   return lijstje;
 }
 

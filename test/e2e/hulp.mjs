@@ -70,10 +70,10 @@ export async function startDemo(context, { stap = 'weekend', als = 'Bas', beheer
 }
 
 // Start een nepbackend met de demodata en een geldige deelnemerssessie voor Anna (token 'lokaal').
-// opties gaan naar maakDemo, bijvoorbeeld { antwoorden: true } voor de demoantwoorden.
+// opties gaan naar maakDemo, bijvoorbeeld { antwoorden: true } voor de demoantwoorden; apiVersie bootst een oud script na.
 export async function startNep(context, opties = {}) {
   const demo = maakDemo(opties);
-  const nep = await startServer({ port: 0, seed: demo.seed });
+  const nep = await startServer({ port: 0, seed: demo.seed, apiVersie: opties.apiVersie });
   nep.store.nieuwVerzoek();
   nep.store.voegToe('Sessies', { tokenHash: hashToken(nodeSha256, 'lokaal'), soort: 'deelnemer', subjectId: 'dln0000000000002', verloopt: '2099-01-01T00:00:00.000Z' });
   nep.store.flush();

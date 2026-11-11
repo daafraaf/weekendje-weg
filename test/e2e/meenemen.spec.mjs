@@ -16,7 +16,7 @@ test('MEE-1 MEE-2 MEE-3 MEE-4: drie secties, claimen en intrekken, een tweede cl
   const pindakaasId = nep.store.lees('Items').find((i) => i.naam === 'Pindakaas').id;
   nep.store.flush();
   const bram = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ apiVersie: 1, editieId: 'demo-editie-2027', actie: 'claimen', sessie: 'bram', data: { itemId: pindakaasId } }) }).then((r) => r.json());
+    body: JSON.stringify({ apiVersie: 2, editieId: 'demo-editie-2027', actie: 'claimen', sessie: 'bram', data: { itemId: pindakaasId } }) }).then((r) => r.json());
   expect(bram.ok).toBe(true);
 
   await page.goto('/#/meenemen');

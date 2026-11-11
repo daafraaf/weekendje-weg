@@ -3,6 +3,7 @@
 // aanroep `bundel`, bewaart wat nog niet bevestigd is in localStorage en probeert het bij een fout opnieuw.
 // Pure module: opslag, verzenden, timers en verbinding worden meegegeven, zodat Node hem kan testen.
 import { DEBOUNCE_MS, WACHTTIJDEN_MS, BUNDEL_MAX, BUNDEL_ACTIES } from '../shared/synchronisatie.js';
+import { leesbareMelding } from './foutteksten.js';
 
 export const WACHTRIJ_SLEUTEL = 'ww-wachtrij';
 export const SYNC_TEKST = {
@@ -61,7 +62,7 @@ export function maakWachtrij({
   function voegToe(a) {
     // SYNC-2: een nieuwere handeling op hetzelfde item of veld vervangt de vorige die nog niet onderweg is.
     acties = acties.filter((x) => x.onderweg || x.sleutel !== a.sleutel || x.editieId !== (a.editieId || ''));
-    acties.push({ id: ++teller, actie: a.actie, data: a.data, sleutel: a.sleutel, editieId: a.editieId || '', onderweg: false });
+    acties.push({ id: ++teller, actie: a.actie, data: a.data, sleutel: a.sleutel, editieId: a.editieId || '', onderweg: false, hersteld: Boolean(a.hersteld) });
   }
 
   function terugdraaien(lijst, tekst) {
@@ -71,6 +72,20 @@ export function maakWachtrij({
     melding = tekst ? `${TERUG_TEKST} ${tekst}` : TERUG_TEKST;
     bewaar();
     meld('teruggedraaid', { acties: lijst.map(kopie) });
+  }
+
+  // SYNC-5, BV-24: weigert het script een handeling die uit de opslag van een vorige keer kwam, dan valt ze
+  // stil weg. Na herladen is er niets terug te zetten en Opnieuw zou dezelfde weigering geven.
+  function weigeren(lijst, tekst) {
+    const oud = lijst.filter((a) => a.hersteld);
+    const nieuw = lijst.filter((a) => !a.hersteld);
+    if (oud.length) {
+      const ids = new Set(oud.map((a) => a.id));
+      acties = acties.filter((a) => !ids.has(a.id));
+      bewaar();
+      meld('teruggedraaid', { acties: oud.map(kopie) });
+    }
+    if (nieuw.length) terugdraaien(nieuw, tekst);
   }
 
   async function stuur() {
@@ -89,7 +104,7 @@ export function maakWachtrij({
       if (fout.code === 'verlopen') { zetStatus('fout'); return; } // bewaard; na opnieuw inloggen gaat het alsnog
       if (BLIJVEND.has(fout.code)) {
         poging = 0;
-        terugdraaien(pakket, fout.message || '');
+        weigeren(pakket, fout.message || '');
         if (acties.length) { zetStatus('bezig'); plan(0); } else zetStatus('rust');
         return;
       }
@@ -110,7 +125,10 @@ export function maakWachtrij({
     acties = acties.filter((a) => !klaar.has(a.id));
     bewaar();
     if (goed.length) meld('bevestigd', { acties: goed.map((x) => ({ ...kopie(x.a), uitslag: x.u.data })) });
-    if (afgewezen.length) terugdraaien(afgewezen.map((x) => x.a), (afgewezen.find((x) => x.u.melding) || { u: {} }).u.melding || '');
+    if (afgewezen.length) {
+      const eerste = afgewezen.find((x) => x.u.melding);
+      weigeren(afgewezen.map((x) => x.a), eerste ? leesbareMelding(eerste.u.fout, eerste.u.melding, eerste.a.actie) : ''); // NFR-21
+    }
     if (acties.length) {
       zetStatus('bezig');
       // Wat tijdens het verzenden bijkwam, wacht zijn eigen stilte af; een andere editie of een volle bundel gaat meteen.
@@ -141,7 +159,7 @@ export function maakWachtrij({
       if (sleutel) {
         let ruw = null;
         try { ruw = JSON.parse(opslag.getItem(sleutel)); } catch { ruw = null; }
-        if (Array.isArray(ruw)) for (const a of ruw.filter(geldig)) voegToe(a);
+        if (Array.isArray(ruw)) for (const a of ruw.filter(geldig)) voegToe({ ...a, hersteld: true });
       }
       status = 'rust';
       meld('gezet');

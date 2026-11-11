@@ -49,7 +49,7 @@ test('FRM-5 FRM-6 FRM-7 EDI-2 EDI-3 AAN-75: organisator voegt activiteit en keuz
   await beheer.getByLabel('Type').selectOption('meerkeuze');
   const opties = beheer.getByRole('combobox', { name: /Antwoordopties/ }); // TAG-10
   for (const o of ['Catan', 'Uno', 'Poker']) { await opties.fill(o); await opties.press('Enter'); }
-  await beheer.getByRole('button', { name: 'Toevoegen' }).click();
+  await beheer.getByRole('button', { name: 'Vraag toevoegen' }).click();
   await expect(beheer.getByText('Welke spellen nemen we mee?')).toBeVisible();
   await expect(beheer.getByText('Meerdere keuzes: Catan, Uno, Poker')).toBeVisible();
 

@@ -28,7 +28,8 @@ const SECTIES = sectiesVan();
 export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetchFn }) {
   let editieId = params.editie || sessie.editieId || '';
   let g = null;
-  let bericht = '';
+  let bericht = null; // { soort, tekst }: de bevestiging staat in de sectie van het veld (SYNC-8, BV-35)
+  let toast = null; // de bevestiging die nu in beeld staat
   let bevestig = ''; // id van het item waarvoor "Verwijderen" om bevestiging vraagt
   const wortel = h('section', { class: 'beheer meenemen' });
   const melding = foutMelding();
@@ -38,12 +39,13 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
     kopMetHint(h('h1', { class: 't-title' }, 'Wie neemt wat mee'), 'meenemen'), sub ? h('p', { class: 't-body t-sec' }, sub) : null);
 
   // Grote acties (item toevoegen of verwijderen) wachten op de Sheet met de bezig-status op de knop (SYNC-8).
-  async function schrijf(actie, data, tekst) {
+  async function schrijf(actie, data, tekst, soort) {
     melding.toon('');
     const r = await anroep(actie, data, true);
-    if (r) bericht = tekst;
+    if (r) bericht = { soort, tekst };
     bevestig = '';
     await laad();
+    return Boolean(r);
   }
 
   // SYNC-1: claimen en intrekken staan direct in beeld en gaan via de wachtrij; geen lader, geen melding per klik.
@@ -83,7 +85,7 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
     if ((i.eigen || g.organisator) && !g.definitief && !g.alleenLezen) {
       knoppen.push(bevestig === i.id
         ? h('button', { class: 'btn btn-plain btn-sm', type: 'button', 'data-schrijft': true, 'aria-label': `${i.naam} definitief verwijderen`,
-          onclick: () => schrijf('itemVerwijderen', { id: i.id, versie: i.versie }, `${i.naam} is verwijderd.`) }, 'Ja, verwijderen')
+          onclick: () => schrijf('itemVerwijderen', { id: i.id, versie: i.versie }, `${i.naam} is verwijderd.`, i.soort) }, 'Ja, verwijderen')
         : h('button', { class: 'btn btn-plain btn-sm', type: 'button', 'aria-label': `${i.naam} verwijderen`, onclick: () => { bevestig = i.id; teken(); } }, 'Verwijderen'));
     }
     return h('div', { class: 'row mee-rij', role: 'listitem', 'data-item': i.id },
@@ -93,7 +95,7 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
 
   // MEE-4: naam, soort (de sectie) en categorie; de categorie wordt voorgesteld volgens §7.8.3.
   function toevoeg(sectie) {
-    const naam = h('input', { class: 'field', type: 'text', 'aria-label': sectie.veld, placeholder: sectie.plaatshouder, maxlength: String(NAAM_MAX), autocomplete: 'off', style: 'min-height:44px' });
+    const naam = h('input', { class: 'field', type: 'text', 'data-nieuw': sectie.soort, 'aria-label': sectie.veld, placeholder: sectie.plaatshouder, maxlength: String(NAAM_MAX), autocomplete: 'off', style: 'min-height:44px' });
     const cat = h('select', { class: 'field mee-cat', 'aria-label': `Categorie van ${sectie.veld.toLowerCase()}`, style: 'min-height:44px' }, g.categorieen.map((c) => h('option', { value: c }, c)));
     let eigenKeuze = false;
     cat.value = stelCategorieVoor('');
@@ -101,7 +103,12 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
     naam.addEventListener('input', () => { if (!eigenKeuze) cat.value = stelCategorieVoor(naam.value); });
     const voegToe = async () => {
       if (!naam.value.trim()) { melding.toon('Geef het item een naam.'); return; }
-      await schrijf('itemOpslaan', { soort: sectie.soort, naam: naam.value, categorie: cat.value }, `${naam.value.trim()} staat op de lijst.`);
+      const tekst = naam.value;
+      // SYNC-8: na succes is het veld leeg (nieuw getekend); mislukt het, dan blijft de tekst staan.
+      if (!await schrijf('itemOpslaan', { soort: sectie.soort, naam: tekst, categorie: cat.value }, `${tekst.trim()} staat op de lijst.`, sectie.soort)) {
+        const veld = wortel.querySelector(`[data-nieuw="${sectie.soort}"]`);
+        if (veld && !veld.value) veld.value = tekst;
+      }
     };
     naam.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); voegToe(); } });
     return h('div', { class: 'row mee-nieuw' },
@@ -118,6 +125,7 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
       h('div', { class: 'solid list', role: 'list', 'aria-label': s.kop },
         items.length ? items.map(rij) : h('p', { class: 't-small t-sec mee-leeg' }, 'Nog niets op deze lijst.'),
         g.definitief || g.alleenLezen ? null : toevoeg(s)),
+      toast && toast.soort === s.soort ? h('p', { class: 'form-toast t-small', role: 'status' }, toast.tekst) : null,
       s.hint ? h('p', { class: 'hint' }, s.hint) : null);
   }
 
@@ -127,12 +135,12 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
     // Na opnieuw tekenen blijft de focus in dezelfde rij, zodat het toetsenbord niet terug naar boven springt.
     const actief = document.activeElement && wortel.contains(document.activeElement) ? document.activeElement.closest('[data-item]') : null;
     const focusItem = actief ? actief.getAttribute('data-item') : '';
-    const toast = bericht ? h('p', { class: 'form-toast t-small', role: 'status' }, bericht) : null;
-    bericht = '';
+    toast = bericht;
+    bericht = null;
     zet(
       kop(onderdeelAan('boodschappen') ? 'Zet erbij wat je meeneemt. Wat niemand claimt uit de keuken, gaat op de boodschappenlijst.' : 'Zet erbij wat je meeneemt.'),
       editieKeuze(g.edities, editieId, (id) => { editieId = id; laad(); }, 'mee-editie'),
-      melding.el, toast,
+      melding.el,
       g.alleenLezen ? h('p', { class: 'hint' }, 'De editie is afgerond. Je kunt de lijst nog lezen.') : null,
       !g.ik ? h('p', { class: 'hint' }, 'Je bent geen deelnemer van deze editie, dus je kunt niets claimen.') : null,
       SECTIES.map(sectie));

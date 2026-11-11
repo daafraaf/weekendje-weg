@@ -318,11 +318,28 @@ let laderTimer = null;
 // SYNC-8: een grote actie wacht op de Sheet met de bezig-status op de knop waarmee ze begon.
 // Kleine handelingen gaan via de wachtrij en komen hier niet langs (`stil` in api.js).
 let bezigKnop = null;
+let knopInhoud = null; // wat er in de knop stond voordat hij "Opslaan…" toonde
+// SYNC-8, BV-13, BV-35: de knop zelf zegt "Opslaan…"; de toegankelijke naam blijft de oude tekst.
+function knopBezig(knop) {
+  if (knop.getAttribute('aria-busy') === 'true') return;
+  knop.setAttribute('aria-busy', 'true');
+  const naam = knop.textContent.trim();
+  if (!knop.hasAttribute('aria-label') && naam) { knop.setAttribute('aria-label', naam); knop.dataset.bezigNaam = '1'; }
+  knopInhoud = [...knop.childNodes];
+  knop.replaceChildren(h('span', { class: 'knop-bezig' }, 'Opslaan…'));
+}
+function knopRust(knop) {
+  if (knop.getAttribute('aria-busy') !== 'true') return;
+  knop.removeAttribute('aria-busy');
+  if (knopInhoud) knop.replaceChildren(...knopInhoud);
+  knopInhoud = null;
+  if (knop.dataset.bezigNaam) { knop.removeAttribute('aria-label'); delete knop.dataset.bezigNaam; }
+}
 bijBezig(({ alle, schrijft }) => {
   schrijftNu = schrijft > 0;
   document.documentElement.classList.toggle('is-bezig', schrijftNu);
-  if (schrijftNu && bezigKnop && bezigKnop.isConnected) bezigKnop.setAttribute('aria-busy', 'true');
-  if (!schrijftNu && bezigKnop) { bezigKnop.removeAttribute('aria-busy'); bezigKnop = null; }
+  if (schrijftNu && bezigKnop && bezigKnop.isConnected) knopBezig(bezigKnop);
+  if (!schrijftNu && bezigKnop) { knopRust(bezigKnop); bezigKnop = null; }
   clearTimeout(laderTimer);
   laderTimer = null;
   if (!alle) { lader.hidden = true; laderTekst.textContent = ''; return; }
@@ -336,7 +353,7 @@ function houdTegen(e) {
   if (!(e.target instanceof Element)) return;
   const raakt = e.type === 'submit' ? e.target.querySelector('[data-schrijft]') : e.target.closest('[data-schrijft]');
   if (!raakt) return;
-  if (!schrijftNu) { if (bezigKnop) bezigKnop.removeAttribute('aria-busy'); bezigKnop = raakt; return; }
+  if (!schrijftNu) { if (bezigKnop) knopRust(bezigKnop); bezigKnop = raakt; return; }
   e.preventDefault(); e.stopPropagation();
 }
 document.addEventListener('click', houdTegen, true);

@@ -1,8 +1,11 @@
 // Verbinding met het script (spec §3, §5.3): POST met text/plain, geen preflight.
 // NFR-5: fetch gaat alleen naar script.google.com; de nepbackend gebruikt dezelfde vorm op localhost.
-export const API_VERSIE = 1;
-// AAN-14 (§7.17): een verouderd script krijgt overal dezelfde melding met de weg naar de uitleg.
-export const VEROUDERD_TEKST = 'Het script van deze groep is verouderd. De eigenaar werkt het bij via de uitleg in de README (onderdeel Script bijwerken), altijd als nieuwe versie op de bestaande implementatie en nooit als nieuwe implementatie.';
+import { VEROUDERD_TEKST, leesbareMelding } from './foutteksten.js';
+
+// NFR-22, §7.17: gelijk aan API_VERSIE in src/server/api.js; elke wijziging van ACTIES verhoogt hem aan beide
+// kanten (de snapshot in test/unit/foutafhandeling.test.mjs bewaakt dat).
+export const API_VERSIE = 2;
+export { VEROUDERD_TEKST };
 export const OFFLINE_TEKST = 'Geen verbinding, je gegevens zijn veilig opgeslagen in de Sheet';
 
 export class ApiFoutKlient extends Error {
@@ -41,7 +44,8 @@ export function maakApi({ basisUrl, sessie = () => '', editieId = () => '', fetc
       } finally {
         if (!stil) tel(-1, schrijft);
       }
-      if (!antwoord.ok) throw new ApiFoutKlient(antwoord.fout, antwoord.fout === 'api_versie' ? VEROUDERD_TEKST : antwoord.melding, antwoord.data);
+      // NFR-21: de gebruiker ziet de melding in gewone taal; een veldnaam van het script komt niet in beeld.
+      if (!antwoord.ok) throw new ApiFoutKlient(antwoord.fout, antwoord.fout === 'api_versie' ? VEROUDERD_TEKST : leesbareMelding(antwoord.fout, antwoord.melding, actie), antwoord.data);
       return antwoord.data;
     },
   };
