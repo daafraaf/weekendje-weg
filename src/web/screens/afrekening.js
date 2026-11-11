@@ -55,7 +55,7 @@ export function maakAfrekening({ sessie, params = {}, bijVerlopen, fetchFn }) {
 
   function betalingRij(b, betaald) {
     const knoppen = [];
-    if (!betaald && !g.alleenLezen && b.naarId === g.ik) {
+    if (!betaald && b.naarId === g.ik) { // GELD-9, BV-25: ook na Afgerond, zolang de betaling open staat
       knoppen.push(h('button', { class: 'btn btn-ghost btn-sm', type: 'button', 'aria-label': `Betaalverzoek aan ${naam(b.vanId)}`,
         onclick: () => { verzoek = b; teken(); } }, 'Betaalverzoek'));
     }
@@ -115,7 +115,7 @@ export function maakAfrekening({ sessie, params = {}, bijVerlopen, fetchFn }) {
       maakAfrekenTabs('afrekening', g.edities ? editieId : ''),
       editieKeuze(g.edities, editieId, (id) => { editieId = id; verzoek = null; laad(); }, 'af-editie'),
       melding.el, toast,
-      g.alleenLezen ? h('p', { class: 'hint' }, 'De editie is afgerond. Je kunt de afrekening nog lezen.') : null,
+      g.alleenLezen ? h('p', { class: 'hint' }, g.open.length ? 'De editie is afgerond. Open betalingen kun je nog afvinken.' : 'De editie is afgerond. Je kunt de afrekening nog lezen.') : null,
       mijnKaart(),
       betalingen,
       verzoekKaart(),

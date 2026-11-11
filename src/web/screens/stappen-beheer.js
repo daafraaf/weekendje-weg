@@ -4,7 +4,8 @@
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { deelKnoppen } from '../delen.js';
-import { STAPNAMEN, volgendeStap, vorigeStap } from '../../shared/stappen.js';
+import { STAPNAMEN, volgendeStap, vorigeStap, stapWaarschuwingen, stapVraag } from '../../shared/stappen.js';
+import { lokaalNu } from './programma.js';
 import { datumLang } from '../../shared/datums.js';
 import { deadlineIso } from '../../shared/editie.js';
 import { stapTekst } from '../../shared/whatsapp.js';
@@ -18,6 +19,8 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
   let editieId = params.editie || '';
   let gedeeld = null; // { stap, tekst } na een stapwijziging
   let bericht = '';
+  let stand = null; // het scherm `start` van de gekozen editie: wie nog niet heeft ingevuld, weekend, open betalingen
+  let vraag = null; // { stap, redenen } als een stap vooruit om bevestiging vraagt (AAN-88)
 
   const wortel = h('section', { class: 'beheer stappen-beheer' });
   const melding = foutMelding();
@@ -30,15 +33,35 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
     if (!r) return;
     gegevens = r;
     if (!gegevens.edities.some((e) => e.id === editieId)) editieId = gegevens.edities.length ? gegevens.edities[gegevens.edities.length - 1].id : '';
+    stand = editieId ? await anroep('scherm', { naam: 'start' }, false) : null;
+    teken();
+  }
+
+  // AAN-88 (BV-25, BV-26): een stap vooruit vraagt eerst een bevestiging als er een reden is.
+  function redenen(e, naar) {
+    if (!stand || !stand.editie || stand.editie.id !== e.id) return [];
+    return stapWaarschuwingen({
+      van: e.stap, naar, nogNiet: stand.voortgang ? stand.voortgang.nogNiet : [],
+      vastgelegdWeekend: stand.editie.vastgelegdWeekend, vandaag: lokaalNu().datum,
+      aantalOpen: stand.afrekening ? stand.afrekening.aantalOpen : 0,
+    });
+  }
+
+  function vooruit(e, naar) {
+    const r = redenen(e, naar);
+    if (!r.length) { zetStap(naar); return; }
+    vraag = { stap: naar, redenen: r };
     teken();
   }
 
   // EDI-7: na elke stapwijziging verschijnt de tekst van de nieuwe stap.
   async function zetStap(stap) {
     melding.toon('');
+    const aantalOpen = stand && stand.afrekening ? stand.afrekening.aantalOpen : 0; // §7.12.4: bericht bij Afgerond
     const r = await anroep('stapZetten', { stap }, true);
     if (!r) return;
-    gedeeld = { stap: r.editie.stap, tekst: stapTekst({ editieTitel: r.editie.titel, stap: r.editie.stap, deadline: r.editie.deadline, deelvorm: r.editie.deelvorm }) };
+    vraag = null;
+    gedeeld = { stap: r.editie.stap, tekst: stapTekst({ editieTitel: r.editie.titel, stap: r.editie.stap, deadline: r.editie.deadline, deelvorm: r.editie.deelvorm, aantalOpen }) };
     bericht = '';
     bijStap();
     await laad();
@@ -53,12 +76,24 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
     await laad();
   }
 
+  function bevestiging() {
+    const naam = STAPNAMEN[vraag.stap];
+    return h('div', { class: 'solid panel', role: 'group', 'aria-label': `Naar ${naam} bevestigen` },
+      h('ul', { class: 't-body' }, vraag.redenen.map((t) => h('li', {}, t))),
+      h('p', { class: 't-body' }, stapVraag(vraag.stap)),
+      h('div', { class: 'dl-knoppen' },
+        h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, onclick: () => zetStap(vraag.stap) }, vraag.stap === 'afgerond' ? 'Ja, rond af' : `Ja, naar ${naam}`),
+        h('button', { class: 'btn btn-plain', type: 'button', onclick: () => { vraag = null; teken(); } }, 'Annuleren')));
+  }
+
   function stapKnoppen(e) {
-    if (e.stap === 'afgerond') return h('p', { class: 't-small t-sec' }, 'De editie is afgerond en staat nu vast.');
     const verder = volgendeStap(e.stap);
     const terug = vorigeStap(e.stap);
+    if (vraag && vraag.stap !== verder) vraag = null;
     return h('div', { class: 'beheer-blok' },
-      verder ? h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, onclick: () => zetStap(verder) }, `Naar ${STAPNAMEN[verder]}`, icoon(VOORUIT)) : null,
+      e.stap === 'afgerond' ? h('p', { class: 't-small t-sec' }, 'De editie is afgerond. Open betalingen kun je nog afvinken onder Afrekening.') : null,
+      verder && !vraag ? h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, onclick: () => vooruit(e, verder) }, `Naar ${STAPNAMEN[verder]}`, icoon(VOORUIT)) : null,
+      vraag ? bevestiging() : null,
       verder === 'overzicht' ? h('p', { class: 'hint' }, `Naar ${STAPNAMEN.overzicht} sluit het invullen, ook als de deadline nog niet voorbij is.`) : null,
       terug ? h('button', { class: 'btn btn-ghost', type: 'button', 'data-schrijft': true, onclick: () => zetStap(terug) }, icoon(TERUG), `Terug naar ${STAPNAMEN[terug]}`) : null,
       e.stap === 'accommodatie' ? h('p', { class: 'hint' }, 'Terug naar Invullen kan vanaf hier niet meer.') : null);
@@ -90,7 +125,7 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
       deelKnoppen({ tekst: gedeeld.tekst, soort: 'Stapbericht', naam: 'de groep' })) : null;
     zet(
       kop,
-      editieKeuze(gegevens.edities, editieId, (id) => { editieId = id; gedeeld = null; bericht = ''; teken(); }, 'st-editie'),
+      editieKeuze(gegevens.edities, editieId, (id) => { editieId = id; gedeeld = null; bericht = ''; vraag = null; laad(); }, 'st-editie'),
       melding.el,
       bericht ? h('p', { class: 't-small t-sec', role: 'status' }, bericht) : null,
       tekstKaart,

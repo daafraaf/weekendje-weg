@@ -8,7 +8,7 @@ Werkwijze voor Claude Code: per bevinding de eis-ID's in de commit, een test die
 
 ## Bevindingen
 
-### BV-01 (H) Datum wijzigen: de knop staat ergens anders dan de uitleg zegt, en na Accommodatie kan het niet meer
+### BV-01 (H) Datum wijzigen: de knop staat ergens anders dan de uitleg zegt, en na Accommodatie kan het niet meer (Opgelost in fase 32)
 Gemeld door David, nagespeeld in de testeditie. Drie dingen lopen door elkaar:
 1. Vastleggen en Ander weekend kiezen staan alleen onder Beheren, Accommodaties beheren. Het scherm Weekendje prikker
    (menu) heeft voor de organisator geen enkele knop, terwijl de uitleg daar zegt "Kies het beste weekend en leg het
@@ -159,7 +159,7 @@ waarschuwing in Wie betaalt wat, restcent naar de betaler, saldi tellen op tot n
 "nog € 30,00 te verdelen" met Opslaan uit, organisator kan claim van een ander weghalen, nieuwe editie neemt leden,
 lijsten en blokken over.
 
-### BV-25 (H) Afgerond zonder bevestiging, terwijl er betalingen open staan; daarna kan niemand meer iets afvinken
+### BV-25 (H) Afgerond zonder bevestiging, terwijl er betalingen open staan; daarna kan niemand meer iets afvinken (Opgelost in fase 32)
 Stappen, "Naar Afgerond" met 3 van 4 betalingen open: geen waarschuwing, geen bevestiging. Daarna is de afrekening
 alleen-lezen en heeft Stappen geen "Terug naar Afrekening", dus open betalingen blijven voor altijd open. Het bericht
 voor de groep zegt "is afgerond en afgerekend. Bedankt voor het mooie weekend!" terwijl er nog betaald moet worden en
@@ -167,7 +167,7 @@ het weekend nog 576 dagen weg is. Verwacht: bevestiging met het aantal open beta
 Afgerond mogelijk (of terug naar Afrekening kan, §7.2.2 zegt één stap terug), en een tekst die klopt.
 Eis: §7.2.2, GELD-9, EDI-7, AAN-29.
 
-### BV-26 (K) Stappen vooruit zonder controle op de datum of de voortgang
+### BV-26 (K) Stappen vooruit zonder controle op de datum of de voortgang (Opgelost in fase 32)
 Naar Weekendje prikker met 5 van 6 ingevuld, en naar Weekend en Afrekening ruim een jaar vóór het weekend: geen enkele
 vraag. Een korte bevestiging ("Robin heeft nog niet ingevuld. Toch door?", "Het weekend is pas over 576 dagen.")
 voorkomt een misklik. Eis: EDI-7.

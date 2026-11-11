@@ -1,5 +1,5 @@
 import { test as basis, expect } from '@playwright/test';
-import { startNep, beheerNaar } from './hulp.mjs';
+import { startNep, beheerNaar, stapVooruit } from './hulp.mjs';
 
 const SCRIPT_ID = 'demo-weekendje-weg-0001';
 const WACHTWOORD = 'duinpan-kraanvogel';
@@ -55,7 +55,7 @@ test('OVZ-3 OVZ-4 OVZ-5 EDI-7: de organisator zet de stap naar Weekendje prikker
   await expect(beheer.getByRole('heading', { level: 1 })).toHaveText('Stappen');
   const balk = beheer.getByRole('navigation', { name: 'Stappen van de editie' });
   await expect(balk.locator('[aria-current="step"]')).toContainText('Invullen');
-  await beheer.getByRole('button', { name: 'Naar Weekendje prikker' }).click();
+  await stapVooruit(beheer, 'Weekendje prikker'); // AAN-88: niet iedereen heeft ingevuld
   await expect(balk.locator('[aria-current="step"]')).toContainText('Weekendje prikker');
   await expect(beheer.getByText(/^Hoi allemaal! Het invullen voor Weekendje weg 2027 is gesloten\./)).toBeVisible();
   await expect(beheer.getByRole('button', { name: 'Stapbericht voor de groep delen' })).toBeVisible();

@@ -146,7 +146,6 @@ test('§6 AAN-29: een organisator van een andere editie mag niets, en na Afgeron
   expect((await vraag({ actie: 'scherm', sessie: eva, editieId: DEMO_EDITIE_ID, data: { naam: 'posten' } })).fout).toBe('geen_toegang');
   // In haar eigen, afgeronde editie leest ze wel, maar schrijft ze niets.
   expect((await vraag({ actie: 'scherm', sessie: eva, editieId: DEMO_2026_ID, data: { naam: 'afrekening' } })).ok).toBe(true);
-  expect((await vraag({ actie: 'stapZetten', sessie: eva, editieId: DEMO_2026_ID, data: { stap: 'afrekenen' } })).fout).toBe('gesloten');
   expect((await vraag({ actie: 'programmaVerwijderen', sessie: eva, editieId: DEMO_2026_ID, data: { id: 'prg0000000000001' } })).fout).toBe('gesloten');
   expect(foto()).toBe(voor);
   nep.server.close();

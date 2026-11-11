@@ -92,9 +92,9 @@ test('TOE-7 §6 accommodaties beheren, datum vastleggen: alleen organisator', ()
   alleenOrganisator(['weekendVastleggen', 'accommodatieOpslaan', 'accommodatieVerwijderen', 'deelvormZetten', 'accommodatieBoeken', 'verrassingOnthullen'], { stap: 'accommodatie' });
 });
 
-test('ACC-7 AAN-81 weekend losmaken: organisator in Weekendje prikker en Accommodatie, daarna niet', () => {
-  for (const stap of ['overzicht', 'accommodatie']) assert.ok(mag('organisator', 'weekendLosmaken', { ...ORG, stap }));
-  for (const stap of ['invullen', 'voorbereiding', 'afgerond']) assert.equal(R('organisator', 'weekendLosmaken', { ...ORG, stap }), 'gesloten');
+test('ACC-7 AAN-81 weekend losmaken: organisator in Weekendje prikker, Accommodatie en Meenemen, daarna niet', () => {
+  for (const stap of ['overzicht', 'accommodatie', 'voorbereiding']) assert.ok(mag('organisator', 'weekendLosmaken', { ...ORG, stap }));
+  for (const stap of ['invullen', 'weekend', 'afrekenen', 'afgerond']) assert.equal(R('organisator', 'weekendLosmaken', { ...ORG, stap }), 'gesloten');
   assert.ok(!mag('deelnemer', 'weekendLosmaken', { ...DN, stap: 'accommodatie' }));
 });
 
@@ -222,11 +222,15 @@ test('AAN-03: een beheersessie zonder editie mag een editie aanmaken en een behe
   assert.ok(!mag('organisator', 'editieBijwerken', { editieId: 'e2', organisatorVanEditie: false, stap: 'invullen' }));
 });
 
-test('AAN-29: na de stap Afgerond is alles alleen-lezen behalve lezen', () => {
+test('AAN-29: na de stap Afgerond is alles alleen-lezen behalve lezen, betalingen en de stap terug', () => {
   const c = { ...ORG, stap: 'afgerond' };
-  for (const a of ['editieBijwerken', 'stapZetten', 'postOpslaan', 'afvinken', 'claimen', 'betalingMarkeren']) {
+  for (const a of ['editieBijwerken', 'postOpslaan', 'postVerwijderen', 'afvinken', 'claimen', 'afhakenMarkeren']) {
     assert.equal(R('organisator', a, c), 'gesloten', a);
   }
+  for (const a of ['betalingMarkeren', 'betalingTerugdraaien', 'stapZetten']) assert.ok(mag('organisator', a, c), a); // BV-25
+  assert.ok(mag('deelnemer', 'betalingMarkeren', { ...DN, stap: 'afgerond', betrokken: true }));
+  assert.equal(R('deelnemer', 'betalingMarkeren', { ...DN, stap: 'afgerond', betrokken: false }), 'geen_toegang');
+  assert.equal(R('deelnemer', 'stapZetten', { ...DN, stap: 'afgerond' }), 'geen_toegang');
   assert.equal(R('deelnemer', 'afvinken', { ...DN, stap: 'afgerond' }), 'gesloten');
   assert.ok(mag('deelnemer', 'scherm', { ...DN, stap: 'afgerond', scherm: 'posten' }));
   assert.ok(mag('organisator', 'overzichtDetail', c));

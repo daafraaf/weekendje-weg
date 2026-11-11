@@ -57,8 +57,9 @@ export function afrekeningScherm(h) {
   const st = stand(store, editie.id);
   const ik = mijnRij(store, sessie, editie.id);
   const organisator = sessie.rol === 'organisator';
-  const alleenLezen = editie.stap === 'afgerond'; // na Afgerond alleen lezen (rechten.js)
-  const mag = (b) => !alleenLezen && (organisator || (Boolean(ik) && (b.vanId === ik || b.naarId === ik)));
+  const alleenLezen = editie.stap === 'afgerond'; // na Afgerond alleen lezen (rechten.js), betalingen uitgezonderd
+  // GELD-9, AAN-29 (BV-25): afvinken en terugdraaien kan ook na Afgerond.
+  const mag = (b) => organisator || (Boolean(ik) && (b.vanId === ik || b.naarId === ik));
   return {
     edities,
     editie: editieStappen(editie),

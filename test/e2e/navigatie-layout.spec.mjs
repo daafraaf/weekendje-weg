@@ -18,7 +18,8 @@ for (const [rol, als, beheer, namen] of [['deelnemer', 'Bas', false, NAMEN_DEELN
     try {
       for (const breedte of [360, 390, 1280]) {
         await page.setViewportSize({ width: breedte, height: 800 });
-        for (const route of ['start', 'voortgang', 'meenemen', 'posten']) {
+        // Fase 32 (BV-01): Weekendje prikker heeft voor de organisator het weekendblok, dus die route ook.
+        for (const route of beheer ? ['start', 'voortgang', 'overzicht', 'meenemen', 'posten'] : ['start', 'voortgang', 'meenemen', 'posten']) {
           await page.goto('about:blank');
           await page.goto(`/#/${route}`);
           await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -40,7 +41,7 @@ for (const [rol, als, beheer, namen] of [['deelnemer', 'Bas', false, NAMEN_DEELN
           await expect(page.getByRole('main')).not.toContainText('null');
           // NAV-12: op mobiel heeft alleen het actieve item een zichtbaar label.
           const zichtbaar = await items.evaluateAll((els) => els.filter((e) => e.querySelector('span').getBoundingClientRect().width > 0).map((e) => e.getAttribute('aria-label')));
-          if (breedte < 768) expect(zichtbaar).toEqual([{ start: 'Start', voortgang: 'Voortgang', meenemen: 'Meenemen', posten: 'Afrekening' }[route]]);
+          if (breedte < 768) expect(zichtbaar).toEqual([{ start: 'Start', voortgang: 'Voortgang', overzicht: 'Weekendje prikker', meenemen: 'Meenemen', posten: 'Afrekening' }[route]]);
           else expect(zichtbaar).toEqual(namen);
         }
       }

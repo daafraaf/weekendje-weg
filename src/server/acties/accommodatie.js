@@ -7,6 +7,7 @@ import { tellWeekenden, topWeekenden } from '../../shared/rangorde.js';
 import { DEELVORMEN, ACC_GRENZEN, prijsPerPersoon, isHttpsLink, deelvormVan, rangVan, telPunten, maxRang, beddenFout } from '../../shared/accommodatie.js';
 import { kiesEditie } from './overzicht.js';
 import { editieStappen } from './stappen.js';
+import { LOSMAKEN_STAPPEN } from '../../shared/stappen.js';
 import { deelnemersVan, mijnRij } from './posten.js';
 import { maakStandaardMaaltijden } from './maaltijden.js';
 import { verborgenVoor, isOrganisatorVan } from './geheim.js';
@@ -37,7 +38,7 @@ export const weekendVastleggen = {
   },
 };
 
-// ACC-7, AAN-81, besluit K3: losmaken wist alleen het vastgelegde weekend. Een geboekte accommodatie, de maaltijden
+// ACC-7, AAN-81, besluit K3: losmaken (stappen Weekendje prikker, Accommodatie en Meenemen; rechten.js) wist alleen het vastgelegde weekend. Een geboekte accommodatie, de maaltijden
 // en de stemmen blijven staan; de boeking hoort dan bij de oude datum (de bevestiging in de UI zegt dat).
 export const weekendLosmaken = {
   schema: v.object({}),
@@ -195,7 +196,7 @@ export function accommodatiesScherm(h) {
     geboektId,
     regelaars: deelnemersVan(store, editie.id).filter((d) => d.rol === 'organisator').map((d) => leden.get(d.lidId) || '').filter(Boolean),
     vastgelegdWeekend: editie.vastgelegdWeekend || '',
-    losmakenMogelijk: ['overzicht', 'accommodatie'].includes(editie.stap), // AAN-81
+    losmakenMogelijk: LOSMAKEN_STAPPEN.includes(editie.stap), // AAN-81: tot en met Meenemen
     aantal,
     gaven: deelvorm === 'samen' ? telling.gaven : 0,
     mijnTop3: deelvorm === 'samen' && ik

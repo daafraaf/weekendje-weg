@@ -4,6 +4,18 @@ import { startServer } from '../mock-backend/server.mjs';
 import { maakDemo, maakVolledigeDemo } from '../mock-backend/demo.mjs';
 import { hashToken } from '../../src/server/crypto.js';
 import { nodeSha256 } from '../mock-backend/memorystore.mjs';
+import { expect } from '@playwright/test';
+
+// EDI-7 AAN-88: op Stappen een stap vooruit; vraagt het scherm een bevestiging, dan bevestigt deze hulp die.
+export async function stapVooruit(page, naam) {
+  const main = page.getByRole('main');
+  await main.getByRole('button', { name: `Naar ${naam}`, exact: true }).click();
+  const ja = main.getByRole('group', { name: `Naar ${naam} bevestigen` }).getByRole('button', { name: /^Ja, / });
+  const klaar = main.getByRole('heading', { name: `Bericht voor de groep: ${naam}`, exact: true });
+  await expect(ja.or(klaar)).toBeVisible();
+  if (await ja.isVisible()) await ja.click();
+  await expect(klaar).toBeVisible();
+}
 
 // Zet een geldige sessie in de opslag voordat de pagina laadt (de schil leest de sessie lokaal).
 export async function logIn(context, { rondleidingGezien = true, routeGezien = true, soort = 'deelnemer', token = 'lokaal', editieId = 'demo-editie-2027' } = {}) {

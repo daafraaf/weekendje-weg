@@ -6,7 +6,7 @@ import { startServer } from '../mock-backend/server.mjs';
 import { maakVolledigeDemo } from '../mock-backend/demo.mjs';
 import { datumPlus } from '../../src/shared/editie.js';
 import { saldi } from '../../src/shared/saldo.js';
-import { zetOnderdelen } from './hulp.mjs';
+import { zetOnderdelen, stapVooruit } from './hulp.mjs';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -61,7 +61,7 @@ test('NFR-11 §11 eindtest: zes personen doorlopen een editie van uitnodiging to
   };
   const stapNaar = async (stapNaam) => {
     await naar(anne, 'stappen');
-    await anne.getByRole('button', { name: `Naar ${stapNaam}` }).click();
+    await stapVooruit(anne, stapNaam); // AAN-88: bevestigt als het scherm erom vraagt
     await expect(anne.getByRole('navigation', { name: 'Stappen van de editie' }).locator('[aria-current="step"]')).toContainText(stapNaam);
   };
 

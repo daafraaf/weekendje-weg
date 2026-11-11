@@ -12,7 +12,7 @@
 //   betrokken             de deelnemer is `van` of `naar` van de betaling
 //   setupcodeGeldig       bij groepOpzetten
 //   scherm                naam van de leesactie `scherm`
-import { stapIndex } from '../shared/stappen.js';
+import { stapIndex, LOSMAKEN_STAPPEN } from '../shared/stappen.js';
 
 const JA = null;
 const NEE = 'geen_toegang';
@@ -92,8 +92,8 @@ export const REGELS = {
   bundel: iedereen,
   overzichtDetail: alleenOrganisator,
   weekendVastleggen: alleenOrganisator,
-  // AAN-81: losmaken kan alleen in de stappen Weekendje prikker en Accommodatie.
-  weekendLosmaken: { organisator: (c) => als(c.stap === 'overzicht' || c.stap === 'accommodatie') },
+  // AAN-81: losmaken kan alleen in de stappen Weekendje prikker, Accommodatie en Meenemen (BV-01).
+  weekendLosmaken: { organisator: (c) => als(LOSMAKEN_STAPPEN.includes(c.stap)) },
   accommodatieOpslaan: alleenOrganisator,
   accommodatieVerwijderen: alleenOrganisator,
   deelvormZetten: alleenOrganisator,
@@ -129,7 +129,9 @@ export const REGELS = {
 
 const LEZEN = new Set(['status', 'scherm', 'overzichtDetail']);
 // ACC-10: de verrassing onthullen kan ook nog na Afgerond; het verandert geen gegevens van de afrekening.
-const NA_AFGEROND = new Set(['verrassingOnthullen']);
+// AAN-29, GELD-9 (BV-25): betalingen afvinken en terugdraaien kan ook, zodat open betalingen niet vast komen te zitten.
+// AAN-05: de stap kan van Afgerond één terug naar Afrekening (stapMogelijk laat niets anders toe).
+const NA_AFGEROND = new Set(['verrassingOnthullen', 'betalingMarkeren', 'betalingTerugdraaien', 'stapZetten']);
 
 // Geeft null als het mag, anders de foutcode (`geen_toegang` of `gesloten`).
 export function reden(rol, actie, context = {}) {
@@ -141,7 +143,7 @@ export function reden(rol, actie, context = {}) {
   if (rol === 'organisator' && c.editieId && !c.organisatorVanEditie && !GROEPSBREED.has(actie)) return NEE;
   const r = regel(c);
   if (r) return r;
-  // AAN-29: na de stap Afgerond is een editie alleen-lezen.
+  // AAN-29: na de stap Afgerond is een editie alleen-lezen, behalve NA_AFGEROND.
   if (c.stap === 'afgerond' && !LEZEN.has(actie) && !NA_AFGEROND.has(actie)) return DICHT;
   return JA;
 }

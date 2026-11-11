@@ -39,13 +39,16 @@ const STAP_VERWACHT = {
   voorbereiding: (t) => `Hoi allemaal! We bereiden ${t} voor. Kijk in de app wat je meeneemt, wanneer je kookt en met wie je rijdt.`,
   weekend: (t) => `Hoi allemaal! Het is zover: ${t} begint. Het programma staat in de app.`,
   afrekenen: (t) => `Hoi allemaal! ${t} zit erop. Zet je uitgaven in de app, dan rekenen we af.`,
-  afgerond: (t) => `Hoi allemaal! ${t} is afgerond en afgerekend. Bedankt voor het mooie weekend!`,
+  // §7.12.4, BV-25: "afgerekend" alleen als er geen betaling meer open staat.
+  afgerond: (t, d) => (d.aantalOpen > 0
+    ? `Hoi allemaal! ${t} is afgerond. Er staan nog betalingen open: kijk in de app of jij nog iets moet overmaken.`
+    : `Hoi allemaal! ${t} is afgerond en afgerekend. Bedankt voor het mooie weekend!`),
 };
 
-export function stapTekst({ editieTitel, stap, deadline, deelvorm }) {
+export function stapTekst({ editieTitel, stap, deadline, deelvorm, aantalOpen = 0 }) {
   const maak = STAP_VERWACHT[stap];
   if (!maak) throw new Error(`onbekende stap ${stap}`);
-  const tekst = maak(editieTitel, { deadline: datumVan(deadline), deelvorm });
+  const tekst = maak(editieTitel, { deadline: datumVan(deadline), deelvorm, aantalOpen });
   const volgende = STAPPEN[STAPPEN.indexOf(stap) + 1];
   if (!volgende) return tekst;
   return `${tekst} Daarna volgt de stap ${STAPNAMEN[volgende]}.`; // STA-8: namen uit één tabel, DDL-1: geen datums

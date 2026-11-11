@@ -40,7 +40,8 @@ test('OVZ-5 AAN-06: de top 5 in rangorde met gelijke stand gemarkeerd', () => {
   assert.equal(voorkeursdatum([]), null);
 });
 
-test('AAN-05: één stap vooruit of terug, niet terug naar Invullen vanaf Accommodatie', () => {
+test('AAN-05: één stap vooruit of terug, ook van Afgerond naar Afrekening, niet terug naar Invullen vanaf Accommodatie', () => {
+  assert.ok(stapMogelijk('afgerond', 'afrekenen'));
   assert.ok(stapMogelijk('invullen', 'overzicht'));
   assert.ok(stapMogelijk('overzicht', 'invullen'));
   assert.ok(stapMogelijk('accommodatie', 'overzicht'));

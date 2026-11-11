@@ -70,7 +70,7 @@ test('ACC-6 AAN-63: een tweede weekendVastleggen geeft gesloten en laat het week
   assert.equal(editie().vastgelegdWeekend, s.weekenden[2]);
 });
 
-test('ACC-7 AAN-81: losmaken wist alleen het weekend, laat een geboekte accommodatie staan en kan alleen in Weekendje prikker of Accommodatie', () => {
+test('ACC-7 AAN-81: losmaken wist alleen het weekend, laat een geboekte accommodatie staan en kan alleen tot en met Meenemen', () => {
   const { org, editie, scherm, beheer, nep } = opzet();
   const s = scherm(beheer).data;
   assert.equal(org('weekendLosmaken', {}).fout, 'gewijzigd'); // er staat niets vast
@@ -82,7 +82,7 @@ test('ACC-7 AAN-81: losmaken wist alleen het weekend, laat een geboekte accommod
   assert.equal(editie().vastgelegdWeekend, '');
   assert.equal(editie().geboektAccommodatieId, acc.id); // K3
   assert.equal(org('weekendVastleggen', { vrijdag: s.weekenden[4] }).ok, true); // daarna kan vastleggen weer
-  nep.store.werkBij('Edities', editie().id, { stap: 'voorbereiding' }, editie().versie);
+  nep.store.werkBij('Edities', editie().id, { stap: 'weekend' }, editie().versie);
   assert.equal(scherm(beheer).data.losmakenMogelijk, false);
   assert.equal(org('weekendLosmaken', {}).fout, 'gesloten');
   assert.equal(editie().vastgelegdWeekend, s.weekenden[4]);

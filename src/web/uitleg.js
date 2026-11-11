@@ -14,7 +14,7 @@ export const UITLEG = {
     gebeurt: 'Alle antwoorden komen samen in één overzicht. Je ziet direct welke weekenden voor de meesten werken.',
     oplevert: 'Eén weekend dat vastligt.',
     deelnemer: 'Kijk mee en zie welk weekend het gaat worden. Prikken doet de organisator.',
-    organisator: 'Kies het beste weekend en leg het vast. Bedacht je je? Met Ander weekend kiezen maak je het weer los.',
+    organisator: 'Kies het beste weekend en leg het hier vast. Bedacht je je? Met Ander weekend kiezen maak je het weer los, tot en met de stap Meenemen.',
   },
   accommodatie: {
     gebeurt: 'Er komt een plek om te slapen. Dat is een verrassing of iets wat de groep samen kiest.',

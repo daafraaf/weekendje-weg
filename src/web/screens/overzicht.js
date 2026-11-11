@@ -12,6 +12,7 @@ import { BUDGET_VERBLIJF, BUDGET_WEEKEND, REISTIJD } from '../../shared/antwoord
 import { editieKeuze, foutMelding } from './voortgang.js';
 import { maakKomtIn } from '../components/komtin.js';
 import { STAPNAMEN } from '../../shared/stappen.js';
+import { maakWeekendKeuze } from '../components/weekendkeuze.js';
 
 const STER = 'm12 4 2.4 4.9 5.3.8-3.9 3.8.9 5.3L12 16.3l-4.7 2.5.9-5.3-3.9-3.8 5.3-.8z';
 const SLOT = ['M5 10.5h14v10H5z', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'];
@@ -140,8 +141,31 @@ export function maakOverzicht({ sessie, params = {}, bijVerlopen, fetchFn }) {
   const melding = foutMelding();
   const zet = (...k) => wortel.replaceChildren(...k.flat().filter((x) => x != null && x !== false));
   const kop = (sub) => h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN.overzicht), h('h1', { class: 't-title' }, 'Wanneer kan iedereen?'), sub ? h('p', { class: 't-body t-sec' }, sub) : null);
+  // ACC-1, ACC-7, §7.6.8 (BV-01): de organisator (beheersessie) legt hier het weekend vast en kiest een ander weekend,
+  // met dezelfde knoppen en bevestiging als onder Accommodaties beheren.
+  const beheer = sessie.soort === 'beheer';
+  let laatste = null; // het laatst getekende overzicht
+  let weekendData = null; // het scherm `accommodaties` voor het weekendblok
+  let bericht = '';
+
+  async function schrijf(actie, data, tekst, bijOk) {
+    melding.toon('');
+    try {
+      await api.anroep(actie, data, { schrijft: true });
+    } catch (f) {
+      if (f.code === 'verlopen' || f.code === 'geen_toegang') { bijVerlopen(); return false; }
+      melding.toon(f.message || 'Er ging iets mis. Probeer het later opnieuw.');
+      return false;
+    }
+    bericht = tekst;
+    if (bijOk) bijOk();
+    await laad();
+    return true;
+  }
+  const weekend = beheer ? maakWeekendKeuze({ schrijf, teken: () => { if (laatste) teken(laatste); } }) : null;
 
   function teken(g) {
+    laatste = g;
     if (!g.editie) { zet(kop('Je hebt nog geen editie.')); return; }
     editieId = g.editie.id;
     const feest = feestdagTabel(jaarVan(g.editie.periodeVan || '2000-01-01'), jaarVan(g.editie.periodeTot || '2000-01-01') + 1);
@@ -158,11 +182,15 @@ export function maakOverzicht({ sessie, params = {}, bijVerlopen, fetchFn }) {
       h('ol', { class: 'top-lijst' }, g.top.map((t) => h('li', { class: 'row top-rij' },
         h('span', { class: 't-h3 t-num top-plek', 'aria-hidden': 'true' }, String(t.plek)),
         h('span', { class: 'rij-tekst' }, h('span', { class: 'rij-naam' }, weekendKort(t.vrijdag)), tellers(t), kenmerkTags(kenmerk(t.vrijdag), t.voorkeursmaand, t.gelijk)))))) : null;
+    const toast = bericht ? h('p', { class: 'form-toast t-small', role: 'status' }, bericht) : null;
+    bericht = '';
     zet(
       kop(sub),
-      editieKeuze(g.edities, editieId, (id) => { editieId = id; laad(); }, 'ovz-editie'),
-      melding.el,
-      voorkeur, top, heatmap(g, kenmerk), bandbreedte(g), wensen(g),
+      editieKeuze(g.edities, editieId, (id) => { editieId = id; if (weekend) weekend.reset(); laad(); }, 'ovz-editie'),
+      melding.el, toast,
+      voorkeur, top,
+      weekend && weekendData && weekendData.editie ? weekend.blok(weekendData) : null,
+      heatmap(g, kenmerk), bandbreedte(g), wensen(g),
       g.detail ? h('a', { class: 'btn btn-ghost', href: `#/detail?editie=${encodeURIComponent(editieId)}` }, 'Per persoon bekijken') : null,
       h('p', { class: 'priv' }, icoon(SLOT, 16), h('span', {}, 'Je ziet aantallen, geen namen.')));
   }
@@ -170,7 +198,12 @@ export function maakOverzicht({ sessie, params = {}, bijVerlopen, fetchFn }) {
   async function laad() {
     melding.toon('');
     try {
-      teken(await api.anroep('scherm', { naam: 'overzicht' }));
+      const g = await api.anroep('scherm', { naam: 'overzicht' });
+      if (beheer && g.editie) {
+        editieId = g.editie.id;
+        weekendData = await api.anroep('scherm', { naam: 'accommodaties' }).catch(() => null);
+      }
+      teken(g);
     } catch (f) {
       if (f.code === 'verlopen' || f.code === 'geen_toegang') { bijVerlopen(); return; }
       if (f.code === 'gesloten') { zet(kop(), maakKomtIn('overzicht', `${NOG_NIET_VRIJ}.`)); return; } // OVZ-3, NAV-10

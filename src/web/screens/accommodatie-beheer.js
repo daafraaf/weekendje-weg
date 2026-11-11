@@ -7,12 +7,9 @@ import { STAPNAMEN } from '../../shared/stappen.js';
 import { DEELVORMEN, DEELVORM_NAMEN, ACC_GRENZEN, isHttpsLink, heleEuro, beddenTekst, beddenFout } from '../../shared/accommodatie.js';
 import { invoerTekst, leesBedrag } from '../../shared/geld.js';
 import { editieKeuze, foutMelding } from './voortgang.js';
-import { weekendLang, weekendKort, tellers } from './overzicht.js';
 import { siteLink, geboektPil, puntenBalk, gavenPil, opPunten } from './accommodaties.js';
-import { aftelTekst } from '../../shared/start.js';
-import { lokaalNu } from './programma.js';
+import { maakWeekendKeuze } from '../components/weekendkeuze.js';
 
-const VINK = ['m5 12.5 4.5 4.5L19 7.5'];
 const PLUS = ['M12 5v14M5 12h14'];
 
 export function maakAccommodatieBeheer({ sessie, params = {}, bijVerlopen, fetchFn }) {
@@ -22,7 +19,6 @@ export function maakAccommodatieBeheer({ sessie, params = {}, bijVerlopen, fetch
   let berichtBijVorm = false; // het bericht hoort bij de deelvorm
   let vormBericht = '';
   let bewerk = null; // null, {} voor een nieuwe of de accommodatie die wordt gewijzigd
-  let losmaken = false; // "Ander weekend kiezen" vraagt om bevestiging
   let bevestig = ''; // id van de accommodatie waarvoor "Verwijderen" om bevestiging vraagt
   let onthullen = false; // "Verrassing onthullen" vraagt om bevestiging
   const wortel = h('section', { class: 'beheer accommodatie-beheer' });
@@ -42,46 +38,8 @@ export function maakAccommodatieBeheer({ sessie, params = {}, bijVerlopen, fetch
     return true;
   }
 
-  const vast = () => Boolean(g.vastgelegdWeekend);
-  const losMaken = () => schrijf('weekendLosmaken', {}, 'Het weekend is losgemaakt. Kies een nieuw weekend.', () => { losmaken = false; });
-
-  // ACC-7, AAN-81, K3: de bevestiging toont wat losmaken raakt.
-  function losmakenBlok() {
-    if (!g.losmakenMogelijk) return h('p', { class: 'hint' }, 'Het weekend kan alleen worden losgemaakt in de stappen Weekendje prikker en Accommodatie.');
-    if (!losmaken) return h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => { losmaken = true; teken(); } }, 'Ander weekend kiezen');
-    const geboekt = g.accommodaties.find((a) => a.id === g.geboektId);
-    const raakt = [];
-    const tel = aftelTekst(lokaalNu().datum, g.vastgelegdWeekend);
-    if (tel) raakt.push('De aftelteller op het startscherm verdwijnt.');
-    raakt.push('De datums bij de maaltijden en het programma verdwijnen tot je een nieuw weekend kiest.');
-    if (geboekt) raakt.push(`${geboekt.naam} blijft op geboekt staan, maar die boeking hoort bij ${weekendLang(g.vastgelegdWeekend)}. Controleer of de boeking past bij het nieuwe weekend.`);
-    return h('div', { class: 'solid panel', role: 'group', 'aria-label': 'Ander weekend kiezen' },
-      h('p', { class: 't-body' }, `Weet je zeker dat je ${weekendLang(g.vastgelegdWeekend)} wilt loslaten?`),
-      h('ul', { class: 't-small' }, raakt.map((t) => h('li', {}, t))),
-      h('div', { class: 'dl-knoppen' },
-        h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, onclick: losMaken }, 'Ja, maak los'),
-        h('button', { class: 'btn btn-plain', type: 'button', onclick: () => { losmaken = false; teken(); } }, 'Annuleren')));
-  }
-
-  const legVast = (vrijdag) => schrijf('weekendVastleggen', { vrijdag }, `Het weekend is vastgelegd: ${weekendLang(vrijdag)}.`);
-
-  // ACC-1: vanuit de top 5 of uit alle weekenden van de periode (AAN-63).
-  function weekendBlok() {
-    const keuze = h('select', { id: 'acc-weekend', class: 'field' }, g.weekenden.map((w) => h('option', { value: w }, weekendLang(w))));
-    keuze.disabled = vast();
-    if (g.vastgelegdWeekend) keuze.value = g.vastgelegdWeekend;
-    return h('section', { class: 'glass card beheer-blok', 'aria-labelledby': 'acc-weekend-kop' },
-      h('h2', { class: 't-h3', id: 'acc-weekend-kop' }, 'Weekend vastleggen'),
-      g.vastgelegdWeekend ? h('p', { class: 't-body' }, 'Vastgelegd: ', h('b', {}, weekendLang(g.vastgelegdWeekend))) : h('p', { class: 't-small t-sec' }, 'Er is nog geen weekend vastgelegd.'),
-      g.top.length ? h('div', { class: 'solid list', role: 'list', 'aria-label': 'Top weekenden' }, g.top.map((t) => h('div', { class: 'row', role: 'listitem' },
-        h('span', { class: 'rij-tekst' }, h('span', { class: 'rij-naam' }, `${t.plek}. ${weekendKort(t.vrijdag)}`), tellers(t)),
-        h('button', { class: 'btn btn-ghost btn-sm', type: 'button', 'data-schrijft': true, disabled: g.alleenLezen || vast(), 'aria-label': t.vrijdag === g.vastgelegdWeekend ? `${weekendKort(t.vrijdag)} is vastgelegd` : `Leg ${weekendKort(t.vrijdag)} vast`, onclick: () => legVast(t.vrijdag) },
-          t.vrijdag === g.vastgelegdWeekend ? 'Vastgelegd' : 'Leg vast')))) : null,
-      g.weekenden.length ? h('div', {}, h('label', { class: 'label', for: 'acc-weekend' }, 'Of kies uit alle weekenden'), keuze) : null,
-      g.weekenden.length ? h('div', { class: 'dl-knoppen' }, h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, disabled: g.alleenLezen || vast(),
-        onclick: () => legVast(keuze.value) }, icoon(VINK, 20), 'Leg dit weekend vast')) : null,
-      vast() && !g.alleenLezen ? losmakenBlok() : null);
-  }
+  // ACC-1, ACC-7, §7.6.8: dezelfde knoppen en bevestiging als op Weekendje prikker (BV-01).
+  const weekend = maakWeekendKeuze({ schrijf, teken: () => teken() });
 
   // ACC-8, ACC-13: Verrassing of Samen kiezen; wisselen kan tot er geboekt is, de voorkeuren blijven bewaard.
   function deelvormBlok() {
@@ -207,10 +165,10 @@ export function maakAccommodatieBeheer({ sessie, params = {}, bijVerlopen, fetch
     zet(
       titel,
       h('p', { class: 't-small t-sec' }, STAPNAMEN[g.editie.stap] ? `Nu: ${STAPNAMEN[g.editie.stap]}` : ''),
-      editieKeuze(g.edities, editieId, (id) => { editieId = id; losmaken = false; bewerk = null; bevestig = ''; onthullen = false; laad(); }, 'accb-editie'),
+      editieKeuze(g.edities, editieId, (id) => { editieId = id; weekend.reset(); bewerk = null; bevestig = ''; onthullen = false; laad(); }, 'accb-editie'),
       melding.el, toast,
       g.alleenLezen ? h('p', { class: 'hint' }, 'De editie is afgerond. Je kunt niets meer wijzigen.') : null,
-      weekendBlok(),
+      weekend.blok(g),
       deelvormBlok(),
       lijstBlok(),
       bewerk ? formulier() : (g.alleenLezen ? null : h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => { bewerk = {}; teken(); } }, icoon(PLUS, 20), 'Optie toevoegen')),
@@ -222,7 +180,6 @@ export function maakAccommodatieBeheer({ sessie, params = {}, bijVerlopen, fetch
     const r = await anroep('scherm', { naam: 'accommodaties' }, false);
     if (!r) { if (!g) zet(h('p', { class: 't-body t-sec' }, 'Laden mislukt.'), melding.el); return; }
     g = r;
-    if (!r.vastgelegdWeekend) losmaken = false;
     if (r.editie) editieId = r.editie.id;
     teken();
   }

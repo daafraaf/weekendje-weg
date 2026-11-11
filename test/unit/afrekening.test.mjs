@@ -176,11 +176,11 @@ test('GELD-11: de afgehaakte Chris houdt zijn aandeel in het huisje en het poste
   assert.equal(posten.deelnemers.find((d) => d.id === CHRIS).afgehaakt, true);
 });
 
-test('GELD-9: na Afgerond kan niemand meer markeren of terugdraaien', () => {
+test('GELD-9 AAN-29: na Afgerond kan een betrokkene nog markeren en terugdraaien (BV-25)', () => {
   const { vraag, beheer, scherm } = opzet({ stap: 'afgerond' });
-  assert.equal(vraag({ actie: 'betalingMarkeren', sessie: beheer, data: { vanId: ANNA, naarId: EVA, bedrag: 16660 } }).fout, 'gesloten');
-  assert.equal(vraag({ actie: 'betalingTerugdraaien', sessie: beheer, data: { id: 'bet0000000000001' } }).fout, 'gesloten');
+  assert.equal(vraag({ actie: 'betalingMarkeren', sessie: beheer, data: { vanId: ANNA, naarId: EVA, bedrag: 16660 } }).ok, true);
+  assert.equal(vraag({ actie: 'betalingTerugdraaien', sessie: beheer, data: { id: 'bet0000000000001' } }).ok, true);
   const r = scherm('anna').data;
   assert.equal(r.alleenLezen, true);
-  assert.ok(r.open.every((b) => !b.magMarkeren));
+  assert.ok(r.open.filter((b) => b.vanId === ANNA || b.naarId === ANNA).every((b) => b.magMarkeren));
 });

@@ -1,5 +1,5 @@
 import { test as basis, expect } from '@playwright/test';
-import { startNep, startDemo, koppelNep } from './hulp.mjs';
+import { startNep, startDemo, koppelNep, stapVooruit } from './hulp.mjs';
 import { hashToken } from '../../src/server/crypto.js';
 import { nodeSha256 } from '../mock-backend/memorystore.mjs';
 
@@ -160,7 +160,7 @@ test('STA-8: na een stapwijziging in beheer tonen balk, menu en start overal dez
 
     await page.goto('/#/stappen');
     await expect(balkNu(page)).toHaveText('Invullen');
-    await page.getByRole('button', { name: 'Naar Weekendje prikker' }).click();
+    await stapVooruit(page, 'Weekendje prikker'); // AAN-88: bevestigen als niet iedereen heeft ingevuld
     await expect(balkNu(page)).toHaveText('Weekendje prikker'); // de schil vraagt de stand opnieuw op
 
     await bas.reload();

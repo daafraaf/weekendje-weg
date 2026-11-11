@@ -1,6 +1,6 @@
 # MEMORY.md — Weekendje weg
 
-Laatst bijgewerkt: 2026-11-11 (fase 31: navigatie en layout)
+Laatst bijgewerkt: 2026-11-11 (fase 32: weekend en stappen)
 
 ## Status
 
@@ -23,7 +23,7 @@ zodra fase 0 `package.json` heeft neergezet.
 Nieuwste bovenaan. Houd hier de laatste drie fasen; oudere regels naar
 `docs/sessielog-archief.md`.
 
+- 2026-11-11 fase 32: weekend en stappen: Leg vast en Ander weekend kiezen op Weekendje prikker (gedeeld met Accommodaties beheren), losmaken tot en met Meenemen, vanaf Weekend melding met link naar Stappen, bevestiging bij een stap vooruit (AAN-88), terug van Afgerond naar Afrekening, betalingen afvinken na Afgerond, bericht bij Afgerond zonder "afgerekend" als er nog open staat (ACC-1, ACC-7, EDI-7, GELD-9, AAN-88; BV-01, 25, 26); zie `docs/overdracht/fase-32.md`.
 - 2026-11-11 fase 31: navigatie en layout: mobiel menu met alleen iconen en het actieve label, aria-label met de volle naam, bed-icoon voor Accommodatie, bovenschrift Meenemen, uitleg zegt dat Meenemen en Afrekening altijd open zijn, desktop met inhoud tot 900 px, kopregel met editienaam en stappenbalk zonder afkortingen (NAV-10, NAV-12, NAV-14, NAV-15, UIT-2; BV-16, 17, 18, 19); zie `docs/overdracht/fase-31.md`.
 - 2026-11-11 fase 30: binnenkomen en Start: pinscherm zonder plakveld bij een link en met tekstvakjes, elke login naar #/start, Iedereen uitnodigen zolang links ontbreken, Start zonder null, Uitloggen, dubbele kop en aftelteller na Afgerond, Hoe werkt het? als tekstlink, Afgelopen weekenden met klapicoon, titel één keer, profielmenu met naam (TOE-13, STA-4, STA-9, NAV-2, NAV-15; BV-02, 06, 07, 08, 20, 21, 22, 23, 33, 36); zie `docs/overdracht/fase-30.md`.
-- 2026-11-11 fase 29: foutafhandeling en versie: API_VERSIE 2 met snapshot-test, foutteksten in gewone taal (`web/foutteksten.js`), geen Niet opgeslagen na herladen, onbekende route naar #/start, Opslaan… in de knop met bevestiging bij het veld, minstens twee antwoordopties (NFR-21, NFR-22, SYNC-5, SYNC-8, EDI-12, NAV-13; BV-04, 05, 12, 13, 14, 24, 35); check groen; zie `docs/overdracht/fase-29.md`.
 - 2026-11-11 uitrol feedbackronde (fase 23 t/m 28): voorkant gepusht naar Pages; script bijgewerkt in de sjabloon (@2) en in twee kopieën (@2), waaronder de kopie van de live groep "Weekendje weg test" (implementatie eindigt op MMEbIJ); POST bundel geeft daar geen "onbekende keuze" meer.
