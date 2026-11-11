@@ -502,6 +502,7 @@ textarea.field { min-height: 88px; padding: 12px 14px; resize: vertical; }
 .mee-claim { display: inline-flex; align-items: center; }
 .mee-weg { min-height: 28px; padding: 0 6px; }
 .mee-knoppen { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.mee-toewijzen { width: auto; max-width: 100%; min-width: 0; flex: 0 1 auto; }
 .mee-leeg { padding: 14px; }
 .mee-nieuw { gap: 8px; }
 .bd-kop { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }

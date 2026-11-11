@@ -316,6 +316,21 @@ test('ACC-10 AAN-87: alleen de organisator onthult, ook na Afgerond; daarna ziet
   assert.equal(org('deelvormZetten', { deelvorm: 'samen' }).fout, 'gesloten');
 });
 
+test('ACC-10 BV-29: na onthullen geeft geen leesactie een deelnemer een niet-geboekte optie', () => {
+  const { org, vraag, voegToe, scherm, beheer, nep } = opzet();
+  const eva = sessieVoor(nep, 'eva', 'dln0000000000001');
+  org('deelvormZetten', { deelvorm: 'verrassing' });
+  const a = voegToe('Geheime Hoeve', 120000, { plaats: 'Geheimdorp' }).data;
+  const b = voegToe('Reserve Molen', 90000, { plaats: 'Molendorp', link: 'https://voorbeeld.nl/molen', notitie: 'Molennotitie', bedden: 5 }).data;
+  org('accommodatieBoeken', { accommodatieId: a.id });
+  assert.equal(org('verrassingOnthullen', {}).ok, true);
+  assert.deepEqual(geheimLekt(vraag, 'anna', ['Reserve Molen', 'Molendorp', 'voorbeeld.nl/molen', 'Molennotitie', b.id]), []);
+  assert.deepEqual(scherm('anna').data.accommodaties.map((x) => x.naam), ['Geheime Hoeve']);
+  // De organisator ziet beide, met de beheerlink en met haar eigen deelnemerslink.
+  assert.equal(scherm(beheer).data.accommodaties.length, 2);
+  assert.equal(scherm(eva).data.accommodaties.length, 2);
+});
+
 test('ACC-14 AAN-64: bedden en eigen kamers zijn optioneel, hele getallen van 0 tot 99, eigen kamers niet meer dan bedden', () => {
   assert.equal(beddenFout(null, null), null);
   assert.equal(beddenFout(8, 3), null);

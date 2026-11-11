@@ -65,7 +65,7 @@ test('EDI-1 EDI-4 EDI-5 TOE-8 TOE-12: editie met zes deelnemers, links en pincod
   // Het jaar is een keuzelijst met alleen jaartallen, en elk veld heeft een regel uitleg.
   await expect(page.locator('select#ed-jaar option')).toHaveCount(5);
   await expect(page.getByLabel('Jaar')).toHaveAccessibleDescription('Het jaar waarin het weekend valt.');
-  await expect(page.getByLabel('Deadline invullen')).toHaveAccessibleDescription(/Tot en met deze dag \(23:59\) vult iedereen/);
+  await expect(page.getByLabel('Deadline invullen')).toHaveAccessibleDescription(/Graag ingevuld vóór deze dag/);
   await expect(page.getByLabel('Periode van')).toHaveAccessibleDescription(/eerste dag/);
   await page.getByLabel('Titel').fill('Studievrienden · Weekendje weg 2028');
   await page.getByLabel('Deadline invullen').fill('2027-12-01');

@@ -14,7 +14,7 @@ export const ledenBeheren = {
     voornaam: v.optioneel(v.tekst({ min: 1, max: 40 })),
     woonplaats: v.optioneel(v.tekst({ min: 0, max: 60 })),
   }),
-  uitvoeren({ store, data }) {
+  uitvoeren({ store, sessie, data }) {
     const bestaand = () => {
       const lid = data.id && store.vind('Leden', data.id);
       if (!lid) throw new ApiFout('ongeldig', 'Dit lid bestaat niet.');
@@ -32,6 +32,8 @@ export const ledenBeheren = {
       return { lid: store.werkBij('Leden', lid.id, { woonplaats: data.woonplaats.trim() }) };
     }
     // inactief maken: het lid blijft staan, zodat oude edities kloppen.
+    // AAN-90 (BV-15): de organisator maakt zijn eigen lid niet inactief; de voorkant toont daar geen knop.
+    if (sessie && lid.id === sessie.lidId) throw new ApiFout('ongeldig', 'Je kunt jezelf niet inactief maken.');
     if (lid.actief && actieven(store).length <= MIN_LEDEN) throw new ApiFout('gesloten', `Er blijven minstens ${MIN_LEDEN} actieve leden.`);
     return { lid: store.werkBij('Leden', lid.id, { actief: false }) };
   },
@@ -53,6 +55,7 @@ export function beheerScherm({ store, sessie }) {
     eigenLidId: sessie.lidId,
     leden: store.lees('Leden'),
     edities,
+    jaren: [...new Set(store.lees('Edities').map((e) => e.jaar))].sort((a, b) => a - b), // AAN-89: bezette jaren van de groep
     beheerlinks: store.lees('Beheerlinks').map((b) => ({ id: b.id, lidId: b.lidId, actief: b.actief, heeftWachtwoord: Boolean(b.wachtwoordHash), gemaakt: b.gemaakt })),
   };
 }

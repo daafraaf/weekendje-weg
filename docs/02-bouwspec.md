@@ -226,7 +226,7 @@ opnieuw proberen zinvol), `api_versie`, `fout` (onverwacht).
 | Invullen | `antwoordenOpslaan` (met versie), `antwoordZetten` (één veld van `Antwoorden.data`, `waarde: null` haalt het weg, zonder versie, AAN-83) |
 | Wachtrij | `bundel` (lijst van hooguit 25 `{ actie, data }` uit `claimen`, `claimIntrekken`, `afvinken`, `antwoordZetten`, `top3Opgeven`; antwoord `{ uitslagen: [{ ok, data } of { ok: false, fout, melding }] }`, §7.16.5) |
 | Accommodatie | `weekendVastleggen`, `weekendLosmaken`, `accommodatieOpslaan` (met optioneel `bedden` en `eigenKamers`), `accommodatieVerwijderen`, `deelvormZetten` (`verrassing` of `samen`), `accommodatieBoeken`, `verrassingOnthullen`, `top3Opgeven` (`keuzes`: hooguit drie `{ accommodatieId, rang }`, vervangt de vorige top 3, via de wachtrij) |
-| Voorbereiding | `itemOpslaan`, `itemVerwijderen`, `claimen`, `claimIntrekken` (eigen, of als organisator die van een ander), `afvinken`, `boodschappenDefinitief`, `maaltijdOpslaan`, `kokWorden`, `kokStoppen`, `programmaOpslaan`, `programmaVerwijderen`, `kamersOpslaan`, `kamerIndelen`, `ritOpslaan`, `meerijden`, `meerijdenStoppen` |
+| Voorbereiding | `itemOpslaan`, `itemVerwijderen`, `claimen`, `claimIntrekken` (eigen, of als organisator die van een ander), `claimToewijzen` (organisator, MEE-10), `afvinken`, `boodschappenDefinitief`, `maaltijdOpslaan`, `kokWorden`, `kokStoppen`, `programmaOpslaan`, `programmaVerwijderen`, `kamersOpslaan`, `kamerIndelen`, `ritOpslaan`, `meerijden`, `meerijdenStoppen` |
 | Geld | `postOpslaan`, `postVerwijderen`, `betalingMarkeren`, `betalingTerugdraaien` |
 
 Inloggen en uitloggen zijn schrijfacties (ze schrijven `Pogingen` en `Sessies`).

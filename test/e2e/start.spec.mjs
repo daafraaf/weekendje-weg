@@ -2,6 +2,7 @@ import { test as basis, expect } from '@playwright/test';
 import { startNep, zetOnderdelen } from './hulp.mjs';
 import { startServer } from '../mock-backend/server.mjs';
 import { maakDemo } from '../mock-backend/demo.mjs';
+import { nieuweEditieVoorstel } from '../../src/shared/editie.js';
 
 const EDITIE = 'demo-editie-2027';
 const SCRIPT_ID = 'demo-weekendje-weg-0001';
@@ -142,7 +143,8 @@ test('ARC-2 AAN-29: na Afgerond is alles alleen-lezen en Nieuwe editie neemt de 
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Nieuwe editie');
     await expect(page.getByLabel('Anna doet mee')).toBeChecked();
     await expect(page.getByLabel('Chris doet mee')).toBeChecked();
-    await expect(page.getByLabel('Titel')).toHaveValue(/2028$/);
+    // EDI-11, AAN-89: het eerste vrije jaar vanaf nu, de titel met dat jaar.
+    await expect(page.getByLabel('Titel')).toHaveValue(nieuweEditieVoorstel({ jaren: [2027] }).titel);
     await page.getByLabel('Deadline invullen').fill('2027-12-01');
     await page.getByRole('button', { name: 'Editie maken' }).click();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Uitnodigen');

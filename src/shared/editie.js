@@ -1,4 +1,14 @@
 // Regels rond een nieuwe editie die voorkant en script delen (spec §7.2.4, §7.4.2, EDI-1).
+import { standaardPeriode } from './datums.js';
+
+// AAN-89 (EDI-11, BV-11): het voorstel bij Nieuwe editie. Jaar = het eerste jaar vanaf het huidige kalenderjaar
+// zonder editie van de groep (`jaren`), titel "Weekendje weg <jaar>", periode het kalenderjaar (AAN-15).
+export function nieuweEditieVoorstel({ jaren = [], nu = new Date() } = {}) {
+  const bezet = new Set(jaren.map(Number));
+  let jaar = nu.getFullYear();
+  while (bezet.has(jaar)) jaar += 1;
+  return { jaar, titel: `Weekendje weg ${jaar}`, ...standaardPeriode(jaar) };
+}
 
 // AAN-21 (§7.4.2): Eten en drinken, Activiteiten en Programma staan standaard aan, Samenwerken uit.
 export const BLOKKEN_STANDAARD = { etenDrinken: true, activiteiten: true, programma: true, samenwerken: false };

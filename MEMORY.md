@@ -1,6 +1,6 @@
 # MEMORY.md — Weekendje weg
 
-Laatst bijgewerkt: 2026-11-11 (fase 32: weekend en stappen)
+Laatst bijgewerkt: 2026-11-11 (fase 33: teksten, onderdelen en details)
 
 ## Status
 
@@ -23,7 +23,7 @@ zodra fase 0 `package.json` heeft neergezet.
 Nieuwste bovenaan. Houd hier de laatste drie fasen; oudere regels naar
 `docs/sessielog-archief.md`.
 
+- 2026-11-11 fase 33: teksten, onderdelen en details: deadline-teksten "Graag ingevuld vóór", berichten en losmaakbevestiging volgen ONDERDELEN, Accommodatie zonder opties, na onthullen alleen de geboekte, Toewijzen aan … (`claimToewijzen`), geen categorie zonder Boodschappen, voorstel Nieuwe editie (AAN-89), niet zelf inactief (AAN-90), Bedrag voorgevuld (EDI-10, EDI-11, GRP-5, ACC-10, MEE-10, GELD-12; BV-09, 10, 11, 15, 27, 28, 29, 30, 31, 34); check groen; zie `docs/overdracht/fase-33.md`.
 - 2026-11-11 fase 32: weekend en stappen: Leg vast en Ander weekend kiezen op Weekendje prikker (gedeeld met Accommodaties beheren), losmaken tot en met Meenemen, vanaf Weekend melding met link naar Stappen, bevestiging bij een stap vooruit (AAN-88), terug van Afgerond naar Afrekening, betalingen afvinken na Afgerond, bericht bij Afgerond zonder "afgerekend" als er nog open staat (ACC-1, ACC-7, EDI-7, GELD-9, AAN-88; BV-01, 25, 26); zie `docs/overdracht/fase-32.md`.
 - 2026-11-11 fase 31: navigatie en layout: mobiel menu met alleen iconen en het actieve label, aria-label met de volle naam, bed-icoon voor Accommodatie, bovenschrift Meenemen, uitleg zegt dat Meenemen en Afrekening altijd open zijn, desktop met inhoud tot 900 px, kopregel met editienaam en stappenbalk zonder afkortingen (NAV-10, NAV-12, NAV-14, NAV-15, UIT-2; BV-16, 17, 18, 19); zie `docs/overdracht/fase-31.md`.
-- 2026-11-11 fase 30: binnenkomen en Start: pinscherm zonder plakveld bij een link en met tekstvakjes, elke login naar #/start, Iedereen uitnodigen zolang links ontbreken, Start zonder null, Uitloggen, dubbele kop en aftelteller na Afgerond, Hoe werkt het? als tekstlink, Afgelopen weekenden met klapicoon, titel één keer, profielmenu met naam (TOE-13, STA-4, STA-9, NAV-2, NAV-15; BV-02, 06, 07, 08, 20, 21, 22, 23, 33, 36); zie `docs/overdracht/fase-30.md`.
 - 2026-11-11 uitrol feedbackronde (fase 23 t/m 28): voorkant gepusht naar Pages; script bijgewerkt in de sjabloon (@2) en in twee kopieën (@2), waaronder de kopie van de live groep "Weekendje weg test" (implementatie eindigt op MMEbIJ); POST bundel geeft daar geen "onbekende keuze" meer.

@@ -3,7 +3,7 @@
 // Alle tekst gaat via textContent (NFR-5).
 import { h, icoon } from '../dom.js';
 import { euro, invoerTekst, leesBedrag } from '../../shared/geld.js';
-import { AANDEEL_MAX, verdeel, verdelingFout, iedereen } from '../../shared/verdeling.js';
+import { AANDEEL_MAX, verdeel, verdelingFout, iedereen, bedragenVan } from '../../shared/verdeling.js';
 
 const MIN = ['M5 12h14'];
 const PLUS = ['M12 5v14M5 12h14'];
@@ -46,10 +46,21 @@ export function maakVerdeelinvoer({ deelnemers, verdeling, bedrag, betalerId, al
     for (const [id, span] of Object.entries(bedragen)) span.textContent = euro(delen[id] || 0);
     const f = totaal ? fout() : 'Vul eerst het bedrag in.';
     status.className = `verdeel-status ${f ? 'fout' : 'ok'}`;
-    status.replaceChildren(icoon(f ? WAARSCHUWING : VINK, 18), h('span', {}, f || `Verdeeld: ${euro(totaal)}`));
+    // GELD-12: bij Bedrag laat de status ook bij nul het verschil zien.
+    const goed = wijze === 'bedrag' ? `Nog ${euro(0)} te verdelen` : `Verdeeld: ${euro(totaal)}`;
+    status.replaceChildren(icoon(f ? WAARSCHUWING : VINK, 18), h('span', {}, f || goed));
   }
 
   const wijzig = () => { bijwerken(); bijWijzig(); };
+
+  // GELD-12 (BV-34): van Gelijk of Aandeel naar Bedrag neemt de bedragen van de vorige verdeling over.
+  function naarWijze(w) {
+    if (w === 'bedrag' && wijze !== 'bedrag') {
+      const delen = bedragenVan(bedrag(), waarde(), { betalerId: betalerId(), naamVan });
+      if (Object.keys(delen).length) for (const d of deelnemers) bedragTekst[d.id] = delen[d.id] ? invoerTekst(delen[d.id]) : '';
+    }
+    wijze = w;
+  }
 
   function rijGelijk(d) {
     const vak = h('input', { type: 'checkbox', disabled: alleenLezen });
@@ -82,7 +93,7 @@ export function maakVerdeelinvoer({ deelnemers, verdeling, bedrag, betalerId, al
 
   function teken() {
     segm.replaceChildren(...WIJZEN.map(([w, label]) => h('button', {
-      type: 'button', 'aria-pressed': String(w === wijze), disabled: alleenLezen, onclick: () => { wijze = w; teken(); bijWijzig(); },
+      type: 'button', 'aria-pressed': String(w === wijze), disabled: alleenLezen, onclick: () => { naarWijze(w); teken(); bijWijzig(); },
     }, label)));
     for (const k of Object.keys(bedragen)) delete bedragen[k];
     const rij = wijze === 'gelijk' ? rijGelijk : wijze === 'aandeel' ? rijAandeel : rijBedrag;

@@ -11,7 +11,7 @@ const OMSCHRIJVING = {
   'lijsten-beheer': 'Vinkjes en blokken van het formulier',
   'vragen-beheer': 'Eigen vragen aan de groep',
   detail: 'Antwoorden per persoon',
-  stappen: 'Stap, verwachte datums en deadline',
+  stappen: 'Stap en deadline', // BV-09: datums per stap zijn vervallen (EDI-8)
   'accommodatie-beheer': 'Weekend vastleggen en accommodaties',
 };
 

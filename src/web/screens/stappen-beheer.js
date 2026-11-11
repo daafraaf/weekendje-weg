@@ -21,6 +21,8 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
   let bericht = '';
   let stand = null; // het scherm `start` van de gekozen editie: wie nog niet heeft ingevuld, weekend, open betalingen
   let vraag = null; // { stap, redenen } als een stap vooruit om bevestiging vraagt (AAN-88)
+  let acc = null; // het scherm `accommodaties` als de volgende of vorige stap Accommodatie is
+  const opties = () => (acc && acc.editie && acc.editie.id === editieId ? { aantalOpties: acc.accommodaties.length, deelvorm: acc.deelvorm } : {});
 
   const wortel = h('section', { class: 'beheer stappen-beheer' });
   const melding = foutMelding();
@@ -34,6 +36,9 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
     gegevens = r;
     if (!gegevens.edities.some((e) => e.id === editieId)) editieId = gegevens.edities.length ? gegevens.edities[gegevens.edities.length - 1].id : '';
     stand = editieId ? await anroep('scherm', { naam: 'start' }, false) : null;
+    // §7.12.4 (BV-28): rond de stap Accommodatie telt het aantal opties mee voor bericht en bevestiging.
+    const e = editie();
+    acc = e && ['overzicht', 'voorbereiding'].includes(e.stap) ? await anroep('scherm', { naam: 'accommodaties' }, false) : null;
     teken();
   }
 
@@ -44,6 +49,7 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
       van: e.stap, naar, nogNiet: stand.voortgang ? stand.voortgang.nogNiet : [],
       vastgelegdWeekend: stand.editie.vastgelegdWeekend, vandaag: lokaalNu().datum,
       aantalOpen: stand.afrekening ? stand.afrekening.aantalOpen : 0,
+      ...opties(),
     });
   }
 
@@ -58,10 +64,11 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
   async function zetStap(stap) {
     melding.toon('');
     const aantalOpen = stand && stand.afrekening ? stand.afrekening.aantalOpen : 0; // §7.12.4: bericht bij Afgerond
+    const { aantalOpties = 0 } = opties(); // §7.12.4: bericht bij Accommodatie
     const r = await anroep('stapZetten', { stap }, true);
     if (!r) return;
     vraag = null;
-    gedeeld = { stap: r.editie.stap, tekst: stapTekst({ editieTitel: r.editie.titel, stap: r.editie.stap, deadline: r.editie.deadline, deelvorm: r.editie.deelvorm, aantalOpen }) };
+    gedeeld = { stap: r.editie.stap, tekst: stapTekst({ editieTitel: r.editie.titel, stap: r.editie.stap, deadline: r.editie.deadline, deelvorm: r.editie.deelvorm, aantalOpen, aantalOpties }) };
     bericht = '';
     bijStap();
     await laad();
@@ -106,7 +113,8 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
     el.value = e.deadline ? e.deadline.slice(0, 10) : '';
     return h('section', { class: 'solid panel beheer-blok', 'aria-labelledby': 'st-dl' },
       h('h2', { class: 't-h3', id: 'st-dl' }, 'Deadline'),
-      h('p', { class: 't-small t-sec' }, e.deadline ? `Invullen kan nu tot ${datumLang(e.deadline.slice(0, 10))}, 23:59.` : 'Nog geen deadline.'),
+      // DDL-1, EDI-10 (BV-10): de deadline is informatief.
+      h('p', { class: 't-small t-sec' }, e.deadline ? `Graag ingevuld vóór ${datumLang(e.deadline.slice(0, 10))}. Invullen blijft open tot je naar ${STAPNAMEN.overzicht} gaat.` : 'Nog geen deadline.'),
       h('div', {}, h('label', { class: 'label', for: el.id }, 'Nieuwe deadline'), el),
       h('div', { class: 'dl-knoppen' }, h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true,
         onclick: () => { if (!el.value) { melding.toon('Kies een nieuwe deadline.'); return; } bijwerken({ deadline: deadlineIso(el.value) }, 'De deadline is verlengd.'); } }, 'Deadline verlengen')));

@@ -46,11 +46,13 @@ test('GELD-1 GELD-2 GELD-3 GELD-4: een deelnemer voert een uitgave met aandelen 
   // GELD-3: bij bedrag per persoon het verschil, opslaan kan pas bij nul
   const verdeelwijze = page.getByRole('group', { name: 'Verdeelwijze' });
   await verdeelwijze.getByRole('button', { name: 'Bedrag' }).click();
+  // GELD-12: de velden staan voorgevuld met de gelijke verdeling (4 × € 22,50).
+  await expect(page.getByLabel('Anna', { exact: true })).toHaveValue('22,50');
   await page.getByLabel('Anna', { exact: true }).fill('12,00');
-  await expect(page.getByText('Nog € 78,00 te verdelen')).toBeVisible();
+  await expect(page.getByText('Nog € 10,50 te verdelen')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Opslaan' })).toBeDisabled();
   await page.getByLabel('Bram', { exact: true }).fill('80,00');
-  await expect(page.getByText('€ 2,00 te veel')).toBeVisible();
+  await expect(page.getByText('€ 47,00 te veel')).toBeVisible();
 
   await verdeelwijze.getByRole('button', { name: 'Aandeel' }).click();
   await page.getByRole('button', { name: 'Aandeel Bram hoger' }).click();

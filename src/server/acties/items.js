@@ -127,6 +127,22 @@ export const claimIntrekken = {
   },
 };
 
+// MEE-10, §7.7.4 (BV-30): de organisator zet een claim op naam van een deelnemer (niet afgehaakt), met dezelfde
+// regels als een eigen claim. Een beheeractie: niet in de wachtrij.
+export const claimToewijzen = {
+  schema: v.object({ itemId: v.id(), deelnemerId: v.id() }),
+  uitvoeren({ store, editie, editieId, deps, data }) {
+    const d = store.vind('Deelnemers', data.deelnemerId);
+    if (!d || d.editieId !== editieId) throw new ApiFout('ongeldig', 'Deze deelnemer hoort niet bij de editie.');
+    const i = bestaandItem(store, editieId, data.itemId);
+    if (d.afgehaakt) throw new ApiFout('gesloten', 'Deze deelnemer is afgehaakt.');
+    if (editie.boodschappenDefinitief && i.soort !== 'spullen') throw new ApiFout('gesloten', 'De boodschappen zijn definitief. Toewijzen kan niet meer.');
+    const bestaat = store.lees('Claims').some((c) => c.itemId === i.id && c.deelnemerId === d.id);
+    if (!bestaat) store.voegToe('Claims', { itemId: i.id, deelnemerId: d.id, gemaakt: deps.nu().toISOString() });
+    return { itemId: i.id };
+  },
+};
+
 // AAN-11: bij afhaken vervallen alle claims van die persoon; de items staan weer open.
 export function claimsVervallen(store, editieId, deelnemerId) {
   const mijn = new Set(itemsVan(store, editieId).map((i) => i.id));
@@ -185,6 +201,8 @@ export function meenemenScherm(h) {
     definitief,
     categorieen: CATEGORIEEN,
     wensen: etenDrinkenTelling(store, editie, alle),
+    // MEE-10: de organisator kiest bij "Toewijzen aan ..." uit de deelnemers die niet afgehaakt zijn.
+    ...(organisator ? { deelnemers: alle.filter((d) => !d.afgehaakt).map((d) => ({ id: d.id, naam: naam(d.id) })) } : {}),
     items: itemsVan(store, editie.id).map((i) => ({
       id: i.id, soort: i.soort, naam: i.naam, categorie: i.categorie, versie: i.versie, afgevinkt: Boolean(i.afgevinkt),
       eigen: Boolean(ik) && i.toegevoegdDoor === ik,
@@ -196,4 +214,4 @@ export function meenemenScherm(h) {
   };
 }
 
-export const itemsHandlers = { itemOpslaan, itemVerwijderen, claimen, claimIntrekken, afvinken, boodschappenDefinitief };
+export const itemsHandlers = { itemOpslaan, itemVerwijderen, claimen, claimIntrekken, claimToewijzen, afvinken, boodschappenDefinitief };

@@ -155,7 +155,7 @@ test('OVZ-2: de herinnering noemt wie nog niet heeft ingevuld en de deadline', (
   assert.equal(namenLijst(['Joris', 'Sanne']), 'Joris en Sanne');
   assert.equal(namenLijst(['A', 'B', 'C']), 'A, B en C');
   const t = herinneringTekst({ editieTitel: 'Weekendje weg 2027', namen: ['Joris', 'Sanne'], deadline: '2026-12-01T23:59:00+01:00' });
-  assert.equal(t, 'Hoi allemaal! Joris en Sanne, jullie wensen voor Weekendje weg 2027 staan nog open. Invullen kan tot dinsdag 1 december.');
+  assert.equal(t, 'Hoi allemaal! Joris en Sanne, jullie wensen voor Weekendje weg 2027 staan nog open. Graag ingevuld vóór dinsdag 1 december.');
   assert.match(herinneringTekst({ editieTitel: 'X', namen: ['Anna'], deadline: '2026-12-01T23:59:00+01:00' }), /Anna, jouw wensen/);
 });
 
@@ -208,13 +208,13 @@ test('AAN-58 DDL-1: elke stap heeft een tekst die de volgende stap noemt, zonder
     assert.ok(t.includes('Weekendje weg 2027'));
     assert.ok(!heeftLinkEnPincode(t));
   }
-  assert.match(stapTekst({ editieTitel: 'W', stap: 'invullen', deadline: '2026-12-01T23:59:00+01:00' }), /tot dinsdag 1 december\. Daarna volgt de stap Weekendje prikker\.$/);
+  assert.match(stapTekst({ editieTitel: 'W', stap: 'invullen', deadline: '2026-12-01T23:59:00+01:00' }), /vóór dinsdag 1 december\. Daarna volgt de stap Weekendje prikker\.$/);
   assert.match(stapTekst({ editieTitel: 'W', stap: 'accommodatie' }), /Daarna volgt de stap Meenemen\.$/);
   assert.ok(!/volgt/.test(stapTekst({ editieTitel: 'W', stap: 'afgerond' })));
 });
 
 test('ACC-9: de WhatsApp-tekst van de stap Accommodatie noemt bij een verrassing geen opties', () => {
-  const samen = stapTekst({ editieTitel: 'W', stap: 'accommodatie', deelvorm: 'samen' });
+  const samen = stapTekst({ editieTitel: 'W', stap: 'accommodatie', deelvorm: 'samen', aantalOpties: 3 });
   assert.match(samen, /Kijk in de app naar de opties en geef je top 3./);
   const verrassing = stapTekst({ editieTitel: 'W', stap: 'accommodatie', deelvorm: 'verrassing' });
   assert.match(verrassing, /Het wordt een verrassing/);

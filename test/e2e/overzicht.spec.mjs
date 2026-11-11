@@ -41,7 +41,7 @@ test('OVZ-1 OVZ-2: iedereen ziet wie heeft ingevuld, de organisator maakt de her
   const { page: beheer, context } = await organisatorPagina(browser, nep);
   await menu(beheer, 'Voortgang').click();
   await expect(beheer.getByRole('heading', { name: 'Herinnering' })).toBeVisible();
-  await expect(beheer.getByText(/^Hoi allemaal! Anna, jouw wensen voor Weekendje weg 2027 staan nog open\. Invullen kan tot /)).toBeVisible();
+  await expect(beheer.getByText(/^Hoi allemaal! Anna, jouw wensen voor Weekendje weg 2027 staan nog open\. Graag ingevuld vóór /)).toBeVisible();
   await expect(beheer.getByRole('button', { name: 'Herinnering voor de groep kopiëren' })).toBeVisible();
   await context.close();
 });

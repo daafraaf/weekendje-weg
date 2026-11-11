@@ -2,7 +2,7 @@
 // Accommodaties beheren. `g` is het antwoord van het scherm `accommodaties` voor de organisator. De acties wachten op de
 // Sheet met data-schrijft (SYNC-8). Alle tekst gaat via textContent (NFR-5).
 import { h, icoon } from '../dom.js';
-import { STAPNAMEN, LOSMAKEN_STAPPEN, stapIndex } from '../../shared/stappen.js';
+import { STAPNAMEN, LOSMAKEN_STAPPEN, stapIndex, losmakenGevolgen } from '../../shared/stappen.js';
 import { aftelTekst } from '../../shared/start.js';
 import { weekendLang, weekendKort, tellers } from '../screens/overzicht.js';
 import { lokaalNu } from '../screens/programma.js';
@@ -28,13 +28,11 @@ export function maakWeekendKeuze({ schrijf, teken }) {
     }
     if (!losmaken) return h('button', { class: 'btn btn-ghost', type: 'button', onclick: () => { losmaken = true; teken(); } }, 'Ander weekend kiezen');
     const geboekt = (g.accommodaties || []).find((a) => a.id === g.geboektId);
-    const raakt = [];
-    if (aftelTekst(lokaalNu().datum, g.vastgelegdWeekend)) raakt.push('De aftelteller op het startscherm verdwijnt.');
-    raakt.push('De datums bij de maaltijden en het programma verdwijnen tot je een nieuw weekend kiest.');
-    if (geboekt) raakt.push(`${geboekt.naam} blijft op geboekt staan, maar die boeking hoort bij ${weekendLang(g.vastgelegdWeekend)}. Controleer of de boeking past bij het nieuwe weekend.`);
+    // OND-2 (BV-27): alleen onderdelen die aan staan.
+    const raakt = losmakenGevolgen({ aftellen: Boolean(aftelTekst(lokaalNu().datum, g.vastgelegdWeekend)), geboektNaam: geboekt ? geboekt.naam : '', weekendTekst: weekendLang(g.vastgelegdWeekend) });
     return h('div', { class: 'solid panel', role: 'group', 'aria-label': 'Ander weekend kiezen' },
       h('p', { class: 't-body' }, `Weet je zeker dat je ${weekendLang(g.vastgelegdWeekend)} wilt loslaten?`),
-      h('ul', { class: 't-small' }, raakt.map((t) => h('li', {}, t))),
+      raakt.length ? h('ul', { class: 't-small' }, raakt.map((t) => h('li', {}, t))) : null,
       h('div', { class: 'dl-knoppen' },
         h('button', { class: 'btn btn-primary', type: 'button', 'data-schrijft': true, onclick: losMaken }, 'Ja, maak los'),
         h('button', { class: 'btn btn-plain', type: 'button', onclick: () => { losmaken = false; teken(); } }, 'Annuleren')));

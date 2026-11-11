@@ -10,7 +10,7 @@ import { editieStappen } from './stappen.js';
 import { LOSMAKEN_STAPPEN } from '../../shared/stappen.js';
 import { deelnemersVan, mijnRij } from './posten.js';
 import { maakStandaardMaaltijden } from './maaltijden.js';
-import { verborgenVoor, isOrganisatorVan } from './geheim.js';
+import { verborgenVoor, isOrganisatorVan, zichtbareOpties } from './geheim.js';
 
 const accommodatiesVan = (store, editieId) => store.lees('Accommodaties').filter((a) => a.editieId === editieId);
 const stemmenVan = (store, editieId) => store.lees('Stemmen').filter((s) => s.editieId === editieId);
@@ -178,7 +178,7 @@ export function accommodatiesScherm(h) {
   const deelvorm = deelvormVan(editie.deelvorm);
   const verborgen = verborgenVoor(store, sessie, editie);
   const leden = new Map(store.lees('Leden').map((l) => [l.id, l.voornaam]));
-  const opties = verborgen ? [] : accommodatiesVan(store, editie.id);
+  const opties = zichtbareOpties(store, sessie, editie, accommodatiesVan(store, editie.id)); // ACC-9, ACC-10
   const geboektId = opties.some((a) => a.id === editie.geboektAccommodatieId) ? editie.geboektAccommodatieId : '';
   const stemmenLijst = deelvorm === 'samen' ? stemmenVan(store, editie.id) : [];
   const telling = telPunten(opties, stemmenLijst, (id) => actieveIds.has(id)); // AAN-08: afgehaakten tellen niet mee

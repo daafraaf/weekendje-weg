@@ -44,6 +44,10 @@ export function verdeel(bedrag, verdeling, { betalerId, naamVan } = {}) {
   return uit;
 }
 
+// GELD-12 (BV-34): de bedragen per persoon van een verdeling, om bij wisselen naar Bedrag voor te vullen. Een ongeldige
+// verdeling of geen bedrag geeft {}.
+export const bedragenVan = (bedrag, verdeling, opties = {}) => (bedrag > 0 ? verdeel(bedrag, verdeling, opties) : {});
+
 // Verschil tussen het bedrag en de som van de bedragen per persoon; positief is nog te verdelen.
 export const verschil = (bedrag, verdeling) => bedrag - positief(verdeling && verdeling.bedragen).reduce((s, [, c]) => s + c, 0);
 

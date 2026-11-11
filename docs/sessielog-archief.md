@@ -2,6 +2,7 @@
 
 Oudere regels uit het sessielog van MEMORY.md.
 
+- 2026-11-11 fase 30: binnenkomen en Start: pinscherm zonder plakveld bij een link en met tekstvakjes, elke login naar #/start, Iedereen uitnodigen zolang links ontbreken, Start zonder null, Uitloggen, dubbele kop en aftelteller na Afgerond, Hoe werkt het? als tekstlink, Afgelopen weekenden met klapicoon, titel één keer, profielmenu met naam (TOE-13, STA-4, STA-9, NAV-2, NAV-15; BV-02, 06, 07, 08, 20, 21, 22, 23, 33, 36); zie `docs/overdracht/fase-30.md`.
 - 2026-11-11 fase 29: foutafhandeling en versie: API_VERSIE 2 met snapshot-test, foutteksten in gewone taal (`web/foutteksten.js`), geen Niet opgeslagen na herladen, onbekende route naar #/start, Opslaan… in de knop met bevestiging bij het veld, minstens twee antwoordopties (NFR-21, NFR-22, SYNC-5, SYNC-8, EDI-12, NAV-13; BV-04, 05, 12, 13, 14, 24, 35); check groen; zie `docs/overdracht/fase-29.md`.
 - 2026-11-11 fase 28: uitleg van de stappen: route op Start (sluitbaar, vlag `ww-route-gezien`), Hoe werkt het?, info-icoon bij de stappenbalk, teksten per rol in `web/uitleg.js` (UIT-1 t/m UIT-4, NAV-7, AAN-85); check groen; eindlijst voor David in `docs/overdracht/fase-28.md`.
 - 2026-11-10 fase 26: synchronisatielaag: wachtrij met debounce, localStorage en terugdraaien, actie `bundel`, `antwoordZetten` per veld, formulier zonder Opslaan (K4), indicator in de kopregel (SYNC-1 t/m SYNC-8, AAN-82, AAN-83); check groen; zie `docs/overdracht/fase-26.md`.

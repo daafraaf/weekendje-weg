@@ -9,13 +9,14 @@ import { maakWachtrij, WACHTRIJ_SLEUTEL } from '../../src/web/wachtrij.js';
 import { maakNepApi } from '../mock-backend/server.mjs';
 
 // NFR-22: de actielijst zoals ze hoort bij API_VERSIE. Wijzig je ACTIES, verhoog dan API_VERSIE aan beide
-// kanten en werk deze snapshot bij.
+// kanten en werk deze snapshot bij. Uitzondering: fase 33 voegde claimToewijzen toe binnen versie 2, omdat versie 2
+// nog niet was uitgerold en de fasen van feedbackronde 2 samen live gaan.
 const SNAPSHOT = {
   versie: 2,
   acties: [
     'accommodatieBoeken', 'accommodatieOpslaan', 'accommodatieVerwijderen', 'afhakenMarkeren', 'afvinken',
     'antwoordZetten', 'antwoordenOpslaan', 'beheerlinkMaken', 'betalingMarkeren', 'betalingTerugdraaien',
-    'boodschappenDefinitief', 'bundel', 'claimIntrekken', 'claimen', 'deelnemersBeheren', 'deelvormZetten',
+    'boodschappenDefinitief', 'bundel', 'claimIntrekken', 'claimToewijzen', 'claimen', 'deelnemersBeheren', 'deelvormZetten',
     'editieAanmaken', 'editieBijwerken', 'groepOpzetten', 'inloggenBeheer', 'inloggenDeelnemer', 'itemOpslaan',
     'itemVerwijderen', 'kamerIndelen', 'kamersOpslaan', 'kokStoppen', 'kokWorden', 'ledenBeheren', 'linkVernieuwen',
     'linksMaken', 'maaltijdOpslaan', 'meerijden', 'meerijdenStoppen', 'pincodeVernieuwen', 'postOpslaan',

@@ -69,16 +69,16 @@ Nieuwe editie, stap Invullen, nog geen links gemaakt. Start toont als eerstvolge
 Verwacht: "Iedereen uitnodigen" (naar Uitnodigen) zolang niet alle deelnemers een link hebben, daarna pas herinnering.
 Eis: STA-4, EDI-4.
 
-### BV-09 (K) Beschrijving van Stappen in Beheren noemt nog verwachte datums
+### BV-09 (K) Beschrijving van Stappen in Beheren noemt nog verwachte datums (Opgelost in fase 33)
 Beheren, item Stappen: "Stap, verwachte datums en deadline". Datums per stap zijn vervallen (EDI-8, §7.2.4).
 Maak er "Stap en deadline" van.
 
-### BV-10 (K) Teksten rond de deadline zeggen nog dat hij het invullen afsluit
+### BV-10 (K) Teksten rond de deadline zeggen nog dat hij het invullen afsluit (Opgelost in fase 33)
 Nieuwe editie: "Iedereen vult in tot de deadline" en "Tot en met deze dag (23:59) vult iedereen beschikbaarheid en
 wensen in". Stappen: "Invullen kan nu tot dinsdag 15 december, 23:59". Herinnering: "Invullen kan tot ...". Volgens
 DDL-1 is de deadline informatief. Maak er bijvoorbeeld "Graag ingevuld vóór ..." van, zoals op het formulier.
 
-### BV-11 (K) Nieuwe editie neemt titel en periode over van de vorige editie
+### BV-11 (K) Nieuwe editie neemt titel en periode over van de vorige editie (Opgelost in fase 33)
 "Nieuwe editie" opent met de titel "Leid0n Test · Weekendje weg 2027" en jaar 2027 ingevuld, terwijl er al een editie
 2027 is. Periode staat op 1 april tot 31 oktober in plaats van het kalenderjaar (§7.3.1, AAN-15). Verwacht: titel leeg
 of "Weekendje weg <volgend jaar>", jaar = eerste jaar zonder editie, periode volgens AAN-15 (of pas de spec aan als
@@ -96,7 +96,7 @@ Na Toevoegen gebeurt er zichtbaar een tijd niets; het veld blijft gevuld tot het
 `#/vragen` of `#/lijsten` toont Start terwijl de adresbalk het foute adres houdt. Verwacht: doorsturen naar `#/start`
 (of een "Pagina niet gevonden"). Eis: NAV.
 
-### BV-15 (K) De organisator kan zichzelf inactief maken
+### BV-15 (K) De organisator kan zichzelf inactief maken (Opgelost in fase 33)
 Leden: naast "David (jij)" staat de knop Inactief. Verwacht: niet beschikbaar voor jezelf, of een bevestiging met de
 gevolgen. Er staat ook een tweede, inactieve "Rick" met dezelfde naam; overweeg een waarschuwing bij een dubbele naam.
 Eis: GRP-5.
@@ -172,7 +172,7 @@ Naar Weekendje prikker met 5 van 6 ingevuld, en naar Weekend en Afrekening ruim 
 vraag. Een korte bevestiging ("Robin heeft nog niet ingevuld. Toch door?", "Het weekend is pas over 576 dagen.")
 voorkomt een misklik. Eis: EDI-7.
 
-### BV-27 (H) Groepsberichten en bevestigingen noemen onderdelen die uit staan
+### BV-27 (H) Groepsberichten en bevestigingen noemen onderdelen die uit staan (Opgelost in fase 33)
 - Bericht bij Meenemen: "Kijk in de app wat je meeneemt, wanneer je kookt en met wie je rijdt." Kookbeurten en
   carpool staan uit (AAN-80).
 - Bevestiging bij Ander weekend kiezen: "De datums bij de maaltijden en het programma verdwijnen". Maaltijden en
@@ -180,20 +180,20 @@ voorkomt een misklik. Eis: EDI-7.
 Verwacht: teksten volgen `ONDERDELEN`, net als de uitleg (OND-2, UIT-2). Breid de test die dat voor de uitleg
 controleert uit naar `src/shared/whatsapp.js` en de bevestiging in `accommodatie-beheer.js`.
 
-### BV-28 (K) Bericht bij Accommodatie vraagt om een top 3 terwijl er nog geen opties zijn
+### BV-28 (K) Bericht bij Accommodatie vraagt om een top 3 terwijl er nog geen opties zijn (Opgelost in fase 33)
 De stap Accommodatie zetten maakt direct "Kijk in de app naar de opties en geef je top 3", ook met nul opties. Waarschuw
 de organisator bij nul opties, of maak de tekst zonder opties anders ("de organisator zet binnenkort opties neer").
 
-### BV-29 (K) Na onthullen ziet de groep ook de opties die niet geboekt zijn
+### BV-29 (K) Na onthullen ziet de groep ook de opties die niet geboekt zijn (Opgelost in fase 33)
 Verrassing met drie opties, één geboekt, onthuld: een deelnemer krijgt alle drie de opties terug. Bij een verrassing
 hoort alleen de geboekte te verschijnen (§7.6.6 noemt alleen de geboekte accommodatie). Eis: ACC-9, ACC-10.
 
-### BV-30 (H) De organisator kan geen naam achter een item zetten
+### BV-30 (H) De organisator kan geen naam achter een item zetten (Opgelost in fase 33)
 De uitleg bij Meenemen zegt voor de organisator: "zet daar desnoods een naam achter". Op het scherm heeft de organisator
 alleen "Ik neem mee" en Verwijderen, geen manier om iemand anders in te delen. Bouw "Toewijzen aan…" of pas de uitleg
 aan. Eis: UIT-2, MEE-2.
 
-### BV-31 (K) Meenemen: "Uit eigen keuken" vraagt een categorie terwijl Boodschappen uit staat
+### BV-31 (K) Meenemen: "Uit eigen keuken" vraagt een categorie terwijl Boodschappen uit staat (Opgelost in fase 33)
 Het invoerveld onder Uit eigen keuken heeft een keuzelijst met dertien supermarktcategorieën. Die heeft alleen zin met
 de boodschappenlijst (uit, AAN-80). Verberg hem zolang het onderdeel uit staat. Eis: OND-2.
 
@@ -208,7 +208,7 @@ Open punt voor David (MEMORY.md); AAN-06 blijft tot dan ongewijzigd.
 Start, stap Afrekening: "Eerstvolgende actie | Openstaande betalingen | Openstaande betalingen". Eén kop is genoeg.
 Ook staat bij Afgerond nog "Nog 576 dagen tot het weekend", wat niet past bij een afgeronde editie.
 
-### BV-34 (K) Wisselen naar Bedrag per persoon begint leeg
+### BV-34 (K) Wisselen naar Bedrag per persoon begint leeg (Opgelost in fase 33)
 Een post met Gelijk (33,33 / 33,33 / 33,34), daarna Bedrag: alle velden zijn leeg en er staat "nog € 100,00 te
 verdelen". Vul ze voor met de bedragen van de vorige verdeling, dan hoeft alleen het verschil aangepast. Eis: GELD-2.
 

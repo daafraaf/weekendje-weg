@@ -2,7 +2,7 @@
 // Alle tekst gaat via textContent (NFR-5).
 import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
-import { BLOKKEN_STANDAARD, BLOKKEN_NAMEN, MAANDEN_STANDAARD, MAANDNAMEN, deadlineIso } from '../../shared/editie.js';
+import { BLOKKEN_STANDAARD, BLOKKEN_NAMEN, MAANDEN_STANDAARD, MAANDNAMEN, deadlineIso, nieuweEditieVoorstel } from '../../shared/editie.js';
 
 const WAARSCHUWING = ['M12 4 2.8 19.5h18.4z', 'M12 10v4M12 17h.01'];
 const JAREN_VOORUIT = 4;
@@ -54,20 +54,25 @@ export function maakEditieNieuw({ sessie, params = {}, bijVerlopen, bijKlaar, fe
 
   function teken(g) {
     const bron = params.van ? g.edities.find((e) => e.id === params.van && e.stap === 'afgerond') : null;
-    const jaar = bron ? bron.jaar + 1 : nu().getFullYear() + 1;
+    // EDI-11 (AAN-89): eerste vrije jaar, titel met dat jaar en het kalenderjaar als periode.
+    const voorstel = nieuweEditieVoorstel({ jaren: g.jaren || g.edities.map((e) => e.jaar), nu: nu() });
+    const jaar = voorstel.jaar;
     const doetMee = (lidId) => !bron || bron.deelnemers.some((d) => d.lidId === lidId);
     const isOrg = (lidId) => bron && bron.deelnemers.some((d) => d.lidId === lidId && d.rol === 'organisator');
-    const titel = veld('ed-titel', 'Titel', { type: 'text', maxlength: '80' }, `${g.groep.naam} · Weekendje weg ${jaar}`);
+    const titel = veld('ed-titel', 'Titel', { type: 'text', maxlength: '80' }, voorstel.titel);
     const jaarVeld = jaarKeuze('ed-jaar', 'Jaar', jaar, 'Het jaar waarin het weekend valt.');
-    const van = veld('ed-van', 'Periode van', { type: 'date' }, `${jaar}-04-01`, 'De eerste dag waarop het weekend mag vallen.');
-    const tot = veld('ed-tot', 'Periode tot en met', { type: 'date' }, `${jaar}-10-31`, 'De laatste dag. Deelnemers geven in de kalender aan wanneer ze in deze periode kunnen.');
-    // Een ander jaar schuift de periode mee, zolang de datums nog in het vorige gekozen jaar liggen.
+    const van = veld('ed-van', 'Periode van', { type: 'date' }, voorstel.periodeVan, 'De eerste dag waarop het weekend mag vallen.');
+    const tot = veld('ed-tot', 'Periode tot en met', { type: 'date' }, voorstel.periodeTot, 'De laatste dag. Deelnemers geven in de kalender aan wanneer ze in deze periode kunnen.');
+    // Een ander jaar schuift de periode mee, zolang de datums nog in het vorige gekozen jaar liggen; de titel ook,
+    // zolang hij het voorgestelde jaar noemt.
     let vorigJaar = String(jaar);
     jaarVeld.el.addEventListener('change', () => {
       for (const d of [van.el, tot.el]) if (d.value.startsWith(`${vorigJaar}-`)) d.value = `${jaarVeld.el.value}${d.value.slice(4)}`;
+      if (titel.el.value === `Weekendje weg ${vorigJaar}`) titel.el.value = `Weekendje weg ${jaarVeld.el.value}`;
       vorigJaar = jaarVeld.el.value;
     });
-    const deadline = veld('ed-deadline', 'Deadline invullen', { type: 'date' }, '', 'Tot en met deze dag (23:59) vult iedereen beschikbaarheid en wensen in. Twee tot drie weken na het uitnodigen is meestal genoeg. Daarna bekijk jij het overzicht en kies je de datum.');
+    // EDI-10, DDL-1: de deadline is informatief.
+    const deadline = veld('ed-deadline', 'Deadline invullen', { type: 'date' }, '', 'Graag ingevuld vóór deze dag. De deadline sluit niets af: invullen blijft open tot jij naar Weekendje prikker gaat. Twee tot drie weken na het uitnodigen is meestal genoeg.');
     const maanden = MAANDNAMEN.map((naam, i) => ({ nr: i + 1, ...vink(`ed-maand-${i + 1}`, naam, (bron && bron.voorkeursmaanden.length ? bron.voorkeursmaanden : MAANDEN_STANDAARD).includes(i + 1)) }));
     const blokken = Object.keys(BLOKKEN_NAMEN).map((sleutel) => ({ sleutel, ...vink(`ed-blok-${sleutel}`, BLOKKEN_NAMEN[sleutel], bron ? Boolean(bron.blokken[sleutel]) : BLOKKEN_STANDAARD[sleutel]) }));
     const leden = g.leden.filter((l) => l.actief).map((l) => {
@@ -85,7 +90,7 @@ export function maakEditieNieuw({ sessie, params = {}, bijVerlopen, bijKlaar, fe
     const formulier = h('form', { class: 'beheer', novalidate: true },
       h('section', { class: 'glass card binnen-kaart' }, titel.blok, jaarVeld.blok,
         h('h2', { class: 't-h2' }, 'Wanneer kan het weekend vallen?'), h('div', { class: 'wz-twee' }, van.blok, tot.blok),
-        h('h2', { class: 't-h2' }, 'Tot wanneer kan iedereen invullen?'), deadline.blok),
+        h('h2', { class: 't-h2' }, 'Wanneer graag ingevuld?'), deadline.blok),
       h('section', { class: 'solid panel wz-nieuw' }, h('h2', { class: 't-h2' }, 'Voorkeursmaanden'), h('p', { class: 't-small t-sec' }, 'De maanden die jullie het liefst hebben. De kalender laat ze als eerste zien; andere maanden in de periode blijven mogelijk.'), h('div', { class: 'ed-raster' }, maanden.map((m) => m.blok))),
       h('section', { class: 'solid panel wz-nieuw' }, h('h2', { class: 't-h2' }, 'Onderdelen van het formulier'), h('p', { class: 't-small t-sec' }, ALTIJD_AAN), h('div', { class: 'ed-raster' }, blokken.map((b) => b.blok))),
       h('section', { class: 'solid panel wz-nieuw' }, h('h2', { class: 't-h2' }, 'Wie doen er mee?'), h('p', { class: 't-small t-sec' }, 'Vink aan wie meegaat en wie het weekend regelt. Regelt iemand anders het, zet dan je eigen vinkje bij organisator uit; die persoon heeft een beheerlink nodig.'), h('div', { class: 'list' }, leden.map((r) => h('div', { class: 'row ed-lid' },
@@ -122,7 +127,7 @@ export function maakEditieNieuw({ sessie, params = {}, bijVerlopen, bijKlaar, fe
     wortel.replaceChildren(
       h('div', { class: 'wz-kop' }, h('p', { class: 't-cap' }, 'Beheren'), h('h1', { class: 't-title' }, 'Nieuwe editie'),
         h('p', { class: 't-body t-sec' }, bron ? `Leden, onderdelen en lijsten komen uit ${bron.titel}. Daarna maak je de links en pincodes om uit te nodigen.` : 'Een editie is één weekend weg. Je legt hier vast wanneer het kan en wie er meedoen. Daarna maak je de links en pincodes om uit te nodigen.')),
-      h('ol', { class: 'solid panel ed-route' }, ['Editie maken', 'Iedereen uitnodigen met link en pincode', 'Iedereen vult in tot de deadline', 'Jij kiest de datum uit het overzicht'].map((tekst) => h('li', { class: 't-small' }, tekst))),
+      h('ol', { class: 'solid panel ed-route' }, ['Editie maken', 'Iedereen uitnodigen met link en pincode', 'Iedereen vult in, graag vóór de deadline', 'Jij kiest de datum uit het overzicht'].map((tekst) => h('li', { class: 't-small' }, tekst))),
       formulier);
   }
 

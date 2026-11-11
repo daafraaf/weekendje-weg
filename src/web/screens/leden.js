@@ -3,6 +3,7 @@
 import { h, icoon } from '../dom.js';
 import { maakApi } from '../api.js';
 import { scriptUrl } from '../sessie.js';
+import { zelfdeNaam } from '../../shared/leden.js';
 
 const PLUS = 'M12 5v14M5 12h14';
 const POTLOOD = 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4';
@@ -42,18 +43,26 @@ export function maakLeden({ sessie, uitloggen, bijVerlopen, fetchFn }) {
 
   const naam = h('input', { id: 'lid-naam', class: 'field', type: 'text', maxlength: '40', autocomplete: 'off' });
   const plaats = h('input', { id: 'lid-plaats', class: 'field', type: 'text', maxlength: '60', autocomplete: 'off' });
+  // GRP-5: een dubbele voornaam geeft een waarschuwing, toevoegen blijft mogelijk (zelfdeNaam in shared/leden.js).
+  const dubbel = h('p', { class: 'hint', role: 'status', id: 'lid-naam-dubbel', hidden: true });
+  naam.setAttribute('aria-describedby', dubbel.id);
+  naam.addEventListener('input', () => {
+    const zelfde = gegevens && zelfdeNaam(gegevens.leden, naam.value);
+    dubbel.textContent = zelfde ? `Er is al een lid dat ${naam.value.trim()} heet. Voeg bijvoorbeeld de eerste letter van de achternaam toe.` : '';
+    dubbel.hidden = !zelfde;
+  });
   const voeg = h('button', { class: 'btn btn-ghost', type: 'button', 'data-schrijft': true }, icoon(PLUS, 20), 'Lid toevoegen');
   voeg.addEventListener('click', async () => {
     if (!naam.value.trim()) { toonMelding('Vul een naam in.'); return; }
     await wijzig({ soort: 'toevoegen', voornaam: naam.value.trim(), woonplaats: plaats.value.trim() });
-    if (melding.hidden) { naam.value = ''; plaats.value = ''; naam.focus(); }
+    if (melding.hidden) { naam.value = ''; plaats.value = ''; dubbel.hidden = true; naam.focus(); }
   });
   // Enter in een van de velden voegt toe; de klik loopt langs de schil, die hem negeert zolang er wordt opgeslagen.
   for (const veld of [naam, plaats]) veld.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); voeg.click(); } });
   const nieuw = h('section', { class: 'solid panel wz-nieuw' },
     h('h2', { class: 't-h2' }, 'Lid toevoegen'),
     h('div', { class: 'wz-twee' },
-      h('div', {}, h('label', { class: 'label', for: 'lid-naam' }, 'Naam'), naam),
+      h('div', {}, h('label', { class: 'label', for: 'lid-naam' }, 'Naam'), naam, dubbel),
       h('div', {}, h('label', { class: 'label', for: 'lid-plaats' }, 'Woonplaats'), plaats)),
     voeg);
 
@@ -73,7 +82,8 @@ export function maakLeden({ sessie, uitloggen, bijVerlopen, fetchFn }) {
         h('span', { class: 'rij-naam' }, l.voornaam, eigen ? h('span', { class: 'chip' }, 'jij') : null, l.actief ? null : h('span', { class: 'chip chip-n' }, 'inactief')),
         h('span', { class: 't-small t-sec' }, l.woonplaats || 'Woonplaats onbekend')),
       l.actief ? h('button', { class: 'icon-btn', type: 'button', 'aria-label': `Woonplaats van ${l.voornaam} wijzigen`, onclick: () => { wijzigId = l.id; teken(); } }, icoon(POTLOOD, 18)) : null,
-      l.actief ? h('button', { class: 'btn-plain', type: 'button', 'data-schrijft': true, 'aria-label': `${l.voornaam} inactief maken`, onclick: () => wijzig({ soort: 'inactief', id: l.id }) }, 'Inactief') : null);
+      // GRP-5, AAN-90: geen knop om jezelf inactief te maken.
+      l.actief && !eigen ? h('button', { class: 'btn-plain', type: 'button', 'data-schrijft': true, 'aria-label': `${l.voornaam} inactief maken`, onclick: () => wijzig({ soort: 'inactief', id: l.id }) }, 'Inactief') : null);
   }
 
   function teken() {

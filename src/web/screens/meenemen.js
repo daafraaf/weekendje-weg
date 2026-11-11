@@ -82,6 +82,19 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
         : h('button', { class: 'btn btn-ghost btn-sm', type: 'button', 'aria-label': `Ik neem ${i.naam} mee`,
           onclick: () => klein('claimen', { itemId: i.id }) }, 'Ik neem mee'));
     }
+    // MEE-10 (BV-30): de organisator zet een naam achter een item; een grote actie, die wacht op de Sheet.
+    if (g.organisator && g.deelnemers && !dicht(i)) {
+      const vrij = g.deelnemers.filter((d) => d.id !== g.ik && !i.claims.some((c) => c.deelnemerId === d.id));
+      if (vrij.length) {
+        const keuze = h('select', { class: 'field mee-toewijzen', 'aria-label': `${i.naam} toewijzen aan`, style: 'min-height:44px' },
+          h('option', { value: '' }, 'Toewijzen aan …'), vrij.map((d) => h('option', { value: d.id }, d.naam)));
+        keuze.addEventListener('change', () => {
+          const d = vrij.find((x) => x.id === keuze.value);
+          if (d) schrijf('claimToewijzen', { itemId: i.id, deelnemerId: d.id }, `${d.naam} neemt ${i.naam} mee.`, i.soort);
+        });
+        knoppen.push(keuze);
+      }
+    }
     // AAN-26: een eigen item tot definitief, de organisator elk item.
     if ((i.eigen || g.organisator) && !g.definitief && !g.alleenLezen) {
       knoppen.push(bevestig === i.id
@@ -113,7 +126,8 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
     };
     naam.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); voegToe(); } });
     return h('div', { class: 'row mee-nieuw' },
-      h('span', { class: 'mee-velden' }, naam, sectie.soort === 'spullen' ? null : cat),
+      // MEE-10, OND-2 (BV-31): de categorie hoort bij de boodschappenlijst; zonder dat onderdeel geen keuzelijst.
+      h('span', { class: 'mee-velden' }, naam, sectie.soort === 'spullen' || !onderdeelAan('boodschappen') ? null : cat),
       h('button', { class: 'icon-btn mee-plus', type: 'button', 'data-schrijft': true, 'aria-label': `${sectie.veld} toevoegen`, onclick: voegToe }, icoon(PLUS, 20)));
   }
 

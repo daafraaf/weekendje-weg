@@ -30,7 +30,7 @@ export const ACTIES = {
   bundel: S, // SYNC-2: kleine handelingen uit de wachtrij, elk met eigen rechten, validatie en Log
   weekendVastleggen: S, weekendLosmaken: S, accommodatieOpslaan: S, accommodatieVerwijderen: S, deelvormZetten: S,
   accommodatieBoeken: S, verrassingOnthullen: S, top3Opgeven: S,
-  itemOpslaan: S, itemVerwijderen: S, claimen: S, claimIntrekken: S, afvinken: S,
+  itemOpslaan: S, itemVerwijderen: S, claimen: S, claimIntrekken: S, claimToewijzen: S, afvinken: S,
   boodschappenDefinitief: S, maaltijdOpslaan: S, kokWorden: S, kokStoppen: S, programmaOpslaan: S,
   programmaVerwijderen: S, kamersOpslaan: S, kamerIndelen: S, ritOpslaan: S, meerijden: S, meerijdenStoppen: S,
   postOpslaan: S, postVerwijderen: S, betalingMarkeren: S, betalingTerugdraaien: S,
