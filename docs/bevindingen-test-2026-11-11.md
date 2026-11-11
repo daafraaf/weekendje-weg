@@ -105,23 +105,23 @@ Eis: GRP-5.
 
 Mobiel getest op 390 × 760 (de app in een iframe van die breedte, zelfde sessie), desktop op 2560 × 1270.
 
-### BV-16 (H) Mobiel: Afrekening valt buiten het onderste menu
+### BV-16 (H) Mobiel: Afrekening valt buiten het onderste menu (Opgelost in fase 31)
 Het onderste menu heeft zeven items van 60 px in een balk van 351 px. Afrekening staat helemaal buiten beeld, Meenemen
 half ("Meenem"), en "Accommodatie" loopt in "Meenemen" over. Je kunt horizontaal scrollen, maar niets laat zien dat er
 meer is. Verwacht: alle items zichtbaar. Opties: kortere labels (Prikker, Verblijf, Mee, Geld), alleen iconen met
 het label van het actieve item, vijf items plus "Meer", of Voortgang en Invullen samenvoegen. Eis: NAV-10, STA-2.
 
-### BV-17 (K) Start en Accommodatie hebben bijna hetzelfde icoon (een huisje)
+### BV-17 (K) Start en Accommodatie hebben bijna hetzelfde icoon (een huisje) (Opgelost in fase 31)
 In het zijmenu en het onderste menu lijken Start en Accommodatie op elkaar. Kies voor Accommodatie een bed of sleutel.
 
-### BV-18 (H) Meenemen en Afrekening zijn al open in de stap Invullen, Weekendje prikker en Accommodatie niet
+### BV-18 (H) Meenemen en Afrekening zijn al open in de stap Invullen, Weekendje prikker en Accommodatie niet (Opgelost in fase 31)
 Als deelnemer in stap Invullen tonen Weekendje prikker en Accommodatie "Komt in stap ...", maar Meenemen toont de
 volledige lijst met "Ik neem mee" en Afrekening de uitgaven. Dat is onlogisch naast de stappenbalk. Kies één lijn:
 of elk scherm vóór zijn stap "Komt in stap ..." (eventueel met een voorproefje), of leg in de spec vast dat Meenemen
 en Afrekening altijd open zijn en laat de uitleg dat zeggen. Op Meenemen staat bovendien "Invullen" als kopje
 boven de titel, omdat de kop de stap toont en niet het scherm. Eis: NAV-10, §7.14.
 
-### BV-19 (K) Desktop: smalle kolom met een los zwevend menu
+### BV-19 (K) Desktop: smalle kolom met een los zwevend menu (Opgelost in fase 31)
 Op een breed scherm is de inhoud ongeveer 590 px breed in het midden; het menu zweeft linksboven als losse kaart en de
 profielknop staat helemaal rechtsboven, ver van de rest. De stappenbalk kort daardoor namen af ("Weekendj…",
 "Accommo…"), terwijl er ruimte genoeg is. Voorstel: inhoud tot ±900 px op desktop of de stappenbalk breder dan de

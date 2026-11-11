@@ -176,8 +176,7 @@ for (const breedte of [360, 390, 1280]) {
   });
 
   test(`NAV-12: alle menu-items vallen binnen beeld op ${breedte} pixels`, async ({ page, context }) => {
-    // Het mobiele menu met zeven items scrolt nog horizontaal; NAV-12 (iconen zonder label) hoort bij fase 31.
-    test.fixme(breedte < 768, 'NAV-12: het mobiele menu wordt in fase 31 passend gemaakt');
+    // NAV-12, BV-16 (fase 31): op mobiel alleen iconen, het actieve item met label.
     const { nep } = await startDemo(context, { stap: 'invullen', als: 'Anne', beheer: true });
     try {
       await page.setViewportSize({ width: breedte, height: 800 });

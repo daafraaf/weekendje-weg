@@ -119,6 +119,8 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 
 - Kinderen die kunnen ontbreken: `vervang(el, ...)` uit `web/dom.js`, nooit `replaceChildren` met een mogelijke `null` (BV-02). Elke login landt op `#/start`; e2e naar Leden met `naarLeden(page)`, uitloggen met `uitloggen(page)` (profielmenu) uit `hulp.mjs`.
 
+- Menu en layout (NAV-12, NAV-14): menu-links hebben `aria-label` met de volle naam; op mobiel is alleen het label van het actieve item zichtbaar. Desktop: kopregel over beide kolommen met `.kop-titel`; een scherm met de editietitel als kop hoort in `TITEL_OP_SCHERM` (`app.js`). e2e-maten: `test/e2e/navigatie-layout.spec.mjs`.
+
 ## Valkuilen
 
 Leeg bij de start. Elke fout die twee keer gebeurt, komt hier.

@@ -22,6 +22,14 @@ test('UIT-2: de deadline staat alleen bij Invullen en is informatief', () => {
   for (const s of STAPPEN.filter((x) => x !== 'invullen')) assert.ok(!JSON.stringify(UITLEG[s]).toLowerCase().includes('deadline'), s);
 });
 
+test('UIT-2 §7.14 BV-18: de uitleg zegt dat Meenemen en Afrekening in elke stap open zijn', () => {
+  for (const [s, naam] of [['voorbereiding', 'Meenemen'], ['afrekenen', 'Afrekening']]) {
+    assert.ok(UITLEG[s].gebeurt.includes(`${naam} staat in elke stap open`), s);
+  }
+  // In de eerste stap, waar de deelnemer begint, staat het ook.
+  assert.ok(UITLEG.invullen.deelnemer.includes('Meenemen en Afrekening'), 'invullen');
+});
+
 test('AAN-85: de vlag ww-route-gezien overleeft een opslag die faalt', () => {
   const opslag = new Map();
   const goed = { getItem: (k) => opslag.get(k) ?? null, setItem: (k, v) => opslag.set(k, v) };

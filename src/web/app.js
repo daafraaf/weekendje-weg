@@ -205,7 +205,7 @@ registreer('afrekening', {
 // ACC-8 t/m ACC-14: de accommodatie van de groep (verrassing of samen kiezen, top 3 via de wachtrij).
 registreer('accommodaties', {
   titel: 'Accommodatie',
-  icoon: ['M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z'],
+  icoon: ['M2.5 5v15', 'M2.5 9h17a2 2 0 0 1 2 2v9', 'M2.5 16.5h19', 'M6.5 9v7.5'], // NAV-12, BV-17: een bed, anders dan het huisje van Start
   render(params) {
     return maakAccommodaties({ sessie: leesSessie(localStorage), params, wachtrij, bijVerlopen: bijVerlopenSessie });
   },
@@ -297,6 +297,8 @@ const melding = h('div', { class: 'glass toast offline-melding', role: 'alert', 
   h('span', { class: 'ico' }, icoon(['M3 3l18 18', 'M8.5 16.2a5 5 0 0 1 7 0', 'M5 12.6a10 10 0 0 1 4-2.3', 'M14.8 10.4A10 10 0 0 1 19 12.6', 'M2 9a15 15 0 0 1 4.3-2.6', 'M11 5.1A15 15 0 0 1 22 9', 'M12 19.5h.01'], 22)),
   h('span', {}, h('span', { class: 'titel' }, OFFLINE_TEKST)));
 const kopregel = h('header', { class: 'kopregel' }); // NAV-2: het profielmenu staat op elk scherm op dezelfde plek
+// NAV-14, BV-19: op desktop staat de editienaam in de kopregel naast de profielknop (de compacte balk met de titel is daar weg).
+const kopTitel = h('p', { class: 't-h2 kop-titel' });
 const schil = h('div', { class: 'schil', hidden: true }, menu, kopregel, balkPlek, inhoud);
 let binnen = null;
 let schilGestart = false;
@@ -377,6 +379,7 @@ function toonMenu(actief = menuActief) {
 }
 
 function toonBalk() {
+  kopTitel.textContent = editieStand ? editieStand.titel : '';
   if (standBekend && !editieStand) { balkPlek.replaceChildren(); return; } // zonder editie geen balk
   const s = editieStand || { stap: null, titel: '' };
   balkPlek.replaceChildren(maakStappenbalk({ stap: s.stap, titel: s.titel, organisator: soortNu() === 'beheer' }));
@@ -452,11 +455,11 @@ function kies() {
   schil.hidden = !sessie;
   if (sessie) {
     const sleutel = sessie.sessie;
-    if (sleutel !== laatsteSessie) { profiel = maakProfielmenu({ soort: sessie.soort, kanInstalleren, installeer, uitloggen }); kopregel.replaceChildren(sync.indicator, profiel); }
+    if (sleutel !== laatsteSessie) { profiel = maakProfielmenu({ soort: sessie.soort, kanInstalleren, installeer, uitloggen }); kopregel.replaceChildren(kopTitel, sync.indicator, profiel); }
     wachtrij.start(); // SYNC-3: wat bij een vorige keer bleef staan, gaat alsnog
     // RON-1, AAN-73: een deelnemer zonder gezien-vlag op dit apparaat begint met de rondleiding.
     if (sessie.soort === 'deelnemer' && !rondleidingGezien(localStorage) && !location.hash.startsWith('#/uitleg')) history.replaceState(null, '', `${location.pathname}${location.search}#/uitleg`);
-    if (!schilGestart) { schilGestart = true; toonBalk(); start(inhoud, (naam, params) => { toonMenu(naam); balkPlek.toggleAttribute('data-titel-dubbel', TITEL_OP_SCHERM.has(naam)); if (naam !== 'start' || params.editie) haalStand(); }, soortNu); } else if (sleutel !== laatsteSessie) { toonBalk(); ververs(); }
+    if (!schilGestart) { schilGestart = true; toonBalk(); start(inhoud, (naam, params) => { toonMenu(naam); balkPlek.toggleAttribute('data-titel-dubbel', TITEL_OP_SCHERM.has(naam)); kopregel.toggleAttribute('data-titel-dubbel', TITEL_OP_SCHERM.has(naam)); if (naam !== 'start' || params.editie) haalStand(); }, soortNu); } else if (sleutel !== laatsteSessie) { toonBalk(); ververs(); }
     laatsteSessie = sleutel;
     return;
   }

@@ -7,6 +7,7 @@ import { menuItems } from '../../shared/start.js';
 export function maakMenuItems({ routes, actief, stap = null }) {
   const icoonVan = (naam) => (routes.find((r) => r.naam === naam) || {}).icoon || [];
   const { items, beheer } = menuItems(routes.map((r) => r.naam));
-  const link = (m) => h('a', { href: `#/${m.href}`, 'aria-current': m.routes.includes(actief) ? 'page' : false, 'data-stap-nu': Boolean(stap) && m.stap === stap }, icoon(icoonVan(m.naam), 24), h('span', {}, m.label));
+  // NAV-12, BV-16: op mobiel toont alleen het actieve item zijn label; aria-label houdt de volle naam voor iedereen.
+  const link = (m) => h('a', { href: `#/${m.href}`, 'aria-label': m.label, 'aria-current': m.routes.includes(actief) ? 'page' : false, 'data-stap-nu': Boolean(stap) && m.stap === stap }, icoon(icoonVan(m.naam), 24), h('span', {}, m.label));
   return [...items.map(link), ...(beheer ? [h('span', { class: 'menu-scheiding', 'aria-hidden': 'true' }), link(beheer)] : [])];
 }

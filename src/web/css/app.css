@@ -90,16 +90,19 @@ a:hover { text-decoration: underline; }
 .sb-datum { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
 
 /* Menu */
-.menu { position: fixed; left: 12px; right: 12px; bottom: calc(20px + env(safe-area-inset-bottom)); height: 70px; border-radius: 26px; display: flex; align-items: stretch; padding: 6px; z-index: 6; }
-.menu a { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: var(--tap-min); border-radius: 20px; color: var(--text-secondary); font-size: 11px; font-weight: 600; text-decoration: none; }
-.menu { overflow-x: auto; scrollbar-width: none; }
-.menu a { min-width: 60px; }
+.menu { position: fixed; left: 8px; right: 8px; bottom: calc(20px + env(safe-area-inset-bottom)); height: 70px; border-radius: 26px; display: flex; align-items: stretch; padding: 4px; z-index: 6; }
+.menu a { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: var(--tap-min); border-radius: 20px; color: var(--text-secondary); font-size: 10.5px; font-weight: 600; text-decoration: none; }
+/* NAV-12, BV-16: op mobiel alleen iconen, zodat zeven items even breed binnen 360 pixels passen; het actieve item
+   toont zijn label onder het icoon. Een lang label mag iets over de rand van zijn item vallen, de buren tonen alleen
+   een icoon in hun midden. aria-label op de link houdt de volle naam. */
+.menu a:not([aria-current="page"]) span { display: none; }
+.menu a[aria-current="page"] span { width: max-content; max-width: 76px; }
 .menu a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
 /* NAV-10: zeven items in stapvolgorde, Beheren na een scheidingslijn; het item van de huidige stap heeft een stip (STA-8) */
 .menu a span { text-align: center; line-height: 1.15; }
 .menu a { position: relative; }
 .menu a[data-stap-nu]::after { content: ""; position: absolute; top: 7px; right: 10px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
-.menu-scheiding { flex: 0 0 1px; align-self: stretch; margin: 10px 4px; background: var(--line); }
+.menu-scheiding { flex: 0 0 1px; align-self: stretch; margin: 10px 2px; background: var(--line); }
 /* NAV-11: tabs onder Afrekening */
 .tabs { display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: var(--line); }
 .tabs .tab { flex: 1 1 0; display: flex; align-items: center; justify-content: center; min-height: var(--tap-min); border-radius: 12px; font-size: 15px; font-weight: 600; color: var(--text-secondary); text-decoration: none; }
@@ -140,6 +143,7 @@ a:hover { text-decoration: underline; }
 
 /* Kopregel en profielmenu (NAV-2, NAV-3) */
 .kopregel { display: flex; justify-content: flex-end; align-items: center; }
+.kop-titel { display: none; }
 .profiel { position: relative; }
 .profiel-knop { width: var(--tap-min); height: var(--tap-min); border-radius: 50%; border: 0; background: var(--accent-soft); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; }
 .profiel-menu { position: absolute; right: 0; top: calc(100% + 8px); min-width: 220px; padding: 8px; border-radius: 20px; z-index: 8; display: flex; flex-direction: column; gap: 2px; }
@@ -170,10 +174,16 @@ a:hover { text-decoration: underline; }
 .tag-rij .field { flex: 1 1 auto; min-width: 0; }
 
 @media (min-width: 768px) {
-  .schil { display: grid; grid-template-columns: 220px minmax(0, 1fr); grid-template-areas: "menu kop" "menu balk" "menu inhoud"; align-content: start; gap: 16px; padding: 20px; }
-  .kopregel { grid-area: kop; }
-  .stappenbalk { grid-area: balk; max-width: 960px; width: 100%; margin: 0 auto; padding: 8px; }
-  .inhoud { grid-area: inhoud; }
+  /* NAV-14, BV-19: menu en inhoud vormen samen één gecentreerd blok; de inhoud is tot 900 pixels breed, de kopregel
+     loopt over beide kolommen (editienaam links, profielknop boven de rechterkant van de balk) en het menu begint op de
+     hoogte van de stappenbalk. */
+  .schil { display: grid; grid-template-columns: 220px minmax(0, 900px); justify-content: center; grid-template-areas: "kop kop" "menu balk" "menu inhoud"; align-content: start; gap: 16px; padding: 20px; }
+  .kopregel { grid-area: kop; min-width: 0; }
+  .kop-titel { display: block; margin: 0 auto 0 4px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* NAV-15: toont het scherm de titel al als kop of bovenschrift, dan niet nog eens in de kopregel. */
+  .kopregel[data-titel-dubbel] .kop-titel { display: none; }
+  .stappenbalk { grid-area: balk; width: 100%; margin: 0; padding: 8px; }
+  .inhoud { grid-area: inhoud; max-width: none; }
   .sb-compact { display: none; }
   .sb-lijstrij { display: flex; align-items: flex-start; gap: 4px; }
   .sb-lijstrij .sb-lijst { flex: 1 1 auto; }
@@ -188,6 +198,14 @@ a:hover { text-decoration: underline; }
   .menu a[data-stap-nu]::after { top: 50%; right: 14px; margin-top: -3.5px; }
   .menu-scheiding { flex: 0 0 1px; align-self: auto; margin: 6px 12px; }
   .offline-melding { left: 244px; right: 24px; bottom: 24px; max-width: 700px; }
+  .menu a:not([aria-current="page"]) span, .menu a[aria-current="page"] span { display: inline; width: auto; max-width: none; }
+}
+/* NAV-14, BV-19: met genoeg breedte krijgt elke stap minstens de ruimte voor zijn naam; een naam van twee woorden
+   mag breken, afkorten gebeurt alleen nog op smallere schermen. */
+@media (min-width: 1200px) {
+  .sb-lijst, .stappenbalk.open .sb-lijst { grid-template-columns: repeat(7, minmax(min-content, auto)); }
+  .sb-stap { padding: 8px 4px; }
+  .sb-naam { white-space: normal; }
 }
 
 /* Binnenkomen (TOE-1 t/m TOE-4): link plakken en pincode */

@@ -35,7 +35,8 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
   const melding = foutMelding();
   const anroep = maakBeheerApi({ sessie, editieId: () => editieId, bijVerlopen, toonMelding: melding.toon, fetchFn });
   const zet = (...k) => wortel.replaceChildren(...k.flat().filter((x) => x != null && x !== false));
-  const kop = (sub) => h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, g && g.editie ? STAPNAMEN[g.editie.stap] || 'Voorbereiding' : 'Voorbereiding'),
+  // NAV-15, BV-18: het bovenschrift is de schermnaam, in elke stap.
+  const kop = (sub) => h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN.voorbereiding),
     kopMetHint(h('h1', { class: 't-title' }, 'Wie neemt wat mee'), 'meenemen'), sub ? h('p', { class: 't-body t-sec' }, sub) : null);
 
   // Grote acties (item toevoegen of verwijderen) wachten op de Sheet met de bezig-status op de knop (SYNC-8).

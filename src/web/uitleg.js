@@ -7,7 +7,7 @@ export const UITLEG = {
   invullen: {
     gebeurt: 'Iedereen vult los van de rest in wanneer het kan, wat hij of zij leuk vindt en wat het mag kosten.',
     oplevert: 'Een eerlijk beeld van de groep.',
-    deelnemer: 'Vul het formulier in. Elk veld wordt meteen bewaard, opslaan hoeft dus niet. De deadline is een vriendelijke duw, geen harde grens.',
+    deelnemer: 'Vul het formulier in. Elk veld wordt meteen bewaard, opslaan hoeft dus niet. De deadline is een vriendelijke duw, geen harde grens. Meenemen en Afrekening staan nu al open.',
     organisator: 'Nodig iedereen uit, houd de voortgang bij en stuur een herinnering naar wie nog stil is. Vul zelf ook in.',
   },
   overzicht: {
@@ -23,7 +23,7 @@ export const UITLEG = {
     organisator: 'Kies Verrassing of Samen kiezen, voeg opties toe met bedden en eigen kamers en boek. Een verrassing onthul je zelf, nooit automatisch.',
   },
   voorbereiding: {
-    gebeurt: 'Wie neemt wat mee wordt verdeeld, zodat niemand met vijf grillpannen aankomt.',
+    gebeurt: 'Wie neemt wat mee wordt verdeeld, zodat niemand met vijf grillpannen aankomt. Meenemen staat in elke stap open, dus een lijstje kan al vroeg beginnen.',
     oplevert: 'Een lijst met wie wat regelt.',
     deelnemer: 'Claim wat jij meeneemt. Bedacht je je? Trek je claim gewoon weer in.',
     organisator: 'Houd in de gaten wat nog niemand heeft geclaimd en zet daar desnoods een naam achter.',
@@ -35,7 +35,7 @@ export const UITLEG = {
     organisator: 'Hetzelfde als de rest: voeg uitgaven toe en kijk of de lijst klopt.',
   },
   afrekenen: {
-    gebeurt: 'De uitgaven worden verrekend. Onder Wie betaalt wat staan de uitgaven, onder Eindafrekening wie aan wie hoeveel overmaakt.',
+    gebeurt: 'De uitgaven worden verrekend. Onder Wie betaalt wat staan de uitgaven, onder Eindafrekening wie aan wie hoeveel overmaakt. Afrekening staat in elke stap open, zodat een voorschot op het huis er al vroeg in kan.',
     oplevert: 'Niemand betaalt te veel en niemand te weinig.',
     deelnemer: 'Kijk in de Eindafrekening wat jij moet betalen of krijgt en maak het over.',
     organisator: 'Controleer de uitgaven en houd bij wie al betaald heeft. Daarna kan de editie afgerond worden.',
