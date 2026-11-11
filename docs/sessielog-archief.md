@@ -2,6 +2,7 @@
 
 Oudere regels uit het sessielog van MEMORY.md.
 
+- 2026-11-10 fase 26: synchronisatielaag: wachtrij met debounce, localStorage en terugdraaien, actie `bundel`, `antwoordZetten` per veld, formulier zonder Opslaan (K4), indicator in de kopregel (SYNC-1 t/m SYNC-8, AAN-82, AAN-83); check groen; zie `docs/overdracht/fase-26.md`.
 - 2026-11-11 fase 27: accommodatie Verrassing of Samen kiezen, top 3 via de wachtrij, boeken, onthullen (nooit vanzelf), geen lek naar deelnemers, bedden en eigen kamers (ACC-8 t/m ACC-14, AAN-84, AAN-86, AAN-87; AAN-08, AAN-64, AAN-65 aangepast); check groen; zie `docs/overdracht/fase-27.md`.
 - 2026-11-10 fase 24: vijf onderdelen uit met vlaggen (AAN-80), invullen vraagt alleen beschikbaarheid, deadline informatief en geen stapData meer (OND-1, OND-2, OND-3, FRM-11, DDL-1); check groen; zie `docs/overdracht/fase-24.md`.
 - 2026-11-10 fase 23: stappenbalk één bron (één stand in de schil, ook voor beheer), menu altijd zeven items in stapvolgorde met Beheren apart, Afrekening met tabs (STA-8, NAV-10, NAV-11); AAN-40 vervallen, AAN-12 en AAN-71 herschreven; check groen; zie `docs/overdracht/fase-23.md`.

@@ -63,7 +63,7 @@ registreer('start', {
   titel: 'Start',
   icoon: ['m3 11 9-8 9 8', 'M5 10v10h5v-6h4v6h5V10'],
   render(params) {
-    return maakStart({ sessie: leesSessie(localStorage), params, bijVerlopen: () => { wisSessie(localStorage); kies(); }, uitloggen, bijStand: zetStandVanStart });
+    return maakStart({ sessie: leesSessie(localStorage), params, bijVerlopen: () => { wisSessie(localStorage); kies(); }, bijStand: zetStandVanStart });
   },
 });
 
@@ -289,6 +289,8 @@ luisterNaarInstallatie();
 
 const root = document.getElementById('app');
 const balkPlek = h('div', { class: 'balk-plek' });
+// NAV-15, BV-20: deze schermen tonen de editietitel zelf (kop op Start, bovenschrift op het formulier); de balk laat hem dan weg.
+const TITEL_OP_SCHERM = new Set(['start', 'formulier']);
 const inhoud = h('main', { class: 'inhoud', id: 'inhoud' });
 const menu = h('nav', { class: 'glass menu', 'aria-label': 'Menu' });
 const melding = h('div', { class: 'glass toast offline-melding', role: 'alert', hidden: true },
@@ -397,10 +399,15 @@ function wisStand() {
 }
 
 // Het startscherm vraagt hetzelfde scherm al op; zonder eigen editiekeuze geeft het zijn antwoord door.
-function zetStandVanStart(editie) {
+function zetStandVanStart(editie, naam) {
   standVraag += 1;
   zetStand(editie);
+  zetProfielNaam(naam);
 }
+
+// NAV-2, BV-36: het profielmenu toont de eigen voornaam uit het scherm `start`.
+let profiel = null;
+function zetProfielNaam(naam) { if (profiel) profiel.zetNaam(naam); }
 
 async function haalStand() {
   const sessie = leesSessie(localStorage);
@@ -409,7 +416,7 @@ async function haalStand() {
   try {
     const api = maakApi({ basisUrl: scriptUrl(sessie.scriptId), sessie: () => sessie.sessie, editieId: () => sessie.editieId || '' });
     const g = await api.anroep('scherm', { naam: 'start' }, { schrijft: false });
-    if (nr === standVraag && leesSessie(localStorage)) zetStand(g.editie);
+    if (nr === standVraag && leesSessie(localStorage)) { zetStand(g.editie); zetProfielNaam(g.ikNaam); }
   } catch { /* zonder verbinding blijft de laatste stand staan */ }
 }
 
@@ -445,11 +452,11 @@ function kies() {
   schil.hidden = !sessie;
   if (sessie) {
     const sleutel = sessie.sessie;
-    if (sleutel !== laatsteSessie) kopregel.replaceChildren(sync.indicator, maakProfielmenu({ soort: sessie.soort, kanInstalleren, installeer, uitloggen }));
+    if (sleutel !== laatsteSessie) { profiel = maakProfielmenu({ soort: sessie.soort, kanInstalleren, installeer, uitloggen }); kopregel.replaceChildren(sync.indicator, profiel); }
     wachtrij.start(); // SYNC-3: wat bij een vorige keer bleef staan, gaat alsnog
     // RON-1, AAN-73: een deelnemer zonder gezien-vlag op dit apparaat begint met de rondleiding.
     if (sessie.soort === 'deelnemer' && !rondleidingGezien(localStorage) && !location.hash.startsWith('#/uitleg')) history.replaceState(null, '', `${location.pathname}${location.search}#/uitleg`);
-    if (!schilGestart) { schilGestart = true; toonBalk(); start(inhoud, (naam, params) => { toonMenu(naam); if (naam !== 'start' || params.editie) haalStand(); }, soortNu); } else if (sleutel !== laatsteSessie) { toonBalk(); ververs(); }
+    if (!schilGestart) { schilGestart = true; toonBalk(); start(inhoud, (naam, params) => { toonMenu(naam); balkPlek.toggleAttribute('data-titel-dubbel', TITEL_OP_SCHERM.has(naam)); if (naam !== 'start' || params.editie) haalStand(); }, soortNu); } else if (sleutel !== laatsteSessie) { toonBalk(); ververs(); }
     laatsteSessie = sleutel;
     return;
   }
@@ -479,7 +486,8 @@ function bijIngelogd(sessie, link = null) {
   onthoudenLink = link && link.soort === 'deelnemer' ? persoonlijkeLinkVan(`${location.origin}${location.pathname}`, link.scriptId, link.token) : null;
   wisStand(); // een nieuwe sessie begint zonder stand
   bewaarSessie(localStorage, sessie);
-  history.replaceState(null, '', `${location.pathname}${location.search}#/${sessie.soort === 'beheer' ? 'leden' : 'start'}`); // de link blijft niet in de adresbalk staan
+  // STA-4, BV-07: ook een beheersessie landt op Start, waar de eerstvolgende actie staat. De link blijft niet in de adresbalk.
+  history.replaceState(null, '', `${location.pathname}${location.search}#/start`);
   kies();
 }
 

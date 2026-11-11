@@ -25,7 +25,7 @@ async function organisatorPagina(browser, nep) {
   await page.goto(`/#b=${SCRIPT_ID}&beheer=${token}`);
   await page.getByLabel('Wachtwoord', { exact: true }).fill(WACHTWOORD);
   await page.getByRole('button', { name: 'Inloggen' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  await expect(page).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
   await page.goto('/#/afrekening');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Eindafrekening');
   return { page, context };

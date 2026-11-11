@@ -20,7 +20,7 @@ Verwacht: Leg vast en Ander weekend kiezen op Weekendje prikker voor de organisa
 In latere stappen: een knop "Datum wijzigen" die uitlegt dat dit de stap terugzet, met bevestiging, of de melding met
 een link naar Stappen. Overweeg losmaken in elke stap tot en met Meenemen toe te staan. Eis: ACC-1, ACC-7, AAN-81, UIT-2, §7.14.
 
-### BV-02 (K) Het woord "null" staat op Start onder de route
+### BV-02 (K) Het woord "null" staat op Start onder de route (Opgelost in fase 30)
 Start, organisator, editie met één lopende editie. Onder de kaart "Zo gaat het weekend" staat de tekst `null`.
 Oorzaak: `src/web/screens/start.js` regel ~74 `inhoud.replaceChildren(...)` krijgt `null` mee (route dicht,
 `editieKeuze` zonder keuze of `aftelBlok` zonder datum). `replaceChildren` zet `null` om in tekst; `h()` filtert dat wel.
@@ -51,7 +51,7 @@ staan letterlijk in beeld. Verwacht: een Nederlandse zin zonder veldnamen, bijvo
 handeling kent het script nog niet. Vraag de eigenaar het script bij te werken." Map de `ongeldig`-meldingen in de
 voorkant naar gewone taal of laat de validatie leesbare teksten geven. Eis: SYNC-5, EDI-3, NFR-12.
 
-### BV-06 (H) Wachtwoordmanager vult "David" in het linkveld en breekt inloggen via een link
+### BV-06 (H) Wachtwoordmanager vult "David" in het linkveld en breekt inloggen via een link (Opgelost in fase 30)
 Open een persoonlijke link in Chrome met een wachtwoordmanager. Het pinscherm zet de link in het veld "Plak je
 persoonlijke link", maar de wachtwoordmanager overschrijft dat met de gebruikersnaam ("David"). Gevolg: "Dit lijkt geen
 persoonlijke link." en Inloggen blijft grijs; wie niet weet wat er gebeurt, komt niet binnen. Oorzaak: de zes
@@ -60,11 +60,11 @@ gebruikersnaam. Fix: verberg het plakveld als er al een link in het fragment sta
 maak de pinvakjes `type="text"` met `inputmode="numeric"`, `autocomplete="one-time-code"`/`off`, plus
 `data-1p-ignore`, `data-lpignore="true"` en `data-bwignore` op beide velden. Eis: TOE-1, TOE-11.
 
-### BV-07 (K) Na inloggen met een beheerlink landt de organisator op Leden
+### BV-07 (K) Na inloggen met een beheerlink landt de organisator op Leden (Opgelost in fase 30)
 `src/web/app.js` regel ~465 stuurt een beheersessie naar `#/leden`. Verwacht: Start, waar de eerstvolgende actie staat
 (STA-4). Eis: STA-3, STA-4.
 
-### BV-08 (H) Eerstvolgende actie bij een nieuwe editie is "Herinnering sturen" terwijl er nog niemand is uitgenodigd
+### BV-08 (H) Eerstvolgende actie bij een nieuwe editie is "Herinnering sturen" terwijl er nog niemand is uitgenodigd (Opgelost in fase 30)
 Nieuwe editie, stap Invullen, nog geen links gemaakt. Start toont als eerstvolgende actie "Herinnering sturen".
 Verwacht: "Iedereen uitnodigen" (naar Uitnodigen) zolang niet alle deelnemers een link hebben, daarna pas herinnering.
 Eis: STA-4, EDI-4.
@@ -127,19 +127,19 @@ profielknop staat helemaal rechtsboven, ver van de rest. De stappenbalk kort daa
 "Accommo…"), terwijl er ruimte genoeg is. Voorstel: inhoud tot ±900 px op desktop of de stappenbalk breder dan de
 kolom, menu verticaal uitgelijnd met de stappenbalk, en een kopregel met de app- of editienaam naast de profielknop.
 
-### BV-20 (K) De editietitel staat twee keer bovenaan
+### BV-20 (K) De editietitel staat twee keer bovenaan (Opgelost in fase 30)
 Mobiel: in de uitgeklapte stappenbalk "Claude test · Weekendje weg 2028" en direct daaronder nog eens als kop (op Start)
 of als bovenschrift (formulier). Eén keer is genoeg; laat de stappenbalk de titel weglaten of de kop.
 
-### BV-21 (K) "Hoe werkt het?" is een volle brede knop direct onder de titel
+### BV-21 (K) "Hoe werkt het?" is een volle brede knop direct onder de titel (Opgelost in fase 30)
 Op Start neemt de knop de hele breedte in, boven de eerstvolgende actie. Hij trekt meer aandacht dan de actie zelf.
 Maak er een kleine tekstlink of een (i) naast de titel van.
 
-### BV-22 (K) "Je bent ingelogd." en Uitloggen onderaan Start
+### BV-22 (K) "Je bent ingelogd." en Uitloggen onderaan Start (Opgelost in fase 30)
 Uitloggen staat al in het profielmenu (NAV-8). De losse regel en knop onderaan Start voegen niets toe en ogen als
 debugtekst. Weghalen.
 
-### BV-23 (K) "Afgelopen weekenden" is een kale kop zonder inhoud of klapicoon
+### BV-23 (K) "Afgelopen weekenden" is een kale kop zonder inhoud of klapicoon (Opgelost in fase 30)
 Bij een groep zonder afgeronde editie staat alleen de kop. Toon een pijltje (uitklapbaar, NAV-4) en bij leeg
 "Nog geen afgelopen weekenden", of verberg de sectie als er niets is.
 
@@ -204,7 +204,7 @@ letterlijk, maar voelt verkeerd. Voorstel ter overweging: tel niet-ingevuld mee 
 dan misschien. Beslissing voor David; daarna AAN-06 bijwerken.
 Open punt voor David (MEMORY.md); AAN-06 blijft tot dan ongewijzigd.
 
-### BV-33 (K) Eerstvolgende actie bij Afrekening heeft een dubbele kop
+### BV-33 (K) Eerstvolgende actie bij Afrekening heeft een dubbele kop (Opgelost in fase 30)
 Start, stap Afrekening: "Eerstvolgende actie | Openstaande betalingen | Openstaande betalingen". Eén kop is genoeg.
 Ook staat bij Afgerond nog "Nog 576 dagen tot het weekend", wat niet past bij een afgeronde editie.
 
@@ -217,6 +217,6 @@ Een item toevoegen, een eigen vraag toevoegen of de deelvorm wisselen duurt 5 to
 "Even geduld…"; de tekst blijft in het veld staan en de bevestiging ("Badminton set staat op de lijst.") verschijnt
 boven de sectie, ver van het veld. Zet de bezig-status op de knop zelf en toon de bevestiging bij het veld. Eis: SYNC-8.
 
-### BV-36 (K) Profielmenu toont geen naam
+### BV-36 (K) Profielmenu toont geen naam (Opgelost in fase 30)
 Het profielmenu zegt alleen "Organisator (beheer)". Met "David · organisator" weet je op een gedeeld apparaat meteen
 wie er ingelogd is. Eis: NAV-2.

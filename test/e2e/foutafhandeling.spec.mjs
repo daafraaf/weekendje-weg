@@ -153,7 +153,7 @@ for (const breedte of [360, 390, 1280]) {
     const { nep } = await startDemo(context, { stap: 'overzicht', als: 'Anne', beheer: true }); // boodschappen nog niet definitief
     try {
       await page.setViewportSize({ width: breedte, height: 800 });
-      for (const route of ['vragen-beheer', 'meenemen']) { // Start heeft nog "null" (BV-02, fase 30)
+      for (const route of ['start', 'uitnodigen', 'vragen-beheer', 'meenemen']) { // BV-02 (fase 30): ook Start en Uitnodigen
         await page.goto(`/#/${route}`);
         await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
         await expect(page.getByRole('main')).not.toContainText('null');

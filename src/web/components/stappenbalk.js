@@ -25,7 +25,7 @@ export function maakStappenbalk({ stap, titel = '', organisator = false }) {
   const knop = h('button', { class: 'icon-btn sb-knop', type: 'button', 'aria-label': 'Alle stappen tonen', 'aria-expanded': 'false' }, icoon('m6 9.5 6 6 6-6'));
   const vorige = STAPPEN[nu - 1];
   const volgende = STAPPEN[nu + 1];
-  const kop = h('div', { class: 'sb-kop' }, h('p', { class: 't-cap' }, titel), knop);
+  const kop = h('div', { class: 'sb-kop' }, h('p', { class: 't-cap sb-titel' }, titel), knop);
   const compact = h('div', { class: 'sb-compact' },
     kop,
     segmenten,

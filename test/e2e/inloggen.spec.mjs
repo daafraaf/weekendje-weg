@@ -2,6 +2,7 @@ import { test as basis, expect } from '@playwright/test';
 import { startServer } from '../mock-backend/server.mjs';
 import { maakDemo } from '../mock-backend/demo.mjs';
 import { OPSLAG_SLEUTEL } from '../../src/web/sessie.js';
+import { uitloggen } from './hulp.mjs';
 
 // Elke test krijgt een eigen nepbackend. De app praat met https://script.google.com (CSP, NFR-4/NFR-2);
 // de test stuurt die aanroepen door naar de nepbackend op localhost.
@@ -37,7 +38,7 @@ const opslag = (page) => page.evaluate((k) => localStorage.getItem(k), OPSLAG_SL
 test('TOE-1: een demolink zonder pincode toont alleen het pinscherm', async ({ page, nep }) => {
   await page.goto(`/${nep.demo.fragment(0)}`);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Weekendje weg');
-  await expect(page.getByLabel('Plak je persoonlijke link')).toBeVisible();
+  await expect(page.getByLabel('Plak je persoonlijke link')).toHaveCount(0); // TOE-13
   await expect(page.getByText('Link herkend')).toBeVisible();
   await expect(page.getByRole('group', { name: 'Je pincode, zes cijfers' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Inloggen' })).toBeDisabled();
@@ -52,7 +53,7 @@ test('TOE-2 TOE-9: met de pincode open je een lege startpagina, je blijft ingelo
   await page.goto(`/${nep.demo.fragment(0)}`);
   await pinInvoer(page, nep.demo.pin);
   await page.getByRole('button', { name: 'Inloggen' }).click();
-  await expect(page.getByText('Je bent ingelogd')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Profiel en uitleg' })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Stappen van de editie' })).toBeVisible();
   expect(page.url()).not.toContain('t=');
   const s = JSON.parse(await opslag(page));
@@ -61,9 +62,9 @@ test('TOE-2 TOE-9: met de pincode open je een lege startpagina, je blijft ingelo
   expect(nep.store.lees('Sessies')).toHaveLength(1);
 
   await page.reload();
-  await expect(page.getByText('Je bent ingelogd')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Profiel en uitleg' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Uitloggen' }).click();
+  await uitloggen(page);
   await expect(page.getByLabel('Plak je persoonlijke link')).toBeVisible();
   expect(await opslag(page)).toBeNull();
   nep.store.nieuwVerzoek();
@@ -110,7 +111,7 @@ test('TOE-11: in een nieuwe context zonder fragment accepteert de app de geplakt
   await expect(page.getByText('Link herkend')).toBeVisible();
   await pinInvoer(page, nep.demo.pin);
   await page.getByRole('button', { name: 'Inloggen' }).click();
-  await expect(page.getByText('Je bent ingelogd')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Profiel en uitleg' })).toBeVisible();
   await context.close();
 });
 
@@ -130,7 +131,7 @@ test('TOE-10 NFR-2: een scriptId buiten het patroon wordt geweigerd en verkeer g
   await veld.fill(`#b=${nep.demo.scriptId}&t=${nep.demo.tokens[0]}`);
   await pinInvoer(page, nep.demo.pin);
   await page.getByRole('button', { name: 'Inloggen' }).click();
-  await expect(page.getByText('Je bent ingelogd')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Profiel en uitleg' })).toBeVisible();
   expect(nep.urls.length).toBeGreaterThan(0);
   for (const u of nep.urls) expect(u).toBe(`https://script.google.com/macros/s/${nep.demo.scriptId}/exec`);
 });

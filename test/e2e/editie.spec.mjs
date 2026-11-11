@@ -1,5 +1,5 @@
 import { test as basis, expect } from '@playwright/test';
-import { beheerNaar } from './hulp.mjs';
+import { beheerNaar, naarLeden, uitloggen } from './hulp.mjs';
 import { startServer } from '../mock-backend/server.mjs';
 import { maakDemo } from '../mock-backend/demo.mjs';
 import { heeftLinkEnPincode } from '../../src/shared/whatsapp.js';
@@ -39,7 +39,7 @@ async function logInAlsOrganisator(page, nep) {
   await page.goto(`/#b=${SCRIPT_ID}&beheer=${token}`);
   await page.getByLabel('Wachtwoord', { exact: true }).fill(WACHTWOORD);
   await page.getByRole('button', { name: 'Inloggen' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  await expect(page).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
 }
 
 const menu = (page, naam) => page.getByRole('navigation', { name: 'Menu' }).getByRole('link', { name: naam });
@@ -117,8 +117,8 @@ test('EDI-1 EDI-4 EDI-5 TOE-8 TOE-12: editie met zes deelnemers, links en pincod
   await page.goto('about:blank');
   await page.goto(`/${links[anna].slice(links[anna].indexOf('#'))}`);
   await pinIn(page, pins[anna]);
-  await expect(page.getByText('Je bent ingelogd')).toBeVisible();
-  await page.getByRole('button', { name: 'Uitloggen' }).click();
+  await expect(page.getByRole('button', { name: 'Profiel en uitleg' })).toBeVisible();
+  await uitloggen(page);
 
   // TOE-8: wie terugkomt, ziet geen links of pincodes meer, alleen de knoppen om nieuwe te maken.
   await logInAlsOrganisator(page, nep);
@@ -158,14 +158,14 @@ test('EDI-1 EDI-4 EDI-5 TOE-8 TOE-12: editie met zes deelnemers, links en pincod
   await page.goto('about:blank');
   await page.goto(`/${links[anna].slice(links[anna].indexOf('#'))}`);
   await pinIn(page, nieuwePin);
-  await expect(page.getByText('Je bent ingelogd')).toBeVisible();
-  await page.getByRole('button', { name: 'Uitloggen' }).click();
+  await expect(page.getByRole('button', { name: 'Profiel en uitleg' })).toBeVisible();
+  await uitloggen(page);
 
   // Bram: de nieuwe link met de nieuwe pincode werkt.
   await page.goto('about:blank');
   await page.goto(`/${nieuweLink.slice(nieuweLink.indexOf('#'))}`);
   await pinIn(page, nieuwePinBram);
-  await expect(page.getByText('Je bent ingelogd')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Profiel en uitleg' })).toBeVisible();
 });
 
 test('EDI-6: de organisator maakt een beheerlink voor een lid, dat lid kiest een eigen wachtwoord', async ({ page, nep }) => {
@@ -186,7 +186,8 @@ test('EDI-6: de organisator maakt een beheerlink voor een lid, dat lid kiest een
   await page.getByLabel('Nieuw wachtwoord').fill('chris-eigen-wachtwoord');
   await page.getByLabel('Herhaal wachtwoord').fill('chris-eigen-wachtwoord');
   await page.getByRole('button', { name: 'Opslaan en beheren' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  await expect(page).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
+  await naarLeden(page);
   await expect(page.getByText('jij', { exact: true })).toBeVisible();
 });
 

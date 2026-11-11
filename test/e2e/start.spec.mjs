@@ -25,7 +25,7 @@ const ORGANISATOR = {
   accommodatie: 'Accommodaties beheren',
   voorbereiding: 'Boodschappen definitief maken',
   weekend: 'Programma beheren',
-  afrekenen: 'Openstaande betalingen',
+  afrekenen: 'Betalingen afvinken', // BV-33: de kop van de kaart heet Openstaande betalingen
   afgerond: 'Nieuwe editie',
 };
 
@@ -62,7 +62,7 @@ async function startOrganisator(context, page, opties) {
   await page.goto(`/#b=${SCRIPT_ID}&beheer=${token}`);
   await page.getByLabel('Wachtwoord', { exact: true }).fill(WACHTWOORD);
   await page.getByRole('button', { name: 'Inloggen' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  await expect(page).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
   return nep;
 }
 

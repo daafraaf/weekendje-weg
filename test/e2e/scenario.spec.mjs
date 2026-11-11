@@ -57,7 +57,7 @@ test('NFR-11 §11 eindtest: zes personen doorlopen een editie van uitnodiging to
     await anne.goto(`/#b=${demo.scriptId}&beheer=${beheerToken}`);
     await anne.getByLabel('Wachtwoord', { exact: true }).fill(WACHTWOORD);
     await anne.getByRole('button', { name: 'Inloggen' }).click();
-    await expect(hoofd(anne)).toHaveText('Leden');
+    await expect(anne).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
   };
   const stapNaar = async (stapNaam) => {
     await naar(anne, 'stappen');

@@ -1,6 +1,6 @@
 // Archief (ARC-1, spec §7.15): alle edities van de groep, nieuwste bovenaan.
 // Alle tekst gaat via textContent; de link van een accommodatie alleen als hij met https:// begint (NFR-3).
-import { h } from '../dom.js';
+import { h, icoon } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { STAPNAMEN } from '../../shared/stappen.js';
 import { weekendLang } from './overzicht.js';
@@ -27,7 +27,8 @@ export function maakAfgelopen({ sessie, bijVerlopen, fetchFn, open = false }) {
   const lijst = h('div', { class: 'beheer' });
   const fout = h('p', { class: 't-small t-sec', hidden: true });
   const anroep = maakBeheerApi({ sessie, editieId: () => '', bijVerlopen, toonMelding: (t) => { fout.textContent = t || ''; fout.hidden = !t; }, fetchFn });
-  const sectie = h('details', { class: 'afgelopen', open }, h('summary', { class: 't-h3' }, 'Afgelopen weekenden'), fout, lijst);
+  // BV-23: de kop heeft een klapicoon; leeg zegt "Nog geen afgelopen weekenden."
+  const sectie = h('details', { class: 'afgelopen', open }, h('summary', { class: 't-h3' }, h('span', {}, 'Afgelopen weekenden'), h('span', { class: 'afgelopen-pijl' }, icoon('m6 9.5 6 6 6-6'))), fout, lijst);
   let geladen = false;
   async function laad() {
     geladen = true;
@@ -35,7 +36,7 @@ export function maakAfgelopen({ sessie, bijVerlopen, fetchFn, open = false }) {
     const g = await anroep('scherm', { naam: 'archief' }, false);
     if (!g) { geladen = false; lijst.replaceChildren(); return; }
     const klaar = g.edities.filter((e) => e.stap === 'afgerond');
-    lijst.replaceChildren(...(klaar.length ? klaar.map(editieKaart) : [h('p', { class: 't-body t-sec' }, 'Er zijn nog geen afgelopen weekenden.')]));
+    lijst.replaceChildren(...(klaar.length ? klaar.map(editieKaart) : [h('p', { class: 't-body t-sec' }, 'Nog geen afgelopen weekenden.')]));
   }
   sectie.addEventListener('toggle', () => { if (sectie.open && !geladen) laad(); });
   if (open) laad();

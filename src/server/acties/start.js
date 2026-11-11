@@ -57,15 +57,17 @@ export function startScherm(h) {
   const { store, sessie } = h;
   const { editie, edities } = kiesEditie(h);
   const organisator = sessie.rol === 'organisator';
-  if (!editie) return { edities, editie: null, organisator };
   const leden = new Map(store.lees('Leden').map((l) => [l.id, l]));
+  // NAV-2, BV-36: de eigen voornaam voor het profielmenu ("David · organisator").
+  const ikNaam = (leden.get(sessie.lidId) || {}).voornaam || '';
+  if (!editie) return { edities, editie: null, organisator, ikNaam };
   const naamVan = (d) => (leden.get(d.lidId) || {}).voornaam || '';
   const alle = deelnemersVan(store, editie.id);
   const actief = alle.filter((d) => !d.afgehaakt);
   const ikId = mijnRij(store, sessie, editie.id);
   const ik = alle.find((d) => d.id === ikId);
   const uit = {
-    edities, organisator,
+    edities, organisator, ikNaam,
     editie: { ...editieStappen(editie), vastgelegdWeekend: editie.vastgelegdWeekend || '', deelvorm: deelvormVan(editie.deelvorm), onthuld: Boolean(editie.onthuld), boodschappenDefinitief: Boolean(editie.boodschappenDefinitief) },
     ik: ik ? { voornaam: naamVan(ik), ingevuld: Boolean(ik.ingevuld), afgehaakt: Boolean(ik.afgehaakt) } : null,
     voortgang: { aantal: actief.length, ingevuld: actief.filter((d) => d.ingevuld).length, nogNiet: actief.filter((d) => !d.ingevuld).map(naamVan).sort(opNaam) },
@@ -73,6 +75,7 @@ export function startScherm(h) {
     programma: { punten: van(store, 'Programma', editie.id).length },
     deelnemers: actief.length,
   };
+  if (organisator) uit.voortgang.zonderLink = actief.filter((d) => !d.tokenHash).length; // STA-4, BV-08: eerst uitnodigen
   if (stapIndex(editie.stap) >= stapIndex('voorbereiding')) uit.voorbereiding = voorbereiding(store, editie, actief, ikId);
   if (stapIndex(editie.stap) >= stapIndex('afrekenen')) uit.afrekening = afrekeningVan(store, editie, ikId, organisator);
   else uit.afrekening = { open: [], aantalOpen: 0, saldo: 0, uitgaven: 0, betaald: 0 };

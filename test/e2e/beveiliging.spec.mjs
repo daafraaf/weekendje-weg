@@ -7,7 +7,7 @@ import { startServer } from '../mock-backend/server.mjs';
 import { maakVolledigeDemo, DEMO_EDITIE_ID, DEMO_2026_ID } from '../mock-backend/demo.mjs';
 import { ACTIES } from '../../src/server/api.js';
 import { REGELS, ALLE_SCHERMEN } from '../../src/server/rechten.js';
-import { startDemo, logIn } from './hulp.mjs';
+import { startDemo, logIn, uitloggen } from './hulp.mjs';
 import { OPSLAG_SLEUTEL } from '../../src/web/sessie.js';
 
 test.use({ serviceWorkers: 'block' });
@@ -230,7 +230,7 @@ test('AAN-42 TOE-9: uitloggen wist de sessie op het apparaat, ook als het script
   await logIn(context);
   await context.route('https://script.google.com/**', (route) => route.abort());
   await page.goto('/#/start');
-  await page.getByRole('button', { name: 'Uitloggen' }).click();
+  await uitloggen(page);
   await expect(page.getByLabel('Plak je persoonlijke link')).toBeVisible();
   expect(await page.evaluate((k) => localStorage.getItem(k), OPSLAG_SLEUTEL)).toBeNull();
 });

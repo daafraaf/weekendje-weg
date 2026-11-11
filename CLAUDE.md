@@ -117,6 +117,8 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 
 - Versie en fouten (fase 29): een nieuwe of vervallen actie in `ACTIES` vraagt `API_VERSIE` +1 in `server/api.js` en `web/api.js` plus een nieuwe snapshot in `test/unit/foutafhandeling.test.mjs`; de unit- en e2e-tests met een vaste `apiVersie` moeten mee. Foutteksten voor de gebruiker alleen via `leesbareMelding` (`web/foutteksten.js`). Een grote actie krijgt "Opslaan…" in de knop vanzelf via `data-schrijft`; zet de bevestiging bij het veld.
 
+- Kinderen die kunnen ontbreken: `vervang(el, ...)` uit `web/dom.js`, nooit `replaceChildren` met een mogelijke `null` (BV-02). Elke login landt op `#/start`; e2e naar Leden met `naarLeden(page)`, uitloggen met `uitloggen(page)` (profielmenu) uit `hulp.mjs`.
+
 ## Valkuilen
 
 Leeg bij de start. Elke fout die twee keer gebeurt, komt hier.

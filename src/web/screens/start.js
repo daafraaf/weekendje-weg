@@ -1,6 +1,6 @@
 // Startscherm per stap voor de deelnemer (STA-3, STA-5), volgens de tabel in spec §7.14.
 // De organisator heeft zijn eigen bovenkant in start-organisator.js. Alle tekst gaat via textContent (NFR-5).
-import { h } from '../dom.js';
+import { h, vervang } from '../dom.js';
 import { maakBeheerApi } from '../beheerapi.js';
 import { STAPNAMEN } from '../../shared/stappen.js';
 import { onderdeelAan } from '../../shared/onderdelen.js';
@@ -47,7 +47,7 @@ function startDeelnemer(g, ctx) {
 
 // sessie: { scriptId, sessie, editieId, soort }. bijStand(editie) geeft de editie door aan de schil (STA-8), alleen zolang
 // er geen eigen editiekeuze is: dan is het dezelfde editie als die van balk en menu.
-export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStand = () => {}, fetchFn, nu = lokaalNu }) {
+export function maakStart({ sessie, params = {}, bijVerlopen, bijStand = () => {}, fetchFn, nu = lokaalNu }) {
   let editieId = params.editie || sessie.editieId || '';
   let gekozen = Boolean(params.editie);
   const wortel = h('section', { class: 'beheer start' });
@@ -56,12 +56,12 @@ export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStan
   const anroep = maakBeheerApi({ sessie, editieId: () => editieId, bijVerlopen, toonMelding: (t) => { fout.textContent = t || ''; fout.hidden = !t; }, fetchFn });
   // UIT-1, UIT-3: de route staat open zolang `ww-route-gezien` ontbreekt (AAN-85); "Hoe werkt het" haalt hem terug.
   let routeOpen = !routeGezien(window.localStorage);
-  const onder = h('div', { class: 'start-acties' }, h('button', { class: 'btn btn-ghost', type: 'button', onclick: uitloggen }, 'Uitloggen'));
-  wortel.append(inhoud, fout, klein('Je bent ingelogd.'), onder);
+  // STA-9, BV-22: geen "Je bent ingelogd." met Uitloggen; dat staat in het profielmenu (NAV-8).
+  wortel.append(inhoud, fout);
 
   function teken(g) {
     if (!g.editie) {
-      inhoud.replaceChildren(h('header', { class: 'wz-kop' }, h('h1', { class: 't-title' }, 'Weekendje weg')),
+      vervang(inhoud, h('header', { class: 'wz-kop' }, h('h1', { class: 't-title' }, 'Weekendje weg')),
         kaart('Nog geen editie', klein(g.organisator ? 'Maak de eerste editie van de groep.' : 'Je zit nog in geen enkele editie.'), g.organisator ? knop('Nieuwe editie maken', '#/editie-nieuw', 'primary') : null));
       return;
     }
@@ -71,13 +71,15 @@ export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStan
     const opnieuw = () => teken(g);
     const sluitRoute = () => { zetRouteGezien(window.localStorage); routeOpen = false; opnieuw(); };
     const toonRoute = () => { routeOpen = true; opnieuw(); };
-    inhoud.replaceChildren(
+    // BV-02: vervang laat null weg (route dicht, geen editiekeuze, geen aftelteller); replaceChildren zou "null" tonen.
+    vervang(inhoud,
       h('header', { class: 'wz-kop' }, h('p', { class: 't-cap' }, STAPNAMEN[e.stap]), h('h1', { class: 't-title' }, e.titel),
         e.deadline && e.stap === 'invullen' ? klein(`Deadline ${datumLang(e.deadline.slice(0, 10))}.`) : null,
-        routeOpen ? null : h('button', { class: 'btn btn-ghost route-terug', type: 'button', onclick: toonRoute }, 'Hoe werkt het?')),
+        // STA-9, BV-21: een kleine tekstlink, geen brede knop boven de eerstvolgende actie.
+        routeOpen ? null : h('button', { class: 'btn-plain route-terug', type: 'button', onclick: toonRoute }, 'Hoe werkt het?')),
       routeOpen ? maakRoute({ organisator: Boolean(g.organisator), bijSluiten: sluitRoute }) : null,
       editieKeuze(g.edities, e.id, (id) => { editieId = id; gekozen = true; laad(); }, 'start-editie'),
-      aftelBlok(g, nu().datum),
+      e.stap === 'afgerond' ? null : aftelBlok(g, nu().datum), // STA-9, BV-33: geen aftelteller na Afgerond
       h('div', { class: 'beheer', 'data-boven': e.stap }, boven),
       maakAfgelopen({ sessie, bijVerlopen, fetchFn, open: e.stap === 'afgerond' })); // NAV-4
   }
@@ -86,7 +88,7 @@ export function maakStart({ sessie, params = {}, bijVerlopen, uitloggen, bijStan
     const g = await anroep('scherm', { naam: 'start' }, false);
     if (!g) return;
     if (g.editie) editieId = g.editie.id;
-    if (!gekozen) bijStand(g.editie);
+    if (!gekozen) bijStand(g.editie, g.ikNaam);
     teken(g);
   }
 

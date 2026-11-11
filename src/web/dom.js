@@ -13,6 +13,12 @@ export function h(tag, attrs = {}, ...kinderen) {
   return el;
 }
 
+// BV-02, STA-9: replaceChildren zet null, undefined en false om in tekst; vervang laat ze weg, net als h().
+export function vervang(el, ...kinderen) {
+  el.replaceChildren(...kinderen.flat().filter((k) => k != null && k !== false));
+  return el;
+}
+
 // Pictogram uit een vast pad (alleen letterlijke paden uit de code, geen gebruikerstekst).
 export function icoon(pad, maat = 20) {
   const svg = document.createElementNS(SVG, 'svg');

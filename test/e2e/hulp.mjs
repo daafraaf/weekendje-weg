@@ -51,6 +51,18 @@ export async function beheerNaar(page, naam) {
   await page.getByRole('main').getByRole('link', { name: new RegExp(`^${naam}`) }).click();
 }
 
+// STA-9, BV-22: Uitloggen staat niet meer op Start, alleen in het profielmenu (en op Leden).
+export async function uitloggen(page) {
+  await page.getByRole('button', { name: 'Profiel en uitleg' }).click();
+  await page.locator('#profielmenu').getByRole('button', { name: 'Uitloggen' }).click();
+}
+
+// STA-4, BV-07: na een beheerlogin staat de organisator op Start; dit gaat door naar Leden.
+export async function naarLeden(page) {
+  await page.goto('/#/leden');
+  await page.waitForFunction(() => document.querySelector('main h1')?.textContent === 'Leden');
+}
+
 export async function startDemo(context, { stap = 'weekend', als = 'Bas', beheer = false, aanpassen, onderdelen, routeGezien = true } = {}) {
   const demo = maakVolledigeDemo({ stap });
   if (aanpassen) aanpassen(demo.seed, demo);

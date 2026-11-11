@@ -86,7 +86,7 @@ test('STA-4 ACC-10: de eerstvolgende actie van de organisator volgt de stap', ()
   assert.equal(eersteActie(g('weekend'), ALLES_AAN).tekst, 'Programma beheren');
   assert.equal(eersteActie(g('voorbereiding')).tekst, 'Zet de stap op Weekend'); // OND-2: Boodschappen staat uit
   assert.equal(eersteActie(g('weekend')).tekst, 'Zet de stap op Afrekening'); // OND-2: Programma staat uit
-  assert.equal(eersteActie(g('afrekenen', { afrekening: { open: [{}] } })).tekst, 'Openstaande betalingen');
+  assert.equal(eersteActie(g('afrekenen', { afrekening: { open: [{}] } })).tekst, 'Betalingen afvinken');
   assert.equal(eersteActie(g('afgerond')).tekst, 'Nieuwe editie');
   assert.equal(eersteActie(g('afgerond')).route, '#/editie-nieuw?van=e1');
   assert.equal(eersteActie({ editie: null }).route, '#/editie-nieuw');
@@ -108,6 +108,33 @@ test('STA-3: het scherm start geeft per stap de tellingen; een deelnemer ziet al
   assert.equal(mijn.aantalOpen, alle.aantalOpen);
   assert.ok(mijn.open.every((b) => b.ikBetaal || b.ikKrijg));
   assert.ok(alle.open.length >= mijn.open.length);
+});
+
+test('STA-4 BV-08: zolang niet elke deelnemer een link heeft, is de eerstvolgende actie Iedereen uitnodigen', () => {
+  const g = (zonderLink) => ({ editie: { id: 'e1', stap: 'invullen' }, voortgang: { aantal: 4, ingevuld: 1, zonderLink } });
+  assert.deepEqual(eersteActie(g(4)), { tekst: 'Iedereen uitnodigen', route: '#/uitnodigen' });
+  assert.equal(eersteActie(g(1)).tekst, 'Iedereen uitnodigen');
+  assert.equal(eersteActie(g(0)).tekst, 'Herinnering sturen');
+  // Het scherm start telt de deelnemers zonder link, alleen voor de organisator.
+  const { nep, anna, org } = opzet();
+  assert.equal(org('start').data.voortgang.zonderLink, 0);
+  assert.equal(anna('start').data.voortgang.zonderLink, undefined);
+  nep.store.nieuwVerzoek();
+  nep.store.werkBij('Deelnemers', ANNA, { tokenHash: '' });
+  nep.store.flush();
+  assert.equal(org('start').data.voortgang.zonderLink, 1);
+});
+
+test('NAV-2 BV-36: het scherm start geeft de eigen voornaam voor het profielmenu', () => {
+  const { demo, anna, org } = opzet();
+  assert.equal(anna('start').data.ikNaam, 'Anna');
+  assert.equal(org('start').data.ikNaam, demo.seed.Leden[0].voornaam);
+});
+
+test('STA-4 BV-33: bij Afrekening heeft de eerstvolgende actie een eigen tekst, niet de kop Openstaande betalingen', () => {
+  const g = { editie: { id: 'e1', stap: 'afrekenen' }, afrekening: { open: [{}] } };
+  assert.notEqual(eersteActie(g).tekst, 'Openstaande betalingen');
+  assert.equal(eersteActie(g).route, '#/afrekening');
 });
 
 test('ARC-1 AAN-30: iedere deelnemer ziet het archief met alle edities van de groep, nieuwste bovenaan', () => {

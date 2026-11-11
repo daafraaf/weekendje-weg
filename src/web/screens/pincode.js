@@ -19,11 +19,14 @@ export function maakBinnenkomen({ link: beginLink = null, startTekst = '', bijIn
   let link = beginLink;
   let timer = null;
 
-  const veld = h('input', { id: 'plak-link', class: 'field', type: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'https://…/#b=…' });
+  // TOE-13, BV-06: een wachtwoordmanager ziet hier geen inlogformulier. De pinvakjes zijn tekstvelden en beide velden
+  // dragen de negeer-attributen van 1Password, LastPass en Bitwarden.
+  const NEGEER = { 'data-1p-ignore': true, 'data-lpignore': 'true', 'data-bwignore': true };
+  const veld = h('input', { id: 'plak-link', class: 'field', type: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'https://…/#b=…', ...NEGEER });
   veld.value = startTekst;
   const herkend = h('p', { class: 'hint' });
   const velden = Array.from({ length: LENGTE }, (_, i) => h('input', {
-    type: 'password', inputmode: 'numeric', autocomplete: i === 0 ? 'one-time-code' : 'off', 'aria-label': `Cijfer ${i + 1}`,
+    type: 'text', inputmode: 'numeric', pattern: '[0-9]*', maxlength: String(LENGTE), autocomplete: i === 0 ? 'one-time-code' : 'off', 'aria-label': `Cijfer ${i + 1}`, ...NEGEER,
   }));
   const pinGroep = h('fieldset', { class: 'pin-groep' }, h('legend', { class: 'label' }, 'Je pincode, zes cijfers'), h('div', { class: 'pin' }, velden));
   const knop = h('button', { class: 'btn btn-primary', type: 'submit', 'data-schrijft': true }, 'Inloggen');
@@ -102,9 +105,10 @@ export function maakBinnenkomen({ link: beginLink = null, startTekst = '', bijIn
     bijwerken();
   }
 
-  const formulier = h('form', { class: 'glass card binnen-kaart', novalidate: true },
-    h('div', {}, h('label', { class: 'label', for: 'plak-link' }, 'Plak je persoonlijke link'), veld, herkend),
-    melding, pinGroep, knop);
+  // TOE-13: staat de link al in het fragment, dan alleen "Link herkend", zonder plakveld.
+  const plakBlok = beginLink ? h('div', {}, herkend) : h('div', {}, h('label', { class: 'label', for: 'plak-link' }, 'Plak je persoonlijke link'), veld, herkend);
+  const formulier = h('form', { class: 'glass card binnen-kaart', novalidate: true, autocomplete: 'off' },
+    plakBlok, melding, pinGroep, knop);
 
   formulier.addEventListener('submit', async (e) => {
     e.preventDefault();

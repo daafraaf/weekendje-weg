@@ -3,6 +3,7 @@ import { startServer } from '../mock-backend/server.mjs';
 import { maakDemo } from '../mock-backend/demo.mjs';
 import { OPSLAG_SLEUTEL } from '../../src/web/sessie.js';
 import { SJABLOON_KOPIE } from '../../src/shared/uitrol.js';
+import { naarLeden, uitloggen } from './hulp.mjs';
 
 const SCRIPT_ID = 'demo-weekendje-weg-0001';
 const WACHTWOORD = 'duinpan-kraanvogel';
@@ -111,7 +112,8 @@ test('GRP-2 GRP-4 RON-5 TOE-5 [leeg]: de wizard zet de groep op met de setupcode
   expect(nep.store.lees('Leden')).toHaveLength(3);
 
   await page.getByRole('button', { name: 'Naar beheren' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  await expect(page).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
+  await naarLeden(page);
   await expect(page.getByText('jij', { exact: true })).toBeVisible();
   expect(JSON.parse(await opslag(page)).soort).toBe('beheer');
   await expect(page.getByRole('navigation', { name: 'Stappen van de editie' })).toHaveCount(0);
@@ -126,7 +128,7 @@ test('GRP-2 GRP-4 RON-5 TOE-5 [leeg]: de wizard zet de groep op met de setupcode
   await expect(page.getByText('Dit wachtwoord klopt niet')).toBeVisible();
   await page.getByLabel('Wachtwoord', { exact: true }).fill(WACHTWOORD);
   await page.getByRole('button', { name: 'Inloggen' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  await expect(page).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
 });
 
 test('GRP-3 [leeg]: een tweede opzet wordt geweigerd', async ({ page, nep }) => {
@@ -187,12 +189,12 @@ test('TOE-5: een nieuwe beheerlink vraagt eerst een wachtwoord van minimaal 10 t
   await page.getByLabel('Nieuw wachtwoord').fill(WACHTWOORD);
   await page.getByLabel('Herhaal wachtwoord').fill(WACHTWOORD);
   await page.getByRole('button', { name: 'Opslaan en beheren' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  await expect(page).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
   const s = JSON.parse(await opslag(page));
   expect(Date.parse(s.verloopt) - Date.now()).toBeLessThan(12 * 3600 * 1000 + 60000);
   expect(Date.parse(s.verloopt) - Date.now()).toBeGreaterThan(11 * 3600 * 1000);
 
-  await page.getByRole('button', { name: 'Uitloggen' }).click();
+  await uitloggen(page);
   await expect(page.getByLabel('Plak je persoonlijke link')).toBeVisible();
   await page.goto(`/#b=${SCRIPT_ID}&beheer=${token}`);
   await expect(page.getByText('Vul je wachtwoord in om te beheren')).toBeVisible();
@@ -217,7 +219,8 @@ test('GRP-5: de organisator voegt leden toe, wijzigt een woonplaats en maakt een
   await page.goto(`/#b=${SCRIPT_ID}&beheer=${token}`);
   await page.getByLabel('Wachtwoord', { exact: true }).fill(WACHTWOORD);
   await page.getByRole('button', { name: 'Inloggen' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  await expect(page).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
+  await naarLeden(page);
   await expect(page.getByText('Zwolle')).toBeVisible();
 
   await page.getByLabel('Naam', { exact: true }).fill('Sanne');
@@ -245,7 +248,8 @@ test('GRP-5: tijdens opslaan staat er een lader en geeft een tweede klik of Ente
   await page.goto(`/#b=${SCRIPT_ID}&beheer=${token}`);
   await page.getByLabel('Wachtwoord', { exact: true }).fill(WACHTWOORD);
   await page.getByRole('button', { name: 'Inloggen' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  await expect(page).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
+  await naarLeden(page);
   // Een traag script: elk verzoek duurt ruim een halve seconde.
   await page.route('https://script.google.com/**', async (route) => { await new Promise((r) => { setTimeout(r, 600); }); await route.fallback(); });
 
@@ -268,10 +272,11 @@ test('GRP-5 TOE-7: een deelnemerssessie ziet het ledenscherm niet', async ({ pag
   await page.getByLabel('Cijfer 1').click();
   await page.keyboard.type(nep.demo.pin);
   await page.getByRole('button', { name: 'Inloggen' }).click();
-  await expect(page.getByText('Je bent ingelogd')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Profiel en uitleg' })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Menu' }).getByText('Leden')).toHaveCount(0);
   await page.goto('/#/leden');
-  await expect(page.getByText('Je bent ingelogd')).toBeVisible();
+  await expect(page).toHaveURL(/#\/start$/); // NAV-13: een scherm van de andere rol gaat naar Start
+  await expect(page.getByRole('heading', { name: 'Leden' })).toHaveCount(0);
 });
 
 test('GRP-7 AAN-78 [leeg]: een opzetlink opent stap 1 met URL en code ingevuld, verdwijnt uit de adresbalk en zet de groep op', async ({ page, nep }) => {
@@ -302,7 +307,7 @@ test('GRP-7 AAN-78 [leeg]: een opzetlink opent stap 1 met URL en code ingevuld, 
   expect(nep.store.lees('Groep')[0].opgezet).toBe(true);
   expect(nep.store.lees('Leden')).toHaveLength(3);
   await page.getByRole('button', { name: 'Naar beheren' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Leden');
+  await expect(page).toHaveURL(/#\/start$/); // STA-4, BV-07: na inloggen op Start
 });
 
 test('GRP-7 [leeg]: een opzetlink met een fout ID of een code van zeven tekens toont stap 0 met de melding', async ({ page, nep }) => {

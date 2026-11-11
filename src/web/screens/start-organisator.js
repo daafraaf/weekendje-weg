@@ -39,7 +39,10 @@ export function startOrganisator(g, ctx) {
       if (onderdeelAan('programma')) onder.push(knop('Programma beheren', '#/programma'));
       break;
     case 'afrekenen':
-      onder.push(kaart('Openstaande betalingen', g.afrekening.open.length ? h('div', { class: 'solid list', role: 'list' }, betalingRijen(g)) : tekst('Er staat niets open.'), knop('Naar de afrekening', '#/afrekening')));
+      // BV-33: één kop "Openstaande betalingen"; de knop naar de afrekening is dan de eerstvolgende actie.
+      onder.push(g.afrekening.open.length
+        ? kaart('Openstaande betalingen', h('div', { class: 'solid list', role: 'list' }, betalingRijen(g)))
+        : kaart('Openstaande betalingen', tekst('Er staat niets open.'), knop('Naar de afrekening', '#/afrekening')));
       break;
     default:
       onder.push(samenvatting(g));

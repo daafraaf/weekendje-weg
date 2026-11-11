@@ -2,7 +2,7 @@
 // (EDI-4, EDI-5, EDI-6, TOE-8, TOE-12). Ontwerp: docs/design/Uitnodigen.dc.html.
 // Link en pincode staan alleen in het geheugen van dit scherm; wie weggaat, ziet ze niet meer terug (TOE-8).
 // Alle tekst gaat via textContent (NFR-5).
-import { h, icoon } from '../dom.js';
+import { h, icoon, vervang } from '../dom.js'; // BV-02: vervang laat null weg (geen editiekeuze bij één editie)
 import { maakBeheerApi } from '../beheerapi.js';
 import { persoonlijkeLinkVan, beheerlinkVan } from '../sessie.js';
 import { deelKnoppen, kopieer } from '../delen.js';
@@ -122,7 +122,7 @@ export function maakUitnodigen({ sessie, params = {}, bijVerlopen, appAdres = ()
   function teken() {
     const kop = (...extra) => h('div', { class: 'wz-kop' }, h('p', { class: 't-cap' }, 'Beheren'), h('h1', { class: 't-title' }, 'Uitnodigen'), ...extra);
     if (!gegevens.edities.length) {
-      wortel.replaceChildren(kop(), melding,
+      vervang(wortel, kop(), melding,
         h('p', { class: 't-body t-sec' }, 'Je hebt nog geen editie om uit te nodigen.'),
         h('a', { class: 'btn btn-primary', href: '#/editie-nieuw' }, 'Nieuwe editie maken'),
         beheerlinkBlok());
@@ -136,7 +136,7 @@ export function maakUitnodigen({ sessie, params = {}, bijVerlopen, appAdres = ()
       s.addEventListener('change', () => { editieId = s.value; geheimen.clear(); gedeeld.clear(); laad(); });
       keuze = h('div', {}, h('label', { class: 'label', for: 'dl-editie' }, 'Editie'), s);
     }
-    wortel.replaceChildren(
+    vervang(wortel, 
       kop(h('p', { class: 't-body t-sec' }, e.titel)),
       keuze,
       melding,

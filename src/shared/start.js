@@ -54,6 +54,8 @@ export function eersteActie(g, vlaggen = ONDERDELEN) {
   const naarStap = (naam) => ({ tekst: `Zet de stap op ${naam}`, route: '#/stappen' });
   switch (e.stap) {
     case 'invullen':
+      // BV-08: zolang niet elke deelnemer een link heeft, eerst uitnodigen; daarna pas een herinnering.
+      if (g.voortgang.zonderLink > 0) return { tekst: 'Iedereen uitnodigen', route: '#/uitnodigen' };
       return g.voortgang.ingevuld < g.voortgang.aantal ? { tekst: 'Herinnering sturen', route: '#/voortgang' } : naarStap(STAPNAMEN.overzicht);
     case 'overzicht':
       return e.vastgelegdWeekend ? naarStap(STAPNAMEN.accommodatie) : { tekst: 'Weekend vastleggen', route: '#/accommodatie-beheer' };
@@ -65,7 +67,7 @@ export function eersteActie(g, vlaggen = ONDERDELEN) {
     case 'weekend':
       return g.programma.punten || !onderdeelAan('programma', vlaggen) ? naarStap(STAPNAMEN.afrekenen) : { tekst: 'Programma beheren', route: '#/programma' };
     case 'afrekenen':
-      return g.afrekening.open.length ? { tekst: 'Openstaande betalingen', route: '#/afrekening' } : naarStap(STAPNAMEN.afgerond);
+      return g.afrekening.open.length ? { tekst: 'Betalingen afvinken', route: '#/afrekening' } : naarStap(STAPNAMEN.afgerond);
     default:
       return { tekst: 'Nieuwe editie', route: `#/editie-nieuw?van=${encodeURIComponent(e.id)}` };
   }
