@@ -130,3 +130,38 @@ F-19) en `00-bron-2.md` (F-20 t/m F-57).
 - Wat zien koks van eetwensen? Iedereen kan zich kok maken, dus met namen zou ieder lid alle allergieën kunnen zien, wat B-28 tegenspreekt. Voorstel: koks zien aantallen en vrije tekst zonder namen. Impact: midden
 - Is de afrekening "goed genoeg" of moet hij wiskundig minimaal zijn? Voorstel: goed genoeg, met eerst gelijke bedragen koppelen. Impact: laag
 - Wie kiest de pincode? F-38 zegt "de organisator voegt een wachtwoordje toe". Voorstel: het script kiest willekeurig, de organisator verstuurt hem. Impact: laag
+
+## Feedbackronde 2 (test 11 november)
+
+Bron: `docs/bevindingen-test-2026-11-11.md` (BV-01 t/m BV-36), functionele test op de live app.
+Beslissingen van David, vastgelegd op 11 november 2026 voor een onbewaakte run (fase 29 t/m 33).
+
+- **BV-01 Weekend wijzigen.** Leg vast en Ander weekend kiezen staan voor de organisator ook op
+  Weekendje prikker; Accommodaties beheren houdt ze. Losmaken mag tot en met de stap Meenemen, met
+  de bestaande bevestiging. Vanaf Weekend zegt de melding hoe het wel kan, met een link naar Stappen
+  (§7.6.8, ACC-7, AAN-81).
+- **BV-16 Mobiel menu.** Alle zeven items tonen alleen hun icoon, het actieve ook zijn label;
+  `aria-label` blijft de volle naam. Alles past binnen 360 pixels zonder horizontaal scrollen (NAV-12).
+- **BV-17** Accommodatie krijgt een bed-icoon (NAV-12).
+- **BV-18** Meenemen en Afrekening zijn in elke stap open, omdat uitgaven en meenemen vroeg kunnen
+  beginnen; Weekendje prikker en Accommodatie houden "Komt in stap ...". Vast in §7.14 en de uitleg.
+  Het bovenschrift boven een titel toont de schermnaam, niet de stap (NAV-15).
+- **BV-25 Afronden.** "Naar Afgerond" vraagt een bevestiging met het aantal open betalingen. Betaling
+  markeren en terugdraaien blijven na Afgerond mogelijk (uitzondering op AAN-29). Terug van Afgerond
+  naar Afrekening kan, zoals §7.2.2 voor elke stap zegt. Het groepsbericht bij Afgerond noemt
+  "afgerekend" alleen als niets meer open staat.
+- **BV-26** Een korte bevestiging bij Naar Weekendje prikker als niet iedereen heeft ingevuld, en bij
+  Naar Weekend of later als het weekend meer dan 7 dagen weg is (§7.2.7, AAN-88).
+- **BV-29** Na onthullen van een verrassing ziet de groep alleen de geboekte accommodatie (ACC-10).
+- **BV-30** De organisator kan bij een item "Toewijzen aan ..." kiezen; dat maakt een claim op naam
+  van die deelnemer. Nieuwe regel in de rechtentabel §6, met een test in TOE-7 (MEE-10).
+- **BV-32** AAN-06 blijft ongewijzigd. De bevinding staat als open punt in MEMORY.md voor David.
+- **BV-04** `API_VERSIE` wordt 2 aan beide kanten, plus een test die faalt als `ACTIES` wijzigt zonder
+  versieverhoging (§7.17, NFR-22).
+- **BV-03** is opgelost (script bijgewerkt bij de uitrol van 11 november) en krijgt geen fase.
+- **Overige bevindingen** volgen de verwachting in het bevindingenbestand. Waar die een keuze open
+  liet, is er een aanname: AAN-89 (voorstel bij Nieuwe editie, BV-11) en AAN-90 (zelf inactief en
+  dubbele naam, BV-15).
+
+Fasen: 29 foutafhandeling en versie, 30 binnenkomen en Start, 31 navigatie en layout, 32 weekend en
+stappen (hangt af van 31), 33 teksten, onderdelen en details.

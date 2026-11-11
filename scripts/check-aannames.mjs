@@ -36,7 +36,9 @@ export function testnamen(tekst) {
 const heeftId = (tekst, id) => new RegExp(`${id}(?!\\d)`).test(tekst);
 
 export function controleer(root) {
-  const aannames = leesAannames(readFileSync(path.join(root, 'docs', '04-aannames.md'), 'utf8')).filter((a) => a.status !== 'vervallen');
+  // "gepland fase NN": vastgelegd in een plan, nog niet gebouwd; de bouwende fase zet de status op open.
+  const aannames = leesAannames(readFileSync(path.join(root, 'docs', '04-aannames.md'), 'utf8'))
+    .filter((a) => a.status !== 'vervallen' && !a.status.startsWith('gepland'));
   const code = [...bestanden(path.join(root, 'src'), /\.(m?js|html|css)$/), ...bestanden(path.join(root, 'scripts'), /\.m?js$/)]
     .filter((p) => p !== eigen).map((p) => readFileSync(p, 'utf8')).join('\n');
   const namen = bestanden(path.join(root, 'test'), /\.(test|spec)\.mjs$/).flatMap((p) => testnamen(readFileSync(p, 'utf8')));

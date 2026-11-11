@@ -1,5 +1,6 @@
 # Bouwspecificatie Weekendje weg
 
+Versie 0.11, 11 november 2026: feedbackronde 2 na de test van 11 november, BV-01 t/m BV-36 (§6, §7.2.2, §7.2.7, §7.6.6, §7.6.8, §7.7.4, §7.12, §7.14, §7.17, TOE-13, GRP-5, EDI-7, EDI-11, STA-4, STA-9, ACC-7, ACC-9, ACC-10, MEE-10, GELD-9, GELD-12, SYNC-5, SYNC-8, NAV-2, NAV-10, NAV-12 t/m NAV-15, NFR-21, NFR-22).
 Versie 0.10, 11 november 2026: uitleg van de stappen, feedbackronde fase 28 (UIT-1 t/m UIT-4, NAV-7).
 Versie 0.9, 11 november 2026: accommodatie verrassing of samen kiezen, feedbackronde fase 27 (§5.1, §5.3, §7.6, §11, ACC-3 t/m ACC-5 vervangen door ACC-8 t/m ACC-14).
 Versie 0.8, 10 november 2026: synchronisatielaag met wachtrij, feedbackronde fase 26 (§5.3, §7.4.8, §7.4.9, §7.16.5, SYNC-1 t/m SYNC-8, FRM-8, FRM-10, NFR-8, NFR-12).
@@ -253,6 +254,7 @@ Elke actie loopt daar doorheen voordat de Store wordt aangeraakt.
 | Item toevoegen | | ja, tot definitief | ja | |
 | Item verwijderen | | eigen item, tot definitief | elk item | |
 | Claimen, eigen claim intrekken | | ja | ja | |
+| Item toewijzen aan een deelnemer (claim op diens naam) | | nee | ja | |
 | Afvinken | | ja | ja | |
 | Boodschappen definitief zetten of terugzetten | | nee | ja | |
 | Kok worden of stoppen | | ja | ja | |
@@ -264,7 +266,8 @@ Elke actie loopt daar doorheen voordat de Store wordt aangeraakt.
 | Afhaken markeren | | nee | ja | |
 | Archief lezen | | ja | ja | |
 
-Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
+Na de stap Afgerond is alles alleen-lezen, behalve het archief, onthullen (AAN-87) en betaling
+markeren of terugdraaien (AAN-29), zodat open betalingen na Afgerond nog af te vinken zijn.
 
 ## 7. Bedrijfsregels
 
@@ -321,8 +324,8 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
    `afrekenen` → `afgerond`. Dit zijn de waarden in de Sheet. De app toont ze overal met dezelfde
    namen (`STAPNAMEN` in `src/shared/stappen.js`): Invullen, Weekendje prikker, Accommodatie,
    Meenemen, Weekend, Afrekening, Afgerond.
-2. Alleen de organisator zet de stap, één stap vooruit of één stap terug. Terug naar
-   `invullen` kan niet meer vanaf `accommodatie` (AAN-05).
+2. Alleen de organisator zet de stap, één stap vooruit of één stap terug, ook van `afgerond`
+   terug naar `afrekenen`. Terug naar `invullen` kan niet meer vanaf `accommodatie` (AAN-05).
 3. Naar `overzicht` gaan sluit het invullen, ook voor de deadline (AAN-04). De deadline zelf is
    informatief en blokkeert niets: opslaan lukt ook erna zolang de stap `invullen` is (DDL-1).
    De organisator kan de deadline verlengen zolang de stap `invullen` is.
@@ -336,6 +339,14 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
    rol. Ze haalt die stand op bij openen, bij elke navigatie, als de app weer zichtbaar wordt en na
    een stapwijziging in beheer. Een deelnemer ziet zijn editie, een beheersessie de nieuwste eigen
    editie (AAN-71). Er is geen stap in het adres en geen voorbeeldeditie meer.
+7. **Bevestiging bij een stap vooruit** (AAN-88). Stappen vraagt een korte bevestiging vóór:
+   - Naar Weekendje prikker als niet iedereen heeft ingevuld: "Robin heeft nog niet ingevuld. Toch
+     door?" (bij meer namen "Robin en Sam hebben ..." of "3 mensen hebben ...").
+   - Naar Weekend, Afrekening of Afgerond als het vastgelegde weekend meer dan 7 dagen weg is:
+     "Het weekend is pas over 576 dagen. Toch door?".
+   - Naar Afgerond als er betalingen open staan: "Er staan nog 3 betalingen open. Die kun je na
+     Afgerond nog afvinken. Toch afronden?".
+   Staan er meer redenen, dan noemt één bevestiging ze allemaal. Een stap terug vraagt niets extra.
 
 ### 7.3 Kalender
 1. De kalender toont alle weekenden waarvan de vrijdag tussen `periodeVan` en `periodeTot`
@@ -433,11 +444,17 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
    niet na het weekend; de verrassing mag geheim blijven. Onthullen vraagt een bevestiging, is
    definitief en kan vanaf de stap Accommodatie in elke latere stap, ook na Afgerond (AAN-87).
    Daarna zien deelnemers de geboekte accommodatie met naam, plaats, datum, prijs, bedden,
-   eigen kamers, notitie en link.
+   eigen kamers, notitie en link, en alleen die: de opties die niet geboekt zijn, krijgt een
+   deelnemer bij een verrassing ook na onthullen nooit te zien.
 7. **Bedden en eigen kamers.** Een optie heeft optioneel het aantal bedden en het aantal eigen
    kamers (kamers voor één persoon, voor sommigen een pre), elk een geheel getal vanaf 0; eigen
    kamers niet meer dan bedden als beide zijn ingevuld (AAN-64). Ze staan bij elke optie, als
    "8 bedden · 3 eigen kamers"; een leeg veld wordt niet getoond.
+8. **Vastleggen en losmaken.** De organisator legt het weekend vast en kiest een ander weekend op
+   Weekendje prikker én onder Beheren, Accommodaties beheren. Losmaken kan in de stappen Weekendje
+   prikker, Accommodatie en Meenemen, met de bevestiging van ACC-7 (AAN-81). Vanaf de stap Weekend
+   zegt de app: "Het weekend wijzigen kan tot en met de stap Meenemen. Zet de stap terug onder
+   Stappen." met een link naar Stappen.
 
 ### 7.7 Wie neemt wat mee
 1. Drie soorten items: `spullen` (wordt nooit gekocht), `keuken` (uit eigen keuken, kan ook
@@ -448,7 +465,9 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
 3. Een claim is een eigen rij. Twee claims van verschillende personen op hetzelfde item
    bestaan naast elkaar; een tweede claim van dezelfde persoon op hetzelfde item wordt
    genegeerd. Het item toont de namen op volgorde van claim.
-4. Iedereen trekt alleen zijn eigen claim in. De organisator kan elke claim intrekken.
+4. Iedereen trekt alleen zijn eigen claim in. De organisator kan elke claim intrekken en bij elk
+   item "Toewijzen aan ..." kiezen: dat maakt een claim op naam van de gekozen deelnemer (niet
+   afgehaakt), met dezelfde regels als een eigen claim (MEE-10).
 5. Bij afhaken vervallen alle claims van die persoon (AAN-11).
 
 ### 7.8 Boodschappenlijst
@@ -502,6 +521,10 @@ Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig (AAN-16).
    volgt, zonder datums), betaalverzoek per betaling ("Wil je €12,40 overmaken voor
    Weekendje weg 2027?").
 3. Teksten bevatten nooit een pincode samen met een link en nooit een rekeningnummer (AAN-22).
+4. Teksten en bevestigingen noemen alleen onderdelen die aan staan (`ONDERDELEN`, OND-2). Het bericht
+   bij Accommodatie vraagt pas om een top 3 als er opties zijn; zonder opties zegt het dat de
+   organisator binnenkort opties neerzet, en Stappen waarschuwt de organisator bij nul opties. Het
+   bericht bij Afgerond noemt "afgerekend" alleen als er geen betaling meer open staat.
 
 ### 7.13 Geld
 1. Bedragen in centen, getoond als `€ 1.234,56`.
@@ -545,8 +568,11 @@ Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig (AAN-16).
 | Afgerond | Samenvatting en de sectie Afgelopen weekenden (open) | Samenvatting, "Nieuwe editie", sectie Afgelopen weekenden |
 
 Het menu heeft in elke stap dezelfde zeven items (NAV-10, AAN-12): Start, Invullen, Voortgang,
-Weekendje prikker, Accommodatie, Meenemen, Afrekening. Een scherm dat nog niet aan de beurt is,
-toont zelf "Komt in stap ...". Boodschappen, kookbeurten, programma, kamers en carpool staan niet in
+Weekendje prikker, Accommodatie, Meenemen, Afrekening. Weekendje prikker en Accommodatie tonen vóór
+hun stap "Komt in stap ...". Meenemen en Afrekening zijn in elke stap open: wie wat meeneemt en
+uitgaven kunnen vroeg beginnen (een voorschot op het huis, een lijstje spullen). De uitleg (UIT-2)
+zegt dat ook. Het bovenschrift boven de titel van een scherm toont de schermnaam, niet de stap.
+Boodschappen, kookbeurten, programma, kamers en carpool staan niet in
 het menu en blijven bereikbaar via het startscherm. De organisator ziet bovenaan altijd zijn
 eerstvolgende actie.
 
@@ -583,6 +609,12 @@ van een editie van die groep (AAN-30).
 De voorkant stuurt `apiVersie` mee. Wijkt die af van het script, dan antwoordt het script met
 `api_versie` en toont de voorkant: "Het script van deze groep is verouderd. De eigenaar werkt
 het bij via …" met een link naar de uitleg in de README (AAN-14).
+
+`API_VERSIE` staat in `src/server/api.js` en `src/web/api.js` en is vanaf feedbackronde 2 gelijk
+aan 2. Elke wijziging van de actielijst (`ACTIES`, nieuwe of vervallen actie) verhoogt hem aan
+beide kanten. Een test bewaart een snapshot van de actielijst met de versie erbij en faalt als de
+lijst wijzigt zonder versieverhoging (NFR-22). Bij de uitrol gaan voorkant en script kort na
+elkaar live.
 
 ### 7.18 Opzetlink en uitrolinstellingen
 1. **Uitrolinstellingen.** `src/shared/uitrol.js` heeft twee constanten: `APP_ADRES` (het
@@ -627,13 +659,14 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **TOE-10** De voorkant weigert een `scriptId` dat niet aan het patroon in §7.1.2 voldoet.
 - **TOE-11** Zonder sessie toont de app een veld "Plak je persoonlijke link"; een geplakte link of beheerlink leidt naar het pin- of wachtwoordscherm (e2e-test met een geïnstalleerde context zonder fragment).
 - **TOE-12** De organisator vernieuwt de link van een deelnemer; de oude link en de bestaande sessies van die deelnemer werken direct niet meer.
+- **TOE-13** Een wachtwoordmanager breekt inloggen niet: staat er al een link in het fragment, dan toont het pinscherm alleen "Link herkend" zonder plakveld; de pinvakjes zijn `type="text"` met `inputmode="numeric"` en `autocomplete="one-time-code"`, en plakveld en pinvakjes hebben `data-1p-ignore`, `data-lpignore="true"` en `data-bwignore` (BV-06).
 
 ### Groep opzetten (GRP)
 - **GRP-1** Het Sheet-menu "Weekendje weg" heeft: Groep opzetten, Beheerlink maken, Beheerwachtwoord resetten, Uitleg.
 - **GRP-2** De opzetwizard in de app vraagt de script-URL (alleen `/macros/s/<id>/exec`, een `/dev`-URL wordt geweigerd met uitleg), de setupcode, de groepsnaam, de leden (voornaam, woonplaats), welk lid de eigenaar is en een beheerwachtwoord, en zet de groep op.
 - **GRP-3** Een tweede `groepOpzetten` op een opgezette groep wordt geweigerd.
 - **GRP-4** Na opzetten toont de wizard de beheerlink met een kopieerknop en de uitleg om hem te bewaren.
-- **GRP-5** De organisator kan leden toevoegen, hun woonplaats wijzigen en ze inactief maken; leden worden nooit verwijderd.
+- **GRP-5** De organisator kan leden toevoegen, hun woonplaats wijzigen en ze inactief maken; leden worden nooit verwijderd. Zichzelf inactief maken kan niet (geen knop, de server weigert). Een nieuw lid met dezelfde voornaam als een bestaand lid geeft een waarschuwing (BV-15, AAN-90).
 - **GRP-6** "Groep opzetten" in het Sheet-menu bepaalt het webapp-ID (§7.18.2), maakt een setupcode en toont de opzetlink in de dialoog uit §7.18.4. Is de groep al opgezet, dan zegt het menu dat en maakt het geen code. Is `APP_ADRES` leeg, dan toont de dialoog de setupcode en de webapp-URL om in de wizard te plakken.
 - **GRP-7** Een opzetlink opent de wizard bij stap 1 met script-URL en setupcode ingevuld, een korte regel dat de Sheet gekoppeld is, en de focus op de groepsnaam. In de adresbalk en de geschiedenis staat daarna alleen `#/opzetten`. Een opzetlink met een ongeldige `b` of `code` opent stap 0 met de melding "Deze opzetlink klopt niet. Kies in de Sheet opnieuw Weekendje weg en Groep opzetten."
 - **GRP-8** Met `APP_ADRES` ingevuld toont "Beheerlink maken" de volledige beheerlink in dezelfde dialoog als GRP-6, met kopieerveld.
@@ -645,16 +678,19 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **EDI-4** "Links maken" toont per deelnemer zijn link en pincode met de twee WhatsApp-teksten en kopieerknoppen.
 - **EDI-5** De organisator vernieuwt de pincode van één deelnemer; de oude werkt direct niet meer.
 - **EDI-6** De organisator maakt een beheerlink voor een lid, zoals een tweede organisator of de organisator van een nieuwe editie; dat lid kiest bij eerste gebruik zijn eigen wachtwoord.
-- **EDI-7** De organisator zet de stap volgens §7.2; elke wijziging toont daarna de WhatsApp-tekst van de nieuwe stap, zonder datums van latere stappen.
+- **EDI-7** De organisator zet de stap volgens §7.2, met de bevestigingen van §7.2.7; elke wijziging toont daarna de WhatsApp-tekst van de nieuwe stap volgens §7.12.4, zonder datums van latere stappen. Van Afgerond kan hij terug naar Afrekening.
 - **EDI-8** Vervallen (fase 24): de stappen hebben geen verwachte datums meer, zie §7.2.4.
 - **EDI-9** De organisator markeert een deelnemer als afgehaakt en kan dat terugdraaien; de gevolgen volgen §7.7.5, §7.11.4 en §7.13.9.
-- **EDI-10** De organisator verlengt de deadline zolang de stap Invullen is; stappenbeheer stelt alleen de deadline in.
+- **EDI-10** De organisator verlengt de deadline zolang de stap Invullen is; stappenbeheer stelt alleen de deadline in. Teksten bij de deadline zeggen "Graag ingevuld vóór ...", nooit dat de deadline het invullen afsluit (DDL-1, BV-10).
+- **EDI-11** "Nieuwe editie" stelt voor: jaar = het eerste jaar vanaf het huidige zonder editie van de groep, titel "Weekendje weg <jaar>", periode het kalenderjaar (AAN-15); blokken, lijsten en leden komen van de vorige editie (ARC-2, AAN-89, BV-11).
+- **EDI-12** Een eigen vraag van type Eén keuze of Meerkeuze vraagt minstens twee opties ("Geef minstens twee antwoordopties."); een nieuwe poging wist de vorige melding (BV-12).
 
 ### Stappenbalk en startscherm (STA)
 - **STA-1** Bovenaan elk scherm staat de stappenbalk met zeven stappen met de namen uit §7.2.1: afgerond met vinkje, huidige uitgelicht, later grijs, zonder datums.
 - **STA-2** Op mobiel toont de stappenbalk de huidige stap met de vorige en volgende; tikken klapt alle stappen uit.
 - **STA-3** Het startscherm van deelnemer en organisator volgt de tabel in §7.14.
-- **STA-4** Het startscherm van de organisator toont zijn eerstvolgende actie als knop.
+- **STA-4** Het startscherm van de organisator toont zijn eerstvolgende actie als knop, met één kop. In de stap Invullen is dat "Iedereen uitnodigen" (naar Uitnodigen) zolang niet elke deelnemer een link heeft, daarna "Herinnering sturen" (BV-08, BV-33).
+- **STA-9** Start toont geen tekst `null`, geen regel "Je bent ingelogd." met Uitloggen (dat staat in het profielmenu), de editietitel één keer, "Hoe werkt het?" als kleine tekstlink, geen aftelteller na Afgerond, en Afgelopen weekenden met een klapicoon en bij leeg "Nog geen afgelopen weekenden" (BV-02, BV-20 t/m BV-23, BV-33).
 - **STA-5** Zodra het weekend vastligt, toont het startscherm een aftelteller in dagen tot de vrijdag, op de dag zelf "Vandaag!".
 - **STA-6** Het hoofdmenu hangt niet meer af van de stap: het heeft altijd de items van NAV-10. Archief en Uitleg staan er niet in (NAV-1).
 - **STA-8** De stap van een editie heeft één bron, de editie in de Sheet (§7.2.6). Na een stapwijziging in beheer tonen stappenbalk, menu en startscherm bij elke rol en op elk scherm na verversen dezelfde stap; een test met twee contexten bewijst dit.
@@ -705,12 +741,12 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 ### Accommodatie (ACC)
 - **ACC-1** De organisator legt het weekend vast vanuit de top 5 of uit de kalender.
 - **ACC-6** Er staat maar één weekend vast. Daarna is het gekozen weekend gemarkeerd, zijn de andere vastlegknoppen uitgeschakeld en weigert de server een tweede vastlegging met `gesloten`.
-- **ACC-7** "Ander weekend kiezen" maakt het weekend los (`weekendLosmaken`, stappen Weekendje prikker en Accommodatie) na een bevestiging die toont wat het raakt: de aftelteller en een geboekte accommodatie, die bij de oude datum blijft horen (AAN-81).
+- **ACC-7** "Ander weekend kiezen" maakt het weekend los (`weekendLosmaken`, stappen Weekendje prikker, Accommodatie en Meenemen) na een bevestiging die toont wat het raakt: de aftelteller en een geboekte accommodatie, die bij de oude datum blijft horen (AAN-81). Vastleggen en Ander weekend kiezen staan voor de organisator op Weekendje prikker en onder Accommodaties beheren; vanaf Weekend staat de melding met link naar Stappen uit §7.6.8 (BV-01).
 - **ACC-2** De organisator voegt accommodaties toe, wijzigt en verwijdert ze (naam, plaats, link, totaalprijs, notitie).
 - ~~ACC-3, ACC-4, ACC-5~~ Vervallen in fase 27, vervangen door ACC-8 t/m ACC-14.
 - **ACC-8** De organisator kiest per editie Verrassing of Samen kiezen (§7.6.2); een nieuwe editie begint met Samen kiezen.
 - **ACC-9** Bij een verrassing die niet onthuld is, ontvangt een deelnemer uit geen enkele leesactie naam, plaats, link, bedden of eigen kamers, alleen dat het geregeld is ("✓ Geregeld"); de organisator ziet alles en krijgt in Wie betaalt wat een waarschuwing. De WhatsApp-tekst van de stap Accommodatie noemt dan geen opties.
-- **ACC-10** Alleen de organisator onthult, na een bevestiging, op elk moment vanaf de stap Accommodatie en ook na Afgerond; nooit automatisch en definitief. Geboekt is genoeg voor de volgende stap.
+- **ACC-10** Alleen de organisator onthult, na een bevestiging, op elk moment vanaf de stap Accommodatie en ook na Afgerond; nooit automatisch en definitief. Geboekt is genoeg voor de volgende stap. Na onthullen van een verrassing krijgt een deelnemer alleen de geboekte accommodatie, nooit de andere opties (BV-29).
 - **ACC-11** Bij Samen kiezen geeft elke deelnemer een top 3 (minder bij minder opties) met 3, 2 en 1 punt; opnieuw opgeven vervangt de eerdere keuze. Kan vanaf de stap Accommodatie tot er geboekt is, via de wachtrij.
 - **ACC-12** De organisator ziet een ranglijst met per optie punten, een balk en het aantal mensen, en hoeveel deelnemers een top 3 gaven; deelnemers zien de stand zonder namen.
 - **ACC-13** De organisator boekt een optie, wijzigt en verwijdert opties en wisselt van vorm zolang er niets geboekt is; verwijderen neemt de voorkeuren mee en van de geboekte geeft "nog geen accommodatie gekozen".
@@ -726,6 +762,7 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **MEE-7** Afvinken werkt voor iedereen en is gedeeld; afgevinkte items staan doorgestreept onderaan hun categorie.
 - **MEE-8** "Kopieer als tekst" levert de tekst volgens §7.8.7.
 - **MEE-9** Bij boodschappen staan relevante tellingen uit eten en drinken volgens §7.8.8.
+- **MEE-10** De organisator kiest bij een item "Toewijzen aan ..." en een deelnemer; dat maakt een claim op naam van die deelnemer (§7.7.4). Een deelnemerssessie die dit probeert, krijgt `geen_toegang` (TOE-7). Het invoerveld onder Uit eigen keuken toont geen categorie zolang Boodschappen uit staat (OND-2, BV-30, BV-31).
 
 ### Kookbeurten (KOK)
 - **KOK-1** Bij het vastleggen van het weekend verschijnen de standaardmaaltijden; de organisator past ze aan.
@@ -752,9 +789,10 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **GELD-6** De lijst van posten toont per post betaler, bedrag, categorie en jouw aandeel, plus totalen per categorie.
 - **GELD-7** Het saldo per deelnemer volgt §7.13.6; de som is altijd nul (eigenschapstest met willekeurige posten).
 - **GELD-8** De afrekening volgt §7.13.7 en heeft nooit meer betalingen dan het aantal saldi ongelijk aan nul min één.
-- **GELD-9** Een betaling markeren als betaald of terugdraaien werkt de afrekening direct bij.
+- **GELD-9** Een betaling markeren als betaald of terugdraaien werkt de afrekening direct bij, ook na Afgerond (AAN-29, BV-25).
 - **GELD-10** Bij elke openstaande betaling maakt de ontvanger met één knop een betaalverzoek als WhatsApp-tekst.
 - **GELD-11** Afhaken volgt §7.13.9.
+- **GELD-12** Wie van Gelijk of Aandeel naar Bedrag per persoon wisselt, krijgt de velden voorgevuld met de bedragen van de vorige verdeling; er staat dan "nog € 0,00 te verdelen" (BV-34).
 
 ### Archief (ARC)
 - **ARC-1** De sectie "Afgelopen weekenden" op de startpagina toont de afgeronde edities van de groep volgens §7.15, nieuwste bovenaan, elk met een link "Bekijk" (NAV-4). Het scherm `#/archief` blijft bestaan voor bestaande links en toont alle edities.
@@ -785,14 +823,14 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **SYNC-2** Na 1 seconde zonder nieuwe handeling gaan alle wachtende handelingen in één aanroep `bundel` naar het script; tien snelle klikken leveren hooguit drie aanroepen.
 - **SYNC-3** De wachtrij staat in localStorage (altijd in try/catch) en wordt bij het volgende openen van de app alsnog verstuurd.
 - **SYNC-4** Eén indicator op een vaste plek in de kopregel toont "Opslaan…", "Opgeslagen" of "Niet opgeslagen, opnieuw proberen"; er is geen melding per klik.
-- **SYNC-5** Bij een fout probeert de voorkant het opnieuw met oplopende wachttijd (AAN-82); lukt het definitief niet, of weigert het script de actie, dan gaat de wijziging terug in beeld met een korte melding en de knop Opnieuw.
+- **SYNC-5** Bij een fout probeert de voorkant het opnieuw met oplopende wachttijd (AAN-82); lukt het definitief niet, of weigert het script de actie, dan gaat de wijziging terug in beeld met een korte melding in gewone taal (NFR-21) en de knop Opnieuw. Na herladen staat er geen melding "Niet opgeslagen" meer als er niets terug te zetten is (BV-24).
 - **SYNC-6** Zolang er handelingen in de wachtrij staan, waarschuwt de browser bij het verlaten van de pagina.
 - **SYNC-7** Elke kleine handeling schrijft één rij of één veld, is idempotent en de laatste schrijfactie wint (AAN-83); de bundel draait onder het slot van §7.16.1, zodat twee mensen die tegelijk verschillende items wijzigen allebei hun wijziging houden.
-- **SYNC-8** Grote acties wachten op de Sheet: de knop waarmee ze begonnen krijgt een bezig-status (`aria-busy`), de schil toont "Opslaan…" en andere schrijfknoppen doen tot het antwoord niets.
+- **SYNC-8** Grote acties wachten op de Sheet: de knop waarmee ze begonnen krijgt een bezig-status (`aria-busy` en een zichtbare tekst als "Opslaan…" in de knop), de schil toont "Opslaan…" en andere schrijfknoppen doen tot het antwoord niets. De bevestiging staat bij het veld of de knop, niet boven de sectie; na succes wordt het invoerveld leeg (BV-13, BV-35).
 
 ### Navigatie (NAV)
 - **NAV-1** Het hoofdmenu bevat de items van NAV-10, zonder Archief en Uitleg.
-- **NAV-2** Een profielknop in de kopregel, rechts, op dezelfde plek op mobiel en desktop, opent een menu met rol, Uitleg, Installeren (alleen als de browser dat toestaat) en Uitloggen.
+- **NAV-2** Een profielknop in de kopregel, rechts, op dezelfde plek op mobiel en desktop, opent een menu met naam en rol ("David · organisator"), Uitleg, Installeren (alleen als de browser dat toestaat) en Uitloggen (BV-36).
 - **NAV-3** Het profielmenu sluit met Escape, met een tik buiten het menu en na een keuze; de focus keert terug naar de knop; aanraakdoelen zijn minstens `--tap-min`.
 - **NAV-4** De startpagina heeft een uitklapbare sectie "Afgelopen weekenden" met afgeronde edities: dicht bij een lopende editie, open bij een afgeronde.
 - **NAV-5** De editiekiezer bevat alleen edities die niet zijn afgerond, plus de gekozen editie.
@@ -802,6 +840,10 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **NAV-9** In een beheersessie staan de beheerschermen (Leden, Nieuwe editie, Uitnodigen, Lijsten, Vragen, Per persoon, Stappen, Accommodaties beheren) achter één menu-item Beheren met een overzicht, los van de zeven items na een scheidingslijn; het item is actief op elk beheerscherm.
 - **NAV-10** Het hoofdmenu toont altijd Start, Invullen, Voortgang, Weekendje prikker, Accommodatie, Meenemen en Afrekening, in die volgorde en met de namen van de stappenbalk; het item van de huidige stap heeft een stip. Een beheersessie heeft geen Invullen. Een scherm dat nog niet aan de beurt is, toont "Komt in stap ...". Route `#/overzicht` blijft werken.
 - **NAV-11** Afrekening heeft twee tabs: Wie betaalt wat (`#/posten`) en Eindafrekening (`#/afrekening`). Het menu-item opent Wie betaalt wat en is actief op beide; de oude adressen blijven werken.
+- **NAV-12** Op mobiel (onderste menu) tonen alle zeven items alleen hun icoon; het actieve item toont ook zijn label. `aria-label` blijft de volle naam. Het menu past van 360 pixels breed zonder horizontaal scrollen. Accommodatie heeft een bed-icoon, anders dan het huisje van Start (BV-16, BV-17).
+- **NAV-13** Een onbekende route stuurt door naar `#/start` met `history.replaceState`, zodat het foute adres niet in de adresbalk blijft (BV-14).
+- **NAV-14** Op desktop (vanaf 1024 pixels) is de inhoud tot ongeveer 900 pixels breed, staat het menu uitgelijnd met de stappenbalk en kort de stappenbalk geen stapnamen af zolang er ruimte is; de kopregel toont de editienaam naast de profielknop (BV-19).
+- **NAV-15** De editietitel staat één keer bovenaan: de uitgeklapte stappenbalk herhaalt hem niet als het scherm hem al als kop of bovenschrift toont. Het bovenschrift boven een titel is de schermnaam (BV-18, BV-20).
 
 ## 9. Design
 
@@ -833,6 +875,8 @@ glaspaneel, stappenbalk, kaart, knop, invoerveld, schuif, vinkje, drieknop
 - **NFR-17 GitHub.** De README eist tweestapsverificatie op het account dat naar de repo pusht en een beschermde `main`-branch.
 - **NFR-19 Celinjectie.** `SheetStore` schrijft alle waarden als tekst volgens §5 Celopslag; een test op de SheetStore-adapter (met een nagebootste `Range`) bewijst dat invoer die met `=`, `+`, `-` of `@` begint en waarden als `2027-04-09` en `09:30` ongewijzigd als tekst terugkomen.
 - **NFR-20 Bundel.** `dist/gas` bevat de globale functies `doPost`, `doGet`, `onOpen` en alle menufuncties (unittest), en `appsscript.json` volgt §3.
+- **NFR-21 Foutteksten.** De gebruiker ziet nooit een veldnaam of technische code ("Veld data.tekst: te kort."). Elke `ongeldig`-melding wordt in de voorkant een Nederlandse zin ("Vul een vraag in."); een onbekende actie wordt "Deze handeling kent het script van de groep nog niet. Vraag de eigenaar het script bij te werken." (BV-05).
+- **NFR-22 API-versie.** `API_VERSIE` is 2 aan beide kanten; een snapshot-test van de actielijst faalt als `ACTIES` wijzigt zonder versieverhoging (§7.17, BV-04).
 - **NFR-18 Rechten Claude Code.** `.claude/settings.json` bevat een allow-lijst voor `npm`, `node`, `npx playwright`, `npx esbuild`, `git add`, `git commit`, `git status`, `git diff` en lees- en schrijfacties in de repo; geen algemene skip van toestemmingen.
 
 ## 11. Demodata

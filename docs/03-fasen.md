@@ -57,6 +57,11 @@ David samen met Claude Code.
 | 26 | Synchronisatielaag | SYNC-1 t/m SYNC-8 | AAN-82, AAN-83 | Opus |
 | 27 | Accommodatie verrassing of samen kiezen | ACC-8 t/m ACC-13 | AAN-08, AAN-65, AAN-84 | Opus |
 | 28 | Uitleg van de stappen | UIT-1 t/m UIT-4 | AAN-85 | Sonnet |
+| 29 | Foutafhandeling en versie | NFR-21, NFR-22, SYNC-5, SYNC-8, EDI-12, NAV-13 | AAN-14 | Opus |
+| 30 | Binnenkomen en Start | TOE-13, STA-4, STA-9, NAV-2, NAV-15 | AAN-71, AAN-85 | Sonnet |
+| 31 | Navigatie en layout | NAV-10, NAV-12, NAV-14, NAV-15, UIT-2 | AAN-12 | Sonnet |
+| 32 | Weekend en stappen | ACC-1, ACC-7, EDI-7, GELD-9 | AAN-05, AAN-29, AAN-81, AAN-88 | Opus |
+| 33 | Teksten, onderdelen en details | EDI-10, EDI-11, GRP-5, ACC-10, MEE-10, GELD-12 | AAN-89, AAN-90 | Sonnet |
 
 ## Fase 0: Opzet
 
@@ -258,6 +263,13 @@ Toegevoegd op 10 november 2026 na Davids doorklikronde. Opdracht in `feedbackron
 plan en Davids keuzes (K1 t/m K4) in `plan-feedbackronde.md`, per fase een bestand in `fasen/`.
 Volgorde vast: 23, 24, 25, 26, 27, 28; elke fase hangt af van de vorige. Fase 27 stopt na de schets
 tot David akkoord geeft.
+
+## Fase 29 t/m 33: Feedbackronde 2
+
+Toegevoegd op 11 november 2026 na de functionele test (`bevindingen-test-2026-11-11.md`, BV-01 t/m BV-36).
+Beslissingen in `01-interview.md` onder "Feedbackronde 2", spec versie 0.11, aannames versie 0.28. Per fase een
+bestand in `fasen/`. Fase 32 hangt af van fase 31; de andere staan los van elkaar. BV-03 is opgelost bij de uitrol
+en heeft geen fase. Na fase 33 staat `API_VERSIE` op 2: voorkant en script gaan kort na elkaar live (§7.17).
 
 ## Opdracht voor de hele run
 

@@ -13,6 +13,9 @@ zodra fase 0 `package.json` heeft neergezet.
 
 ## Open punten
 
+- BV-32 (beslissing David): de rangorde volgens AAN-06 zet een weekend met 0 ja en 0 nee boven weekenden met 3 ja en 1 nee. Voorstel: niet-ingevuld als onzeker tellen, of sorteren op ja min nee en dan misschien. AAN-06 blijft tot dan ongewijzigd.
+- Feedbackronde 2 (fase 29 t/m 33, `docs/fasen/`): in uitvoering.
+
 - Feedbackronde gebouwd (fase 23 t/m 28, `docs/plan-feedbackronde.md`). Open: Davids test op toestel (telefoon en laptop), lijst in `docs/overdracht/fase-28.md`; daarna uitrol (fase 20) en proef (fase 22).
 
 ## Sessielog
@@ -20,6 +23,7 @@ zodra fase 0 `package.json` heeft neergezet.
 Nieuwste bovenaan. Houd hier de laatste drie fasen; oudere regels naar
 `docs/sessielog-archief.md`.
 
+- 2026-11-11 uitrol feedbackronde (fase 23 t/m 28): voorkant gepusht naar Pages; script bijgewerkt in de sjabloon (@2) en in twee kopieën (@2), waaronder de kopie van de live groep "Weekendje weg test" (implementatie eindigt op MMEbIJ); POST bundel geeft daar geen "onbekende keuze" meer.
 - 2026-11-11 fase 28: uitleg van de stappen: route op Start (sluitbaar, vlag `ww-route-gezien`), Hoe werkt het?, info-icoon bij de stappenbalk, teksten per rol in `web/uitleg.js` (UIT-1 t/m UIT-4, NAV-7, AAN-85); check groen; eindlijst voor David in `docs/overdracht/fase-28.md`.
 - 2026-11-11 fase 27: accommodatie Verrassing of Samen kiezen, top 3 via de wachtrij, boeken, onthullen (nooit vanzelf), geen lek naar deelnemers, bedden en eigen kamers (ACC-8 t/m ACC-14, AAN-84, AAN-86, AAN-87; AAN-08, AAN-64, AAN-65 aangepast); check groen; zie `docs/overdracht/fase-27.md`.
 - 2026-11-10 fase 26: synchronisatielaag: wachtrij met debounce, localStorage en terugdraaien, actie `bundel`, `antwoordZetten` per veld, formulier zonder Opslaan (K4), indicator in de kopregel (SYNC-1 t/m SYNC-8, AAN-82, AAN-83); check groen; zie `docs/overdracht/fase-26.md`.
