@@ -33,17 +33,19 @@ export function herinneringTekst({ editieTitel, namen, deadline }) {
 const STAP_VERWACHT = {
   invullen: (t, d) => `Hoi allemaal! Voor ${t} kun je je beschikbaarheid en wensen invullen in de app. Invullen kan tot ${d.deadline}.`,
   overzicht: (t) => `Hoi allemaal! Het invullen voor ${t} is gesloten. In de app zie je nu welke weekenden het best passen.`,
-  accommodatie: (t) => `Hoi allemaal! Voor ${t} zoeken we nu een accommodatie. Kijk in de app naar de opties.`,
+  accommodatie: (t, d) => (d.deelvorm === 'verrassing'
+    ? `Hoi allemaal! Voor ${t} regelen we de accommodatie. Het wordt een verrassing: waar we heen gaan, hoor je later.` // ACC-9: geen opties
+    : `Hoi allemaal! Voor ${t} zoeken we nu een accommodatie. Kijk in de app naar de opties en geef je top 3.`),
   voorbereiding: (t) => `Hoi allemaal! We bereiden ${t} voor. Kijk in de app wat je meeneemt, wanneer je kookt en met wie je rijdt.`,
   weekend: (t) => `Hoi allemaal! Het is zover: ${t} begint. Het programma staat in de app.`,
   afrekenen: (t) => `Hoi allemaal! ${t} zit erop. Zet je uitgaven in de app, dan rekenen we af.`,
   afgerond: (t) => `Hoi allemaal! ${t} is afgerond en afgerekend. Bedankt voor het mooie weekend!`,
 };
 
-export function stapTekst({ editieTitel, stap, deadline }) {
+export function stapTekst({ editieTitel, stap, deadline, deelvorm }) {
   const maak = STAP_VERWACHT[stap];
   if (!maak) throw new Error(`onbekende stap ${stap}`);
-  const tekst = maak(editieTitel, { deadline: datumVan(deadline) });
+  const tekst = maak(editieTitel, { deadline: datumVan(deadline), deelvorm });
   const volgende = STAPPEN[STAPPEN.indexOf(stap) + 1];
   if (!volgende) return tekst;
   return `${tekst} Daarna volgt de stap ${STAPNAMEN[volgende]}.`; // STA-8: namen uit één tabel, DDL-1: geen datums

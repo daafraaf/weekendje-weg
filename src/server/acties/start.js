@@ -7,14 +7,12 @@ import { kiesEditie } from './overzicht.js';
 import { editieStappen } from './stappen.js';
 import { deelnemersVan, mijnRij } from './posten.js';
 import { stand } from './afrekening.js';
+import { geboekteVoor } from './geheim.js';
+import { deelvormVan } from '../../shared/accommodatie.js';
 
 const opNaam = (a, b) => a.localeCompare(b, 'nl');
 const van = (store, tabel, editieId) => store.lees(tabel).filter((r) => r.editieId === editieId);
 
-function geboektVan(store, editie) {
-  const a = editie.geboektAccommodatieId && store.vind('Accommodaties', editie.geboektAccommodatieId);
-  return a ? { naam: a.naam, plaats: a.plaats, link: a.link } : null;
-}
 
 // Wat de stap Voorbereiding laat zien: per onderdeel een telling en wat er van jou is.
 function voorbereiding(store, editie, actief, ikId) {
@@ -68,10 +66,10 @@ export function startScherm(h) {
   const ik = alle.find((d) => d.id === ikId);
   const uit = {
     edities, organisator,
-    editie: { ...editieStappen(editie), vastgelegdWeekend: editie.vastgelegdWeekend || '', deelvorm: editie.deelvorm || 'info', boodschappenDefinitief: Boolean(editie.boodschappenDefinitief) },
+    editie: { ...editieStappen(editie), vastgelegdWeekend: editie.vastgelegdWeekend || '', deelvorm: deelvormVan(editie.deelvorm), onthuld: Boolean(editie.onthuld), boodschappenDefinitief: Boolean(editie.boodschappenDefinitief) },
     ik: ik ? { voornaam: naamVan(ik), ingevuld: Boolean(ik.ingevuld), afgehaakt: Boolean(ik.afgehaakt) } : null,
     voortgang: { aantal: actief.length, ingevuld: actief.filter((d) => d.ingevuld).length, nogNiet: actief.filter((d) => !d.ingevuld).map(naamVan).sort(opNaam) },
-    geboekt: geboektVan(store, editie),
+    geboekt: geboekteVoor(store, sessie, editie), // ACC-9: bij een geheime verrassing alleen dat het geregeld is
     programma: { punten: van(store, 'Programma', editie.id).length },
     deelnemers: actief.length,
   };
@@ -82,7 +80,7 @@ export function startScherm(h) {
 }
 
 // ARC-1, §7.15, AAN-30: alle edities van de groep, nieuwste bovenaan, voor iedereen met een geldige sessie.
-export function archiefScherm({ store }) {
+export function archiefScherm({ store, sessie }) {
   const leden = new Map(store.lees('Leden').map((l) => [l.id, l]));
   const deelnemers = store.lees('Deelnemers');
   const namen = (editieId, rol) => deelnemers
@@ -90,7 +88,7 @@ export function archiefScherm({ store }) {
     .map((d) => (leden.get(d.lidId) || {}).voornaam || '').filter(Boolean).sort(opNaam);
   const edities = [...store.lees('Edities')].sort((a, b) => b.jaar - a.jaar || (a.id < b.id ? 1 : -1)).map((e) => ({
     id: e.id, jaar: e.jaar, titel: e.titel, stap: e.stap, vastgelegdWeekend: e.vastgelegdWeekend || '',
-    accommodatie: geboektVan(store, e),
+    accommodatie: geboekteVoor(store, sessie, e), // ACC-9
     organisatoren: namen(e.id, 'organisator'), deelnemers: namen(e.id),
   }));
   return { edities };

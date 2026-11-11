@@ -202,16 +202,16 @@ registreer('afrekening', {
   },
 });
 
-// ACC-3 t/m ACC-5: de accommodaties van de groep (info, stemmen of geboekt).
+// ACC-8 t/m ACC-14: de accommodatie van de groep (verrassing of samen kiezen, top 3 via de wachtrij).
 registreer('accommodaties', {
   titel: 'Accommodatie',
   icoon: ['M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z'],
   render(params) {
-    return maakAccommodaties({ sessie: leesSessie(localStorage), params, bijVerlopen: bijVerlopenSessie });
+    return maakAccommodaties({ sessie: leesSessie(localStorage), params, wachtrij, bijVerlopen: bijVerlopenSessie });
   },
 });
 
-// ACC-1, ACC-2, ACC-3, ACC-5: weekend vastleggen en accommodaties beheren, alleen voor de organisator.
+// ACC-1, ACC-2, ACC-8, ACC-10, ACC-13, ACC-14: weekend vastleggen, kiezen hoe, opties beheren, boeken en onthullen (organisator).
 registreer('accommodatie-beheer', {
   titel: 'Accommodaties beheren',
   soort: 'beheer',

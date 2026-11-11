@@ -1,5 +1,6 @@
 # Bouwspecificatie Weekendje weg
 
+Versie 0.9, 11 november 2026: accommodatie verrassing of samen kiezen, feedbackronde fase 27 (§5.1, §5.3, §7.6, §11, ACC-3 t/m ACC-5 vervangen door ACC-8 t/m ACC-14).
 Versie 0.8, 10 november 2026: synchronisatielaag met wachtrij, feedbackronde fase 26 (§5.3, §7.4.8, §7.4.9, §7.16.5, SYNC-1 t/m SYNC-8, FRM-8, FRM-10, NFR-8, NFR-12).
 Versie 0.7, 10 november 2026: één vastgelegd weekend met uitweg, feedbackronde fase 25 (§5.3, ACC-6, ACC-7).
 Versie 0.6, 10 november 2026: onderdelen uit en invullen vrijer, feedbackronde fase 24 (§7.2.3, §7.2.4, §7.2.6, §7.4.8, OND-1, OND-2, OND-3, FRM-8, FRM-9, FRM-11, DDL-1, OVZ-1, STA-1, EDI-7, EDI-8, EDI-10).
@@ -130,13 +131,15 @@ offset (`2027-03-01T23:59:00+01:00`); de tijdzone van script en Sheet is Europe/
 |---|---|---|
 | `Groep` (één rij) | `naam`, `apiVersie`, `opgezet` (bool), `aangemaakt` | F-22 |
 | `Leden` | `id`, `voornaam`, `woonplaats`, `actief` | F-11, F-22, F-27 |
-| `Edities` | `id`, `jaar`, `titel`, `stap` (enum §7.2), `stapData` (JSON, vervallen: wordt niet meer gelezen of geschreven, DDL-1), `periodeVan`, `periodeTot`, `voorkeursmaanden` (JSON, maandnummers), `deadline` (datum+tijd), `blokken` (JSON, aan/uit per blok), `lijsten` (JSON: activiteiten, programma, eten en drinken), `vastgelegdWeekend`, `deelvorm` (`info`, `stemmen`, `geboekt`), `geboektAccommodatieId`, `boodschappenDefinitief` (bool), `versie`, `bijgewerkt` | F-08, F-20, F-30, F-32, F-36, F-43, F-45 |
+| `Edities` | `id`, `jaar`, `titel`, `stap` (enum §7.2), `stapData` (JSON, vervallen: wordt niet meer gelezen of geschreven, DDL-1), `periodeVan`, `periodeTot`, `voorkeursmaanden` (JSON, maandnummers), `deadline` (datum+tijd), `blokken` (JSON, aan/uit per blok), `lijsten` (JSON: activiteiten, programma, eten en drinken), `vastgelegdWeekend`, `deelvorm` (`verrassing`, `samen`; oude waarden `info`, `stemmen` en `geboekt` lezen als `samen`, AAN-86), `geboektAccommodatieId` (leeg: nog geen accommodatie gekozen), `boodschappenDefinitief` (bool), `versie`, `bijgewerkt`, `onthuld` (bool, alleen bij `verrassing`) | F-08, F-20, F-30, F-32, F-36, F-43, F-45 |
 | `Deelnemers` | `id`, `editieId`, `lidId`, `tokenHash`, `pinHash`, `pinSalt`, `rol` (`deelnemer`, `organisator`), `afgehaakt` (bool), `ingevuld` (bool), `ingevuldOp` | F-21, F-29, F-38, F-47 |
 | `Beheerlinks` | `id`, `lidId`, `tokenHash`, `wachtwoordHash` (leeg tot eerste gebruik), `wachtwoordSalt`, `actief` (bool), `gemaakt`. Een beheerlink hoort bij een lid en geeft beheer over de edities waarin dat lid organisator is, plus het aanmaken van nieuwe edities | F-38 |
 | `Antwoorden` | `id`, `editieId`, `deelnemerId`, `data` (JSON §5.2), `versie`, `bijgewerkt` | F-02 t/m F-15, F-24 t/m F-28, F-33, F-36, F-37, F-41 |
 | `Vragen` | `id`, `editieId`, `volgorde`, `type` (`janee`, `keuze`, `meerkeuze`, `schaal`, `tekst`), `tekst`, `opties` (JSON) | F-15, F-33 |
-| `Accommodaties` | `id`, `editieId`, `naam`, `plaats`, `link`, `prijsTotaal` (centen), `notitie`, `versie` | F-32 |
-| `Stemmen` | `id`, `editieId`, `deelnemerId`, `accommodatieId` | F-32 |
+| `Accommodaties` | `id`, `editieId`, `naam`, `plaats`, `link`, `prijsTotaal` (centen), `notitie`, `versie`, `bedden` (geheel getal, optioneel), `eigenKamers` (geheel getal, optioneel: kamers voor één persoon) | F-32 |
+| `Stemmen` | `id`, `editieId`, `deelnemerId`, `accommodatieId`, `rang` (1 t/m 3; leeg in een oude Sheet telt als 1, AAN-86). Eén rij per keuze van de top 3 | F-32 |
+
+**Nieuwe kolommen.** Kolommen die later zijn bijgekomen (`Edities.onthuld`, `Stemmen.rang`, `Accommodaties.bedden` en `eigenKamers`) staan achteraan. Mist een kolom in een bestaande Sheet, dan leest de Store een lege cel en zet hij de kolom achteraan de kop bij de eerste schrijfactie op die tab (AAN-84).
 | `Items` | `id`, `editieId`, `soort` (`spullen`, `keuken`, `boodschap`), `naam`, `categorie` (§7.9), `maaltijdId` (optioneel), `toegevoegdDoor`, `afgevinkt` (bool), `versie` | F-40, F-42, F-43 |
 | `Claims` | `id`, `itemId`, `deelnemerId`, `gemaakt` | F-51 |
 | `Maaltijden` | `id`, `editieId`, `dag` (`vr`, `za`, `zo`), `soort` (`ontbijt`, `lunch`, `diner`), `omschrijving` | F-40 |
@@ -201,7 +204,7 @@ opnieuw proberen zinvol), `api_versie`, `fout` (onverwacht).
 | `formulier` | editie-instellingen, lijsten, vragen, mijn antwoorden met versie |
 | `voortgang` | per deelnemer voornaam, ingevuld ja/nee, deadline |
 | `overzicht` | §7.5.3 voor deelnemers, §7.5.4 voor beheer |
-| `accommodaties` | accommodaties, deelvorm, stemaantallen, mijn stem, vastgelegd weekend |
+| `accommodaties` | deelvorm, geboekt, onthuld, opties met punten en aantal mensen (zonder namen), mijn top 3, hoeveel een top 3 gaven, vastgelegd weekend; bij een niet-onthulde verrassing voor een deelnemer geen enkele optie (ACC-9) |
 | `meenemen` | items met claims, definitief-status, tellingen eten en drinken |
 | `kookbeurten` | maaltijden met koks en ingrediënten, wensen volgens §7.10.4 |
 | `programma` | programmapunten |
@@ -219,8 +222,8 @@ opnieuw proberen zinvol), `api_versie`, `fout` (onverwacht).
 | Leden | `ledenBeheren` (toevoegen, woonplaats wijzigen, inactief) |
 | Editie | `editieAanmaken`, `editieBijwerken`, `deelnemersBeheren`, `linksMaken` (geeft eenmalig links en pincodes terug), `linkVernieuwen`, `pincodeVernieuwen`, `beheerlinkMaken` (voor een lid), `stapZetten`, `afhakenMarkeren`, `vragenBeheren` |
 | Invullen | `antwoordenOpslaan` (met versie), `antwoordZetten` (één veld van `Antwoorden.data`, `waarde: null` haalt het weg, zonder versie, AAN-83) |
-| Wachtrij | `bundel` (lijst van hooguit 25 `{ actie, data }` uit `claimen`, `claimIntrekken`, `afvinken`, `antwoordZetten`; antwoord `{ uitslagen: [{ ok, data } of { ok: false, fout, melding }] }`, §7.16.5) |
-| Accommodatie | `weekendVastleggen`, `weekendLosmaken`, `accommodatieOpslaan`, `accommodatieVerwijderen`, `deelvormZetten`, `stemmen` |
+| Wachtrij | `bundel` (lijst van hooguit 25 `{ actie, data }` uit `claimen`, `claimIntrekken`, `afvinken`, `antwoordZetten`, `top3Opgeven`; antwoord `{ uitslagen: [{ ok, data } of { ok: false, fout, melding }] }`, §7.16.5) |
+| Accommodatie | `weekendVastleggen`, `weekendLosmaken`, `accommodatieOpslaan` (met optioneel `bedden` en `eigenKamers`), `accommodatieVerwijderen`, `deelvormZetten` (`verrassing` of `samen`), `accommodatieBoeken`, `verrassingOnthullen`, `top3Opgeven` (`keuzes`: hooguit drie `{ accommodatieId, rang }`, vervangt de vorige top 3, via de wachtrij) |
 | Voorbereiding | `itemOpslaan`, `itemVerwijderen`, `claimen`, `claimIntrekken` (eigen, of als organisator die van een ander), `afvinken`, `boodschappenDefinitief`, `maaltijdOpslaan`, `kokWorden`, `kokStoppen`, `programmaOpslaan`, `programmaVerwijderen`, `kamersOpslaan`, `kamerIndelen`, `ritOpslaan`, `meerijden`, `meerijdenStoppen` |
 | Geld | `postOpslaan`, `postVerwijderen`, `betalingMarkeren`, `betalingTerugdraaien` |
 
@@ -406,10 +409,34 @@ Na de stap Afgerond is alles alleen-lezen, behalve het archief (AAN-29).
 1. De organisator legt één weekend vast; dat zet de aftelteller aan en is de basis voor
    programma en maaltijden.
 2. Accommodaties zijn zichtbaar voor deelnemers vanaf de stap Accommodatie, in de gekozen
-   deelvorm: `info` (alleen lijst), `stemmen` (iedereen kiest één favoriet, aantallen voor
-   iedereen zichtbaar, wijzigen mag, AAN-08), `geboekt` (één accommodatie met "Geboekt").
+   vorm. De organisator kiest per editie, nadat hij zelf heeft gezocht:
+   - **Samen kiezen** (`samen`, de standaard): de organisator zet een paar opties neer; elke
+     deelnemer geeft een top 3 (minder bij minder opties). Rang 1, 2 en 3 geven 3, 2 en 1 punt.
+     Opnieuw opgeven vervangt de eerdere top 3; de top 3 gaat via de wachtrij (§7.16.5). De
+     organisator ziet een ranglijst met per optie punten en aantal mensen; deelnemers zien
+     dezelfde stand zonder namen (AAN-08).
+   - **Verrassing** (`verrassing`): de organisator kiest en boekt zelf. Een deelnemer krijgt van
+     de server nergens naam, plaats, link, bedden of eigen kamers, ook niet via het startscherm,
+     het archief of een ander leesscherm; alleen dat de accommodatie geregeld is. De organisator
+     (met beheerlink of eigen deelnemerslink) ziet alles. In Wie betaalt wat krijgt de organisator
+     een waarschuwing dat een omschrijving met de naam van het huis de verrassing kan verraden.
 3. Prijs wordt getoond als totaal en per persoon (totaal gedeeld door het aantal niet-afgehaakte
    deelnemers, afgerond op hele euro's).
+4. **Boeken.** De organisator legt één optie vast als geboekt (`geboektAccommodatieId`); een
+   andere boeken vervangt de vorige. Geboekt is genoeg om door te gaan: geen stap hangt af van
+   onthullen. Verwijderen neemt de voorkeuren voor die optie mee; was het de geboekte, dan is
+   er weer "nog geen accommodatie gekozen" (AAN-65).
+5. **Wisselen** tussen Verrassing en Samen kiezen kan zolang er niets geboekt is; ingevoerde
+   voorkeuren blijven bewaard.
+6. **Onthullen** doet alleen de organisator, op een moment naar keuze en nooit automatisch, ook
+   niet na het weekend; de verrassing mag geheim blijven. Onthullen vraagt een bevestiging, is
+   definitief en kan vanaf de stap Accommodatie in elke latere stap, ook na Afgerond (AAN-87).
+   Daarna zien deelnemers de geboekte accommodatie met naam, plaats, datum, prijs, bedden,
+   eigen kamers, notitie en link.
+7. **Bedden en eigen kamers.** Een optie heeft optioneel het aantal bedden en het aantal eigen
+   kamers (kamers voor één persoon, voor sommigen een pre), elk een geheel getal vanaf 0; eigen
+   kamers niet meer dan bedden als beide zijn ingevuld (AAN-64). Ze staan bij elke optie, als
+   "8 bedden · 3 eigen kamers"; een leeg veld wordt niet getoond.
 
 ### 7.7 Wie neemt wat mee
 1. Drie soorten items: `spullen` (wordt nooit gekocht), `keuken` (uit eigen keuken, kan ook
@@ -673,9 +700,14 @@ het bij via …" met een link naar de uitleg in de README (AAN-14).
 - **ACC-6** Er staat maar één weekend vast. Daarna is het gekozen weekend gemarkeerd, zijn de andere vastlegknoppen uitgeschakeld en weigert de server een tweede vastlegging met `gesloten`.
 - **ACC-7** "Ander weekend kiezen" maakt het weekend los (`weekendLosmaken`, stappen Weekendje prikker en Accommodatie) na een bevestiging die toont wat het raakt: de aftelteller en een geboekte accommodatie, die bij de oude datum blijft horen (AAN-81).
 - **ACC-2** De organisator voegt accommodaties toe, wijzigt en verwijdert ze (naam, plaats, link, totaalprijs, notitie).
-- **ACC-3** De organisator kiest de deelvorm `info`, `stemmen` of `geboekt`.
-- **ACC-4** Bij `stemmen` kiest elke deelnemer één favoriet en kan die wijzigen; iedereen ziet de aantallen.
-- **ACC-5** Bij `geboekt` toont de app één accommodatie als geboekt met naam, plaats, link en prijs per persoon.
+- ~~ACC-3, ACC-4, ACC-5~~ Vervallen in fase 27, vervangen door ACC-8 t/m ACC-14.
+- **ACC-8** De organisator kiest per editie Verrassing of Samen kiezen (§7.6.2); een nieuwe editie begint met Samen kiezen.
+- **ACC-9** Bij een verrassing die niet onthuld is, ontvangt een deelnemer uit geen enkele leesactie naam, plaats, link, bedden of eigen kamers, alleen dat het geregeld is ("✓ Geregeld"); de organisator ziet alles en krijgt in Wie betaalt wat een waarschuwing. De WhatsApp-tekst van de stap Accommodatie noemt dan geen opties.
+- **ACC-10** Alleen de organisator onthult, na een bevestiging, op elk moment vanaf de stap Accommodatie en ook na Afgerond; nooit automatisch en definitief. Geboekt is genoeg voor de volgende stap.
+- **ACC-11** Bij Samen kiezen geeft elke deelnemer een top 3 (minder bij minder opties) met 3, 2 en 1 punt; opnieuw opgeven vervangt de eerdere keuze. Kan vanaf de stap Accommodatie tot er geboekt is, via de wachtrij.
+- **ACC-12** De organisator ziet een ranglijst met per optie punten, een balk en het aantal mensen, en hoeveel deelnemers een top 3 gaven; deelnemers zien de stand zonder namen.
+- **ACC-13** De organisator boekt een optie, wijzigt en verwijdert opties en wisselt van vorm zolang er niets geboekt is; verwijderen neemt de voorkeuren mee en van de geboekte geeft "nog geen accommodatie gekozen".
+- **ACC-14** Een optie heeft optioneel bedden en eigen kamers (hele getallen vanaf 0, eigen kamers niet meer dan bedden), getoond als "8 bedden · 3 eigen kamers" bij elke optie in de lijsten en na onthullen.
 
 ### Wie neemt wat mee en boodschappen (MEE)
 - **MEE-1** De lijst toont drie secties: Spullen, Uit eigen keuken, Boodschappen, met per item de namen van wie het meeneemt.
@@ -806,7 +838,7 @@ glaspaneel, stappenbalk, kaart, knop, invoerveld, schuif, vinkje, drieknop
 - **2027, configureerbaar:** met een schakelaar `stap` die de editie in elke stap zet met
   passende data: vier van zes ingevuld (invullen), alle zes ingevuld met een duidelijke
   voorkeursdatum en een gelijkspel op de tweede plek (overzicht), drie accommodaties met
-  stemmen (accommodatie), lijsten met claims, dubbele claim, definitieve boodschappen, twee
+  een top 3 van vijf van de zes, bedden en eigen kamers (accommodatie), lijsten met claims, dubbele claim, definitieve boodschappen, twee
   kookbeurten, kamers en twee ritten (voorbereiding), programma (weekend), open en betaalde
   betalingen en één afgehaakte deelnemer met gedeelde kosten (afrekenen).
 

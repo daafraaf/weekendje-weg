@@ -120,6 +120,7 @@ test('§6 TOE-7: stap en status sluiten acties (stemmen, invullen, definitieve b
   const voor = b.foto();
   expect((await b.vraag({ actie: 'antwoordenOpslaan', sessie: daan, data: { versie: 1, data: {} } })).fout).toBe('gesloten');
   expect((await b.vraag({ actie: 'itemOpslaan', sessie: daan, data: { soort: 'boodschap', naam: 'Chips' } })).fout).toBe('gesloten');
+  expect((await b.vraag({ actie: 'top3Opgeven', sessie: daan, data: { keuzes: [{ accommodatieId: 'accDemo202700002', rang: 1 }] } })).fout).toBe('gesloten'); // ACC-11: er is geboekt
   expect(b.foto()).toBe(voor);
   b.nep.server.close();
   // Afrekenen: een betaling waar Bas niet bij betrokken is.

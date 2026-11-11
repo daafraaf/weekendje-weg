@@ -7,6 +7,8 @@ import { WIJZEN, AANDEEL_MAX, inVerdeling, verdelingFout, schoonVerdeling } from
 import { saldi, totalen, aandelenVan } from '../../shared/saldo.js';
 import { kiesEditie } from './overzicht.js';
 import { editieStappen } from './stappen.js';
+import { isGeheim } from '../../shared/accommodatie.js';
+import { isOrganisatorVan } from './geheim.js';
 
 const MAX_DEELNEMERS = 100;
 const verdelingSchema = v.object({
@@ -115,6 +117,8 @@ export function postenScherm(h) {
     ik,
     organisator: isOrganisator,
     alleenLezen,
+    // ACC-9: de organisator krijgt een waarschuwing dat een omschrijving met de naam van het huis de verrassing kan verraden.
+    verrassingGeheim: isGeheim(editie) && isOrganisatorVan(store, sessie, editie.id),
     categorieen: CATEGORIEEN,
     deelnemers: deelnemers.map((d) => ({ id: d.id, voornaam: naamVan(d.id), afgehaakt: Boolean(d.afgehaakt) }))
       .sort((a, b) => a.voornaam.localeCompare(b.voornaam, 'nl') || (a.id < b.id ? -1 : 1)),

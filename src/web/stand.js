@@ -2,6 +2,8 @@
 // past daar de acties uit de wachtrij op toe die nog niet bevestigd zijn. Zo staat een handeling direct in beeld,
 // blijft ze staan als het scherm opnieuw laadt terwijl ze nog onderweg is, en verdwijnt ze vanzelf als de
 // wachtrij haar terugdraait. Na een geslaagde bundel schuift de actie door naar `bevestigd`, zonder herlaadronde.
+import { PUNTEN } from '../shared/accommodatie.js';
+
 const kloon = (g) => (typeof structuredClone === 'function' ? structuredClone(g) : JSON.parse(JSON.stringify(g)));
 
 // toepassen(g, actie) wijzigt een kopie van de gegevens; hoort(actie) kiest de acties van dit scherm.
@@ -61,5 +63,22 @@ export function pasAntwoordToe(g, { actie, data }) {
   const d = { ...(g.antwoorden.data || {}) };
   if (data.waarde === null) delete d[data.veld]; else d[data.veld] = data.waarde;
   g.antwoorden.data = d;
+  return g;
+}
+
+// Accommodatie: de eigen top 3 vervangen (ACC-11). De punten en aantallen schuiven mee: eerst de oude eigen punten
+// eraf, dan de nieuwe erbij; zo klopt de stand zonder te weten wat anderen kozen.
+export function pasTop3Toe(g, { actie, data }) {
+  if (actie !== 'top3Opgeven' || !g || !Array.isArray(g.accommodaties)) return g;
+  const oud = g.mijnTop3 || [];
+  const nieuw = data.keuzes || [];
+  const pt = (lijst, id) => { const k = lijst.find((x) => x.accommodatieId === id); return k ? PUNTEN[k.rang] : 0; };
+  for (const a of g.accommodaties) {
+    const o = pt(oud, a.id), n = pt(nieuw, a.id);
+    a.punten += n - o;
+    a.mensen += (n ? 1 : 0) - (o ? 1 : 0);
+  }
+  g.gaven += (nieuw.length ? 1 : 0) - (oud.length ? 1 : 0);
+  g.mijnTop3 = nieuw.map((k) => ({ accommodatieId: k.accommodatieId, rang: k.rang }));
   return g;
 }

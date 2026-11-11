@@ -5,6 +5,7 @@ import { reden, rolReden, ALLE_SCHERMEN } from './rechten.js';
 import { valideer, v } from './validatie.js';
 import { hashToken } from './crypto.js';
 import { bundelSchema, voerBundelUit } from './acties/bundel.js';
+import { deelvormVan } from '../shared/accommodatie.js';
 
 export const API_VERSIE = 1;
 export const SLOT_WACHTTIJD_MS = 10000;
@@ -25,7 +26,8 @@ export const ACTIES = {
   pincodeVernieuwen: S, beheerlinkMaken: SG, stapZetten: S, afhakenMarkeren: S, vragenBeheren: S,
   antwoordenOpslaan: S, antwoordZetten: S,
   bundel: S, // SYNC-2: kleine handelingen uit de wachtrij, elk met eigen rechten, validatie en Log
-  weekendVastleggen: S, weekendLosmaken: S, accommodatieOpslaan: S, accommodatieVerwijderen: S, deelvormZetten: S, stemmen: S,
+  weekendVastleggen: S, weekendLosmaken: S, accommodatieOpslaan: S, accommodatieVerwijderen: S, deelvormZetten: S,
+  accommodatieBoeken: S, verrassingOnthullen: S, top3Opgeven: S,
   itemOpslaan: S, itemVerwijderen: S, claimen: S, claimIntrekken: S, afvinken: S,
   boodschappenDefinitief: S, maaltijdOpslaan: S, kokWorden: S, kokStoppen: S, programmaOpslaan: S,
   programmaVerwijderen: S, kamersOpslaan: S, kamerIndelen: S, ritOpslaan: S, meerijden: S, meerijdenStoppen: S,
@@ -114,7 +116,8 @@ export function maakApi(deps) {
       ctx.editieId = editieId;
       ctx.stap = editie.stap;
       ctx.naDeadline = Boolean(editie.deadline) && nu().getTime() > Date.parse(editie.deadline);
-      ctx.deelvorm = editie.deelvorm;
+      ctx.deelvorm = deelvormVan(editie.deelvorm); // oude deelvormen omgezet
+      ctx.geboekt = Boolean(editie.geboektAccommodatieId);
       ctx.definitief = editie.boodschappenDefinitief;
       if (sessie.rol === 'organisator') {
         const eigen = store.lees('Deelnemers').find((d) => d.editieId === editieId && d.lidId === sessie.lidId);

@@ -23,7 +23,7 @@
       "stapData": { "invullen": "2026-04-01", "overzicht": "2026-04-03", "accommodatie": "2026-04-15", "voorbereiding": "2026-09-11", "weekend": "2026-10-02", "afrekenen": "2026-10-05", "afgerond": "2026-10-19" },
       "vastgelegdWeekend": "2026-10-02",
       "accommodaties": [
-        { "id": "accDemo202600001", "naam": "Boshuis De Veldhoek", "plaats": "Ommen", "link": "https://voorbeeld.nl/veldhoek", "prijsTotaal": 96000, "notitie": "Houtkachel en grote tuin", "geboekt": true }
+        { "id": "accDemo202600001", "naam": "Boshuis De Veldhoek", "plaats": "Ommen", "link": "https://voorbeeld.nl/veldhoek", "prijsTotaal": 96000, "notitie": "Houtkachel en grote tuin", "bedden": 8, "eigenKamers": 2, "geboekt": true }
       ],
       "posten": [
         { "omschrijving": "Boshuis De Veldhoek", "bedrag": 96000, "betaler": "Eva", "datum": "2026-05-01", "categorie": "verblijf", "verdeling": { "wijze": "gelijk", "deelnemers": ["Anne", "Bas", "Daan", "Eva", "Joris", "Sanne"] } },
@@ -71,12 +71,19 @@
       "vastgelegdWeekend": { "vanaf": "accommodatie", "vrijdag": "2027-05-21" },
       "accommodaties": {
         "vanaf": "accommodatie",
-        "deelvorm": "stemmen",
+        "deelvorm": "samen",
         "lijst": [
-          { "id": "accDemo202700001", "naam": "Hoeve de Kraanvogel", "plaats": "Dwingeloo", "link": "https://voorbeeld.nl/kraanvogel", "prijsTotaal": 138000, "notitie": "Sauna en zes slaapkamers", "stemmen": ["Anne", "Eva", "Sanne"] },
-          { "id": "accDemo202700002", "naam": "Boerderij ’t Hooiveld", "plaats": "Winterswijk", "link": "", "prijsTotaal": 114000, "notitie": "", "stemmen": ["Bas", "Joris"] },
-          { "id": "accDemo202700003", "naam": "Strandhuis Duinzicht", "plaats": "Renesse", "link": "https://voorbeeld.nl/duinzicht", "prijsTotaal": 96000, "notitie": "Vijf minuten van het strand", "stemmen": ["Daan"] }
+          { "id": "accDemo202700001", "naam": "Hoeve de Kraanvogel", "plaats": "Dwingeloo", "link": "https://voorbeeld.nl/kraanvogel", "prijsTotaal": 138000, "notitie": "Sauna en zes slaapkamers", "bedden": 8, "eigenKamers": 4 },
+          { "id": "accDemo202700002", "naam": "Boerderij ’t Hooiveld", "plaats": "Winterswijk", "link": "", "prijsTotaal": 114000, "notitie": "", "bedden": 10, "eigenKamers": 1 },
+          { "id": "accDemo202700003", "naam": "Strandhuis Duinzicht", "plaats": "Renesse", "link": "https://voorbeeld.nl/duinzicht", "prijsTotaal": 96000, "notitie": "Vijf minuten van het strand", "bedden": 6 }
         ],
+        "top3": {
+          "Anne": ["accDemo202700001", "accDemo202700003", "accDemo202700002"],
+          "Eva": ["accDemo202700001", "accDemo202700002"],
+          "Sanne": ["accDemo202700001", "accDemo202700003"],
+          "Bas": ["accDemo202700002", "accDemo202700001", "accDemo202700003"],
+          "Joris": ["accDemo202700002", "accDemo202700001"]
+        },
         "geboektVanaf": "voorbereiding",
         "geboekt": "accDemo202700001"
       },

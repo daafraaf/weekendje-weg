@@ -6,7 +6,7 @@ import { maakNepApi } from '../mock-backend/server.mjs';
 import { maakDemo, DEMO_EDITIE_ID } from '../mock-backend/demo.mjs';
 import { nodeSha256 } from '../mock-backend/memorystore.mjs';
 import { maakWachtrij, WACHTRIJ_SLEUTEL, SYNC_TEKST, TERUG_TEKST } from '../../src/web/wachtrij.js';
-import { maakStand, pasItemsToe, pasAntwoordToe } from '../../src/web/stand.js';
+import { maakStand, pasItemsToe, pasAntwoordToe, pasTop3Toe } from '../../src/web/stand.js';
 import { BUNDEL_ACTIES, BUNDEL_MAX, DEBOUNCE_MS, WACHTTIJDEN_MS } from '../../src/shared/synchronisatie.js';
 
 const ANNA = 'dln0000000000002';
@@ -79,7 +79,7 @@ test('SYNC-2 SYNC-7: een bundel voert elke actie uit met een eigen uitslag; een 
 
 test('SYNC-2 AAN-82 AAN-83: alleen de vaste lijst en hooguit 25 acties in één bundel', () => {
   const { bundel, keuken } = opzet();
-  assert.deepEqual(BUNDEL_ACTIES, ['claimen', 'claimIntrekken', 'afvinken', 'antwoordZetten']);
+  assert.deepEqual(BUNDEL_ACTIES, ['claimen', 'claimIntrekken', 'afvinken', 'antwoordZetten', 'top3Opgeven']);
   assert.equal(BUNDEL_MAX, 25);
   assert.equal(DEBOUNCE_MS, 1000);
   assert.deepEqual(WACHTTIJDEN_MS, [2000, 4000, 8000, 16000, 30000]);
@@ -272,4 +272,32 @@ test('SYNC-1 SYNC-5: de stand toont een handeling direct, schuift haar door na b
   pasAntwoordToe(f, { actie: 'antwoordZetten', data: { veld: 'woonplaats', waarde: 'Utrecht' } });
   pasAntwoordToe(f, { actie: 'antwoordZetten', data: { veld: 'budgetVerblijf', waarde: null } });
   assert.deepEqual(f.antwoorden.data, { woonplaats: 'Utrecht' });
+});
+
+test('AAN-83 ACC-11: de top 3 staat direct in de stand; punten, mensen en aantal gaven schuiven mee', () => {
+  const g = { mijnTop3: [{ accommodatieId: 'a', rang: 1 }], gaven: 2, accommodaties: [{ id: 'a', punten: 5, mensen: 2 }, { id: 'b', punten: 2, mensen: 1 }] };
+  pasTop3Toe(g, { actie: 'top3Opgeven', data: { keuzes: [{ accommodatieId: 'b', rang: 1 }, { accommodatieId: 'a', rang: 2 }] } });
+  assert.deepEqual(g.accommodaties.map((a) => [a.punten, a.mensen]), [[4, 2], [5, 2]]);
+  assert.equal(g.gaven, 2);
+  pasTop3Toe(g, { actie: 'top3Opgeven', data: { keuzes: [] } });
+  assert.deepEqual(g.accommodaties.map((a) => [a.punten, a.mensen]), [[2, 1], [2, 1]]);
+  assert.equal(g.gaven, 1);
+  assert.deepEqual(g.mijnTop3, []);
+  assert.equal(pasTop3Toe(g, { actie: 'afvinken', data: {} }), g);
+});
+
+test('SYNC-2 AAN-83 ACC-11: de top 3 gaat in een bundel en geeft per actie een uitslag', () => {
+  const demo = maakDemo({ antwoorden: true, stap: 'accommodatie' });
+  const nep = maakNepApi({ seed: demo.seed });
+  nep.store.nieuwVerzoek();
+  const acc = nep.store.voegToe('Accommodaties', { editieId: DEMO_EDITIE_ID, naam: 'Hoeve', plaats: '', link: '', prijsTotaal: 0, notitie: '' });
+  nep.store.voegToe('Sessies', { tokenHash: hashToken(nodeSha256, 'anna'), soort: 'deelnemer', subjectId: 'dln0000000000002', verloopt: '2099-01-01T00:00:00.000Z' });
+  nep.store.flush();
+  const r = (nep.api.verwerk(JSON.stringify({ apiVersie: API_VERSIE, actie: 'bundel', sessie: 'anna', editieId: DEMO_EDITIE_ID, data: { acties: [
+    { actie: 'top3Opgeven', data: { keuzes: [{ accommodatieId: acc.id, rang: 1 }] } },
+    { actie: 'top3Opgeven', data: { keuzes: [{ accommodatieId: acc.id, rang: 2 }] } },
+  ] } })));
+  assert.deepEqual(r.data.uitslagen.map((u) => u.ok ? 'ok' : u.fout), ['ok', 'ongeldig']); // één optie: alleen plek 1
+  nep.store.nieuwVerzoek();
+  assert.deepEqual(nep.store.lees('Stemmen').map((s) => s.rang), [1]);
 });

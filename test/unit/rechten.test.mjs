@@ -89,7 +89,7 @@ test('TOE-7 §6 wachtwoord van een beheerlink resetten: alleen eigenaar', () => 
 });
 
 test('TOE-7 §6 accommodaties beheren, datum vastleggen: alleen organisator', () => {
-  alleenOrganisator(['weekendVastleggen', 'accommodatieOpslaan', 'accommodatieVerwijderen', 'deelvormZetten'], { stap: 'accommodatie' });
+  alleenOrganisator(['weekendVastleggen', 'accommodatieOpslaan', 'accommodatieVerwijderen', 'deelvormZetten', 'accommodatieBoeken', 'verrassingOnthullen'], { stap: 'accommodatie' });
 });
 
 test('ACC-7 AAN-81 weekend losmaken: organisator in Weekendje prikker en Accommodatie, daarna niet', () => {
@@ -98,11 +98,20 @@ test('ACC-7 AAN-81 weekend losmaken: organisator in Weekendje prikker en Accommo
   assert.ok(!mag('deelnemer', 'weekendLosmaken', { ...DN, stap: 'accommodatie' }));
 });
 
-test('TOE-7 §6 stemmen: deelnemer als deelvorm stemmen, organisator ja', () => {
+test('TOE-7 §6 ACC-11: een top 3 bij Samen kiezen vanaf Accommodatie tot er geboekt is, ook de organisator', () => {
   const c = { ...DN, stap: 'accommodatie' };
-  assert.ok(mag('deelnemer', 'stemmen', { ...c, deelvorm: 'stemmen' }));
-  assert.equal(R('deelnemer', 'stemmen', { ...c, deelvorm: 'info' }), 'gesloten');
-  assert.ok(mag('organisator', 'stemmen', { ...ORG, stap: 'accommodatie', deelvorm: 'info' }));
+  assert.ok(mag('deelnemer', 'top3Opgeven', { ...c, deelvorm: 'samen' }));
+  assert.equal(R('deelnemer', 'top3Opgeven', { ...c, deelvorm: 'verrassing' }), 'gesloten');
+  assert.equal(R('deelnemer', 'top3Opgeven', { ...c, deelvorm: 'samen', geboekt: true }), 'gesloten');
+  assert.equal(R('deelnemer', 'top3Opgeven', { ...DN, stap: 'overzicht', deelvorm: 'samen' }), 'gesloten');
+  assert.ok(mag('organisator', 'top3Opgeven', { ...ORG, stap: 'accommodatie', deelvorm: 'samen' }));
+});
+
+test('ACC-10 AAN-87: onthullen alleen door de organisator, vanaf Accommodatie en ook na Afgerond', () => {
+  for (const stap of ['accommodatie', 'voorbereiding', 'weekend', 'afrekenen', 'afgerond']) assert.ok(mag('organisator', 'verrassingOnthullen', { ...ORG, stap }), stap);
+  assert.equal(R('organisator', 'verrassingOnthullen', { ...ORG, stap: 'overzicht' }), 'gesloten');
+  assert.equal(R('deelnemer', 'verrassingOnthullen', { ...DN, stap: 'accommodatie' }), 'geen_toegang');
+  assert.equal(R('organisator', 'accommodatieBoeken', { ...ORG, stap: 'afgerond' }), 'gesloten');
 });
 
 test('TOE-7 §6 item toevoegen: deelnemer tot definitief, organisator ja', () => {
@@ -201,7 +210,7 @@ test('TOE-7: elke actie uit het contract heeft een regel en een gast mag alleen 
 });
 
 test('TOE-7: een deelnemerssessie kan geen enkele beheeractie uitvoeren', () => {
-  const ruim = { ...DN, stap: 'voorbereiding', eigen: true, nieuw: true, betrokken: true, deelvorm: 'stemmen', setupcodeGeldig: true };
+  const ruim = { ...DN, stap: 'voorbereiding', eigen: true, nieuw: true, betrokken: true, deelvorm: 'samen', setupcodeGeldig: true };
   for (const [a, regel] of Object.entries(REGELS)) {
     if (!regel.deelnemer) assert.ok(!mag('deelnemer', a, ruim), a);
   }

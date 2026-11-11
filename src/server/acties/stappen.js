@@ -2,6 +2,7 @@
 import { ApiFout } from '../fouten.js';
 import { v } from '../validatie.js';
 import { STAPPEN, stapMogelijk } from '../../shared/stappen.js';
+import { deelvormVan } from '../../shared/accommodatie.js';
 
 // Velden van `editieBijwerken` die bij de stappen horen; de rest staat in vragen.js.
 export const stapVelden = {
@@ -30,7 +31,7 @@ export const stapZetten = {
       throw new ApiFout('ongeldig', data.stap === 'invullen' ? 'Terug naar Invullen kan niet meer vanaf Accommodatie.' : 'Je zet de stap één stap vooruit of één stap terug.');
     }
     const rij = store.werkBij('Edities', editie.id, { stap: data.stap }, editie.versie);
-    return { editie: editieStappen(rij) };
+    return { editie: { ...editieStappen(rij), deelvorm: deelvormVan(rij.deelvorm) } }; // ACC-9: de WhatsApp-tekst hangt ervan af
   },
 };
 

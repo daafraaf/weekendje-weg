@@ -58,7 +58,7 @@ export function maakVolledigeDemo({ stap = 'invullen' } = {}) {
   const editieRij = (e, jaar, velden) => ({
     id: e.id, jaar, titel: e.titel, stapData: e.stapData, periodeVan: e.periodeVan, periodeTot: e.periodeTot,
     voorkeursmaanden: e.voorkeursmaanden, deadline: e.deadline, blokken: { etenDrinken: true, activiteiten: true, programma: true, samenwerken: false },
-    lijsten: startlijsten(), vastgelegdWeekend: '', deelvorm: 'info', geboektAccommodatieId: '', boodschappenDefinitief: false,
+    lijsten: startlijsten(), vastgelegdWeekend: '', deelvorm: 'samen', geboektAccommodatieId: '', onthuld: false, boodschappenDefinitief: false,
     versie: 1, bijgewerkt: aangemaakt, ...velden,
   });
   const naarIds = (ids, verdeling) => {
@@ -84,8 +84,9 @@ export function maakVolledigeDemo({ stap = 'invullen' } = {}) {
   // verdeelwijzen en een ontvangst, alle betalingen betaald.
   const e26 = f.edities['2026'];
   const ids26 = deelnemers(e26, 2026, f.leden.map((l) => l.voornaam));
-  seed.Edities.push(editieRij(e26, 2026, { stap: e26.stap, vastgelegdWeekend: e26.vastgelegdWeekend, deelvorm: 'geboekt', geboektAccommodatieId: e26.accommodaties.find((a) => a.geboekt).id, boodschappenDefinitief: true }));
-  for (const a of e26.accommodaties) seed.Accommodaties.push({ id: a.id, editieId: e26.id, naam: a.naam, plaats: a.plaats, link: a.link, prijsTotaal: a.prijsTotaal, notitie: a.notitie, versie: 1 });
+  seed.Edities.push(editieRij(e26, 2026, { stap: e26.stap, vastgelegdWeekend: e26.vastgelegdWeekend, deelvorm: 'samen', onthuld: false, geboektAccommodatieId: e26.accommodaties.find((a) => a.geboekt).id, boodschappenDefinitief: true }));
+  const accRij = (e, a) => ({ id: a.id, editieId: e.id, naam: a.naam, plaats: a.plaats, link: a.link, prijsTotaal: a.prijsTotaal, notitie: a.notitie, versie: 1, bedden: a.bedden ?? null, eigenKamers: a.eigenKamers ?? null });
+  for (const a of e26.accommodaties) seed.Accommodaties.push(accRij(e26, a));
   for (const p of e26.posten) seed.Posten.push(post(e26, ids26, p));
   for (const b of voorstel(e26, ids26)) betaal(e26, b, '2026-10-12T18:00:00Z');
 
@@ -99,7 +100,7 @@ export function maakVolledigeDemo({ stap = 'invullen' } = {}) {
   seed.Edities.push(editieRij(e27, 2027, {
     stap,
     vastgelegdWeekend: vanaf(e27.vastgelegdWeekend.vanaf) ? e27.vastgelegdWeekend.vrijdag : '',
-    deelvorm: vanaf(acc.geboektVanaf) ? 'geboekt' : vanaf(acc.vanaf) ? acc.deelvorm : 'info',
+    deelvorm: acc.deelvorm, onthuld: false,
     geboektAccommodatieId: vanaf(acc.geboektVanaf) ? acc.geboekt : '',
     boodschappenDefinitief: vanaf(vb.vanaf) && vb.boodschappenDefinitief,
   }));
@@ -108,9 +109,10 @@ export function maakVolledigeDemo({ stap = 'invullen' } = {}) {
   }
   if (vanaf(acc.vanaf)) {
     for (const a of acc.lijst) {
-      seed.Accommodaties.push({ id: a.id, editieId: e27.id, naam: a.naam, plaats: a.plaats, link: a.link, prijsTotaal: a.prijsTotaal, notitie: a.notitie, versie: 1 });
-      for (const naam of a.stemmen) seed.Stemmen.push({ id: id('stm'), editieId: e27.id, deelnemerId: ids[naam], accommodatieId: a.id });
+      seed.Accommodaties.push(accRij(e27, a));
     }
+    // ACC-11: één rij per keuze, rang 1 tot en met 3.
+    for (const [naam, keuzes] of Object.entries(acc.top3)) keuzes.forEach((accommodatieId, i) => seed.Stemmen.push({ id: id('stm'), editieId: e27.id, deelnemerId: ids[naam], accommodatieId, rang: i + 1 }));
     // KOK-1: het vastleggen van het weekend maakt de standaardmaaltijden.
     for (const [dag, soort] of STANDAARD_MAALTIJDEN) seed.Maaltijden.push({ id: id('mlt'), editieId: e27.id, dag, soort, omschrijving: '' });
   }
@@ -185,7 +187,7 @@ export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen',
       id: DEMO_EDITIE_ID, jaar: 2027, titel: 'Weekendje weg 2027', stap, stapData: fixture.stapData, versie: 1, bijgewerkt: fixture.groep.aangemaakt,
       periodeVan: '2027-01-01', periodeTot: '2027-12-31', voorkeursmaanden: [4, 5, 9, 10], deadline: '2099-01-01T23:59:00+01:00',
       blokken: { etenDrinken: true, activiteiten: true, programma: true, samenwerken: false }, lijsten: {},
-      vastgelegdWeekend: '', deelvorm: 'info', geboektAccommodatieId: '',
+      vastgelegdWeekend: '', deelvorm: 'samen', geboektAccommodatieId: '', onthuld: false,
     }],
     Deelnemers: deelnemers,
   };

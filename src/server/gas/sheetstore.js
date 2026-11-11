@@ -20,7 +20,11 @@ export function maakSheetAdapter(spreadsheet, flush) {
       return waarden.map((rij) => rij.map(celNaarTekst));
     },
     schrijfRij(tab, rijNr, waarden) {
-      const bereik = blad(tab).getRange(rijNr, 1, 1, waarden.length);
+      const b = blad(tab);
+      // Een kop met nieuwe kolommen (store.js) kan breder zijn dan het blad; dan komen er kolommen bij.
+      const breed = typeof b.getMaxColumns === 'function' ? b.getMaxColumns() : waarden.length;
+      if (breed < waarden.length) b.insertColumnsAfter(breed, waarden.length - breed);
+      const bereik = b.getRange(rijNr, 1, 1, waarden.length);
       bereik.setNumberFormat('@');
       bereik.setValues([waarden.map(String)]);
     },

@@ -135,33 +135,32 @@ test('NFR-11 §11 eindtest: zes personen doorlopen een editie van uitnodiging to
     await expect(pagina[naam].getByText('Alle 6 hebben ingevuld.')).toBeVisible();
   }
 
-  // 5. Accommodatie: weekend vastleggen, twee huizen, stemmen, één op geboekt (ACC-1 t/m ACC-5).
+  // 5. Accommodatie: weekend vastleggen, twee huizen, samen kiezen met een top 3, één boeken (ACC-1, ACC-2, ACC-11 t/m ACC-13).
   await stapNaar('Accommodatie');
   await naar(anne, 'accommodatie-beheer');
   await anne.getByRole('list', { name: 'Top weekenden' }).getByRole('listitem').first().getByRole('button', { name: /^Leg .* vast$/ }).click();
   await expect(anne.getByText(/^Het weekend is vastgelegd:/)).toBeVisible();
   for (const [naamHuis, plaats, prijs] of [['Hoeve de Kraanvogel', 'Dwingeloo', '1380'], ['Strandhuis Duinzicht', 'Renesse', '960']]) {
-    await anne.getByRole('button', { name: 'Accommodatie toevoegen' }).click();
+    await anne.getByRole('button', { name: 'Optie toevoegen' }).click();
     await anne.getByLabel('Naam', { exact: true }).fill(naamHuis);
     await anne.getByLabel('Plaats').fill(plaats);
     await anne.getByLabel('Totaalprijs in euro').fill(prijs);
     await anne.getByRole('button', { name: 'Opslaan' }).click();
     await expect(anne.getByText('De accommodatie is toegevoegd.')).toBeVisible();
   }
-  await anne.getByRole('group', { name: 'Deelvorm' }).getByRole('button', { name: 'Stemmen' }).click();
-  await expect(anne.getByText('De deelvorm is stemmen.')).toBeVisible();
-  for (const [naam, huis] of [['Bas', 'Kraanvogel'], ['Daan', 'Kraanvogel'], ['Eva', 'Duinzicht'], ['Sanne', 'Kraanvogel']]) {
+  await expect(anne.getByRole('group', { name: 'Hoe kiezen we?' }).getByRole('button', { name: 'Samen kiezen' })).toHaveAttribute('aria-pressed', 'true');
+  for (const [naam, huis] of [['Bas', 'Hoeve de Kraanvogel'], ['Daan', 'Hoeve de Kraanvogel'], ['Eva', 'Strandhuis Duinzicht'], ['Sanne', 'Hoeve de Kraanvogel']]) {
     const p = pagina[naam];
     await naar(p, 'accommodaties');
-    const kaart = p.locator('article', { hasText: huis });
-    await kaart.getByRole('button', { name: 'Kies als favoriet' }).click();
-    await expect(kaart.getByRole('button', { name: 'Jouw favoriet' })).toBeVisible();
+    await p.getByRole('button', { name: `${huis} op plek 1` }).click();
+    await expect(p.getByRole('button', { name: `${huis} op plek 1` })).toHaveAttribute('aria-pressed', 'true');
+    await expect(p.locator('.sync')).toHaveText('Opgeslagen');
   }
   await naar(pagina.Joris, 'accommodaties');
-  await expect(pagina.Joris.locator('article', { hasText: 'Kraanvogel' })).toContainText('3 stemmen');
+  await expect(pagina.Joris.getByRole('list', { name: 'Stand' }).locator('[data-stand]').first()).toContainText('9 pt');
   await naar(anne, 'accommodatie-beheer');
-  await anne.getByRole('button', { name: 'Zet Hoeve de Kraanvogel op geboekt' }).click();
-  await expect(anne.getByText('Hoeve de Kraanvogel staat op geboekt.')).toBeVisible();
+  await anne.getByRole('button', { name: 'Boek Hoeve de Kraanvogel' }).click();
+  await expect(anne.getByText('✓ Hoeve de Kraanvogel is geboekt.')).toBeVisible();
   await naar(pagina.Eva, 'accommodaties');
   await expect(pagina.Eva.locator('article')).toHaveCount(1);
   await expect(pagina.Eva.locator('article')).toContainText('€ 230 p.p.');

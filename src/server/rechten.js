@@ -6,7 +6,7 @@
 // Context (alles optioneel; de API vult wat de actie nodig heeft):
 //   editieId              de editie van het verzoek
 //   organisatorVanEditie  het lid van de beheersessie is organisator van deze editie
-//   stap, naDeadline, deelvorm, definitief (boodschappen)   uit de editie
+//   stap, naDeadline, deelvorm, geboekt, definitief (boodschappen)   uit de editie
 //   nieuw                 de schrijfactie maakt een nieuwe rij
 //   eigen                 de rij hoort bij de deelnemer van de sessie
 //   betrokken             de deelnemer is `van` of `naar` van de betaling
@@ -65,6 +65,7 @@ const eigenOfOrganisator = {
 // AAN-39: een organisator vult eigen antwoorden in en stemt voor zijn eigen deelnemersrij in die
 // editie. DDL-1: de deadline is informatief en blokkeert niets. AAN-04: naar Overzicht gaan sluit het invullen.
 const eigenAntwoorden = (c) => als(c.stap === 'invullen');
+const top3Open = (c) => als(c.deelvorm === 'samen' && !c.geboekt && stapIndex(c.stap) >= stapIndex('accommodatie'));
 
 export const REGELS = {
   status: { gast: () => JA, deelnemer: () => JA, organisator: () => JA },
@@ -96,7 +97,11 @@ export const REGELS = {
   accommodatieOpslaan: alleenOrganisator,
   accommodatieVerwijderen: alleenOrganisator,
   deelvormZetten: alleenOrganisator,
-  stemmen: { deelnemer: (c) => als(c.deelvorm === 'stemmen'), organisator: () => JA },
+  accommodatieBoeken: alleenOrganisator,
+  // ACC-10: onthullen kan vanaf de stap Accommodatie, ook na Afgerond (zie NA_AFGEROND).
+  verrassingOnthullen: { organisator: (c) => als(stapIndex(c.stap) >= stapIndex('accommodatie')) },
+  // ACC-11, AAN-39: een top 3 bij Samen kiezen, vanaf de stap Accommodatie en tot er geboekt is.
+  top3Opgeven: { deelnemer: top3Open, organisator: top3Open },
   itemOpslaan: {
     deelnemer: (c) => (c.nieuw ? als(!c.definitief) : c.eigen ? als(!c.definitief) : NEE),
     organisator: () => JA,
@@ -123,6 +128,8 @@ export const REGELS = {
 };
 
 const LEZEN = new Set(['status', 'scherm', 'overzichtDetail']);
+// ACC-10: de verrassing onthullen kan ook nog na Afgerond; het verandert geen gegevens van de afrekening.
+const NA_AFGEROND = new Set(['verrassingOnthullen']);
 
 // Geeft null als het mag, anders de foutcode (`geen_toegang` of `gesloten`).
 export function reden(rol, actie, context = {}) {
@@ -135,7 +142,7 @@ export function reden(rol, actie, context = {}) {
   const r = regel(c);
   if (r) return r;
   // AAN-29: na de stap Afgerond is een editie alleen-lezen.
-  if (c.stap === 'afgerond' && !LEZEN.has(actie)) return DICHT;
+  if (c.stap === 'afgerond' && !LEZEN.has(actie) && !NA_AFGEROND.has(actie)) return DICHT;
   return JA;
 }
 

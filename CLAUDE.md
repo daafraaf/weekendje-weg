@@ -111,6 +111,7 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 
 - Kleine handeling (SYNC): actie in `BUNDEL_ACTIES` (`src/shared/synchronisatie.js`), idempotent en laatste wint; op het scherm `maakStand({ wachtrij, toepassen, hoort, levend, bijWijziging })` uit `web/stand.js`, `stand.zetBevestigd(r)` na elke leesactie en `stand.zet(actie, data, { sleutel, editieId })` bij een klik; geen `data-schrijft`. Grote acties houden `data-schrijft` en wachten.
 - e2e met de wachtrij: wacht op `page.locator('.sync')` met "Opgeslagen" voordat een andere context of de Store het ziet; `nep.aanroepen(actie)` en `nep.zetStoring([...])` uit `startServer`; wachttijden overslaan met `page.clock.install()` en `fastForward`.
+- Accommodatie (fase 27): vorm via `deelvormVan` en stemrang via `rangVan` (`shared/accommodatie.js`), nooit de ruwe kolom; geboekt is `geboektAccommodatieId` gevuld. Een leesscherm dat een accommodatie teruggeeft, vraagt `verborgenVoor`/`geboekteVoor` in `acties/geheim.js` (ACC-9) en krijgt een geval in de lektest `geheimLekt` (`accommodatie.test.mjs`). Nieuwe kolommen gewoon achteraan in `TABS`: de Store vult een oude kop aan (AAN-84).
 
 ## Valkuilen
 

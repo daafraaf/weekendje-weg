@@ -437,6 +437,19 @@ textarea.field { min-height: 88px; padding: 12px 14px; resize: vertical; }
 .acc-acties { display: flex; gap: 10px; align-items: center; }
 .acc-acties .btn-primary, .acc-acties .btn-ghost { flex: 1 1 auto; }
 .acc-lijstkop { margin-top: 4px; padding: 0 4px; }
+/* ACC-8 t/m ACC-14: punten, top 3 en verrassing */
+.acc-punten { height: 8px; border-radius: 4px; background: var(--line); position: relative; }
+.acc-punten .aantal-vul { background: var(--accent); }
+.acc-pt { font-weight: 700; white-space: nowrap; }
+.acc-rang { display: flex; gap: 8px; align-items: center; }
+.acc-rang button { min-width: var(--tap-min); min-height: var(--tap-min); border-radius: 12px; border: 1px solid var(--line-strong); background: var(--surface-solid); font: inherit; font-weight: 700; font-size: 16px; color: var(--text-primary); cursor: pointer; }
+.acc-rang button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.acc-rang button:disabled { cursor: default; opacity: .6; }
+.acc-verrassing { align-items: center; text-align: center; }
+.acc-verrassing .acc-cadeau { font-size: 40px; line-height: 48px; margin: 0; }
+.chip-ja { background: var(--ja-soft); color: var(--text-primary); }
+.chip-mis { background: var(--mis-soft); color: var(--text-primary); }
+.post-verrassing { margin: 0; }
 
 .mee-sectie { display: flex; flex-direction: column; gap: 8px; }
 .mee-sectie > h2 { padding: 0 4px; }

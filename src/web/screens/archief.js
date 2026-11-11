@@ -13,7 +13,8 @@ export function editieKaart(e) {
     h('p', { class: 't-cap' }, `${e.jaar} · ${STAPNAMEN[e.stap] || e.stap}`),
     h('h2', { class: 't-h3' }, e.titel),
     h('p', { class: 't-body' }, e.vastgelegdWeekend ? `Weekend: ${weekendLang(e.vastgelegdWeekend)}` : 'Het weekend lag niet vast.'),
-    acc
+    acc && !acc.naam ? h('p', { class: 't-body' }, '✓ Accommodatie geregeld, nog een verrassing.') // ACC-9
+      : acc
       ? h('p', { class: 't-body' }, `Accommodatie: ${acc.naam}${acc.plaats ? `, ${acc.plaats}` : ''}`, veiligeLink(acc.link) ? ' · ' : null, veiligeLink(acc.link) ? h('a', { href: acc.link, target: '_blank', rel: 'noopener noreferrer' }, 'Link') : null)
       : h('p', { class: 't-body' }, 'Geen accommodatie geboekt.'),
     h('p', { class: 't-small t-sec' }, `Organisatie: ${e.organisatoren.join(', ') || 'onbekend'}`),

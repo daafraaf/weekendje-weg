@@ -2,6 +2,7 @@
 
 Oudere regels uit het sessielog van MEMORY.md.
 
+- 2026-11-10 fase 24: vijf onderdelen uit met vlaggen (AAN-80), invullen vraagt alleen beschikbaarheid, deadline informatief en geen stapData meer (OND-1, OND-2, OND-3, FRM-11, DDL-1); check groen; zie `docs/overdracht/fase-24.md`.
 - 2026-11-10 fase 23: stappenbalk één bron (één stand in de schil, ook voor beheer), menu altijd zeven items in stapvolgorde met Beheren apart, Afrekening met tabs (STA-8, NAV-10, NAV-11); AAN-40 vervallen, AAN-12 en AAN-71 herschreven; check groen; zie `docs/overdracht/fase-23.md`.
 - 2026-11-10 feedbackronde voorbereid: opdracht, plan en fasebestanden 23 t/m 28 in `docs/`; nog geen code gewijzigd.
 - 2026-11-10 na fase 22: lader en blokkade tegen dubbel opslaan in de schil (`bijBezig` in `web/api.js`); Nieuwe editie met jaarlijst, uitleg per veld en een organisator die niet de maker is (AAN-46 aangepast, `zonderMaker`); check groen.

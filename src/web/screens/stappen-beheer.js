@@ -38,7 +38,7 @@ export function maakStappenBeheer({ sessie, params = {}, bijVerlopen, bijStap = 
     melding.toon('');
     const r = await anroep('stapZetten', { stap }, true);
     if (!r) return;
-    gedeeld = { stap: r.editie.stap, tekst: stapTekst({ editieTitel: r.editie.titel, stap: r.editie.stap, deadline: r.editie.deadline }) };
+    gedeeld = { stap: r.editie.stap, tekst: stapTekst({ editieTitel: r.editie.titel, stap: r.editie.stap, deadline: r.editie.deadline, deelvorm: r.editie.deelvorm }) };
     bericht = '';
     bijStap();
     await laad();

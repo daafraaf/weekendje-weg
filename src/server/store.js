@@ -14,13 +14,13 @@ const s = 's', n = 'n', b = 'b', j = 'j';
 export const TABS = {
   Groep: { sleutel: null, kolommen: { naam: s, apiVersie: n, opgezet: b, aangemaakt: s } },
   Leden: { kolommen: { id: s, voornaam: s, woonplaats: s, actief: b } },
-  Edities: { kolommen: { id: s, jaar: n, titel: s, stap: s, stapData: j, periodeVan: s, periodeTot: s, voorkeursmaanden: j, deadline: s, blokken: j, lijsten: j, vastgelegdWeekend: s, deelvorm: s, geboektAccommodatieId: s, boodschappenDefinitief: b, versie: n, bijgewerkt: s } },
+  Edities: { kolommen: { id: s, jaar: n, titel: s, stap: s, stapData: j, periodeVan: s, periodeTot: s, voorkeursmaanden: j, deadline: s, blokken: j, lijsten: j, vastgelegdWeekend: s, deelvorm: s, geboektAccommodatieId: s, boodschappenDefinitief: b, versie: n, bijgewerkt: s, onthuld: b } },
   Deelnemers: { kolommen: { id: s, editieId: s, lidId: s, tokenHash: s, pinHash: s, pinSalt: s, rol: s, afgehaakt: b, ingevuld: b, ingevuldOp: s } },
   Beheerlinks: { kolommen: { id: s, lidId: s, tokenHash: s, wachtwoordHash: s, wachtwoordSalt: s, actief: b, gemaakt: s } },
   Antwoorden: { kolommen: { id: s, editieId: s, deelnemerId: s, data: j, versie: n, bijgewerkt: s } },
   Vragen: { kolommen: { id: s, editieId: s, volgorde: n, type: s, tekst: s, opties: j } },
-  Accommodaties: { kolommen: { id: s, editieId: s, naam: s, plaats: s, link: s, prijsTotaal: n, notitie: s, versie: n } },
-  Stemmen: { kolommen: { id: s, editieId: s, deelnemerId: s, accommodatieId: s } },
+  Accommodaties: { kolommen: { id: s, editieId: s, naam: s, plaats: s, link: s, prijsTotaal: n, notitie: s, versie: n, bedden: n, eigenKamers: n } },
+  Stemmen: { kolommen: { id: s, editieId: s, deelnemerId: s, accommodatieId: s, rang: n } },
   Items: { kolommen: { id: s, editieId: s, soort: s, naam: s, categorie: s, maaltijdId: s, toegevoegdDoor: s, afgevinkt: b, versie: n } },
   Claims: { kolommen: { id: s, itemId: s, deelnemerId: s, gemaakt: s } },
   Maaltijden: { kolommen: { id: s, editieId: s, dag: s, soort: s, omschrijving: s } },
@@ -71,9 +71,12 @@ export function maakStore(adapter, { random, nu }) {
     const waarden = adapter.leesWaarden(tab); // NFR-15: hooguit één keer per tab per verzoek
     const schema = TABS[tab].kolommen;
     let kop = waarden.length ? waarden[0].map(String) : null;
-    if (kop) for (const k of Object.keys(schema)) if (!kop.includes(k)) throw new Error(`kolom ${k} ontbreekt in ${tab}`);
+    // AAN-84: een kolom die in de Sheet nog ontbreekt (een oudere Sheet), komt achteraan de kop. Lezen geeft een lege
+    // cel; de kop gaat pas met de eerste schrijfactie op deze tab de Sheet in.
+    let aanvullen = false;
+    if (kop) for (const k of Object.keys(schema)) if (!kop.includes(k)) { kop.push(k); aanvullen = true; }
     const rijen = waarden.slice(1).map((ruw) => ({ ruw: ruw.map((v) => (v === null || v === undefined ? '' : String(v))) }));
-    t = { kop, rijen };
+    t = { kop, rijen, aanvullen };
     cache.set(tab, t);
     return t;
   }
@@ -95,6 +98,7 @@ export function maakStore(adapter, { random, nu }) {
   }
 
   function zorgVoorKop(tab, t) {
+    if (t.kop && t.aanvullen) { adapter.schrijfRij(tab, 1, t.kop.slice()); t.aanvullen = false; }
     if (t.kop) return;
     t.kop = Object.keys(TABS[tab].kolommen);
     adapter.schrijfRij(tab, 1, t.kop.slice());
@@ -141,6 +145,7 @@ export function maakStore(adapter, { random, nu }) {
       const t = tabel(tab);
       const i = zoek(tab, t, waarde);
       if (i < 0) throw new ApiFout('gewijzigd');
+      zorgVoorKop(tab, t);
       const rij = t.rijen[i];
       const obj = { ...velden };
       if (heeft(tab, 'versie')) {

@@ -8,5 +8,5 @@ export const WACHTTIJDEN_MS = [2000, 4000, 8000, 16000, 30000];
 export const BUNDEL_MAX = 25;
 
 // AAN-83: alleen deze acties zijn optimistisch en mogen in een bundel. Ze zijn idempotent en schrijven één rij of
-// één veld; de laatste schrijfactie wint, zonder versiecheck. Fase 27 voegt hier de top 3 aan toe.
-export const BUNDEL_ACTIES = ['claimen', 'claimIntrekken', 'afvinken', 'antwoordZetten'];
+// één veld (de top 3: de eigen rijen in Stemmen); de laatste schrijfactie wint, zonder versiecheck.
+export const BUNDEL_ACTIES = ['claimen', 'claimIntrekken', 'afvinken', 'antwoordZetten', 'top3Opgeven'];

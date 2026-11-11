@@ -74,12 +74,14 @@ test('STA-5: de aftelteller telt dagen tot de vrijdag en zegt op de dag zelf Van
   assert.equal(aftelTekst('2027-05-10', ''), null);
 });
 
-test('STA-4: de eerstvolgende actie van de organisator volgt de stap', () => {
+test('STA-4 ACC-10: de eerstvolgende actie van de organisator volgt de stap', () => {
   const g = (stap, extra = {}) => ({ editie: { id: 'e1', stap, vastgelegdWeekend: '', deelvorm: 'info', boodschappenDefinitief: false }, voortgang: { aantal: 4, ingevuld: 2 }, programma: { punten: 0 }, afrekening: { open: [] }, ...extra });
   assert.equal(eersteActie(g('invullen')).tekst, 'Herinnering sturen');
   assert.equal(eersteActie(g('invullen', { voortgang: { aantal: 4, ingevuld: 4 } })).route, '#/stappen');
   assert.equal(eersteActie(g('overzicht')).tekst, 'Weekend vastleggen');
   assert.equal(eersteActie(g('accommodatie')).tekst, 'Accommodaties beheren');
+  // ACC-10: geboekt is genoeg om door te gaan, ook bij een verrassing die niet onthuld is.
+  assert.equal(eersteActie(g('accommodatie', { geboekt: { geregeld: true, verrassing: true } })).tekst, 'Zet de stap op Meenemen');
   assert.equal(eersteActie(g('voorbereiding'), ALLES_AAN).tekst, 'Boodschappen definitief maken');
   assert.equal(eersteActie(g('weekend'), ALLES_AAN).tekst, 'Programma beheren');
   assert.equal(eersteActie(g('voorbereiding')).tekst, 'Zet de stap op Weekend'); // OND-2: Boodschappen staat uit

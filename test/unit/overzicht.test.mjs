@@ -212,3 +212,12 @@ test('AAN-58 DDL-1: elke stap heeft een tekst die de volgende stap noemt, zonder
   assert.match(stapTekst({ editieTitel: 'W', stap: 'accommodatie' }), /Daarna volgt de stap Meenemen\.$/);
   assert.ok(!/volgt/.test(stapTekst({ editieTitel: 'W', stap: 'afgerond' })));
 });
+
+test('ACC-9: de WhatsApp-tekst van de stap Accommodatie noemt bij een verrassing geen opties', () => {
+  const samen = stapTekst({ editieTitel: 'W', stap: 'accommodatie', deelvorm: 'samen' });
+  assert.match(samen, /Kijk in de app naar de opties en geef je top 3./);
+  const verrassing = stapTekst({ editieTitel: 'W', stap: 'accommodatie', deelvorm: 'verrassing' });
+  assert.match(verrassing, /Het wordt een verrassing/);
+  assert.ok(!/opties|top 3/.test(verrassing));
+  assert.match(verrassing, /Daarna volgt de stap Meenemen.$/);
+});

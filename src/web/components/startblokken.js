@@ -19,9 +19,13 @@ export function aftelBlok(g, vandaag) {
   return t ? h('section', { class: 'glass card start-aftel', 'aria-label': 'Aftellen' }, h('p', { class: 'start-aftel-getal' }, t), klein(weekendLang(g.editie.vastgelegdWeekend))) : null;
 }
 
+// ACC-9: bij een geheime verrassing geeft de server geen naam; dan staat er alleen dat het geregeld is.
 export function accommodatieRegel(g) {
-  if (g.geboekt) return `Geboekt: ${g.geboekt.naam}${g.geboekt.plaats ? `, ${g.geboekt.plaats}` : ''}.`;
-  return g.editie.deelvorm === 'stemmen' ? 'Er wordt gestemd over de accommodatie.' : 'De accommodatie is nog niet geboekt.';
+  const b = g.geboekt;
+  if (b && !b.naam) return '✓ De accommodatie is geregeld. Het wordt een verrassing.';
+  if (b) return `✓ Geboekt: ${b.naam}${b.plaats ? `, ${b.plaats}` : ''}${b.verrassing ? ' (nog een verrassing)' : ''}.`;
+  if (g.editie.deelvorm === 'verrassing') return 'Het wordt een verrassing. De accommodatie is nog niet geboekt.';
+  return 'We kiezen samen: geef je top 3 van de accommodaties.';
 }
 
 export function weekendRegel(g) {

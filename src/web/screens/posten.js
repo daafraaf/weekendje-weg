@@ -13,6 +13,7 @@ import { maakAfrekenTabs } from '../components/tabs.js';
 const PLUS = ['M12 5v14M5 12h14'];
 const POTLOOD = ['M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4'];
 const BON = ['M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3'];
+const SLOT = ['M7 10.5h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'];
 const WIJZE_TEKST = { gelijk: 'gelijk', aandeel: 'aandeel', bedrag: 'bedrag per persoon' };
 
 export function maakPosten({ sessie, params = {}, bijVerlopen, fetchFn }) {
@@ -64,6 +65,8 @@ export function maakPosten({ sessie, params = {}, bijVerlopen, fetchFn }) {
       maakAfrekenTabs('posten', g.edities ? editieId : ''),
       editieKeuze(g.edities, editieId, (id) => { editieId = id; laad(); }, 'po-editie'),
       melding.el, toast,
+      // ACC-9: alleen de organisator ziet dit, zolang de verrassing niet onthuld is.
+      g.verrassingGeheim ? h('p', { class: 'priv post-verrassing' }, icoon(SLOT, 16), h('span', {}, 'De accommodatie is nog een verrassing. Iedereen ziet de posten, dus een omschrijving met de naam van het huis kan haar verraden.')) : null,
       h('section', { class: 'glass card post-totaal' },
         h('div', {}, h('p', { class: 't-cap' }, 'Totaal'), h('p', { class: 't-h2 t-num' }, euro(g.totaal))),
         g.ik ? h('div', {}, h('p', { class: 't-cap' }, 'Jouw deel'), h('p', { class: 't-h2 t-num' }, euro(g.mijnDeel))) : null),

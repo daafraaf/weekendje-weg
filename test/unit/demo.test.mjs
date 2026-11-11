@@ -40,7 +40,8 @@ test('§11: editie 2026 is afgerond met weekend 2 tot en met 4 oktober, geboekte
   const { d, scherm } = demo('invullen');
   const e = d.seed.Edities.find((x) => x.id === DEMO_2026_ID);
   assert.equal(e.vastgelegdWeekend, '2026-10-02');
-  assert.equal(e.deelvorm, 'geboekt');
+  assert.equal(e.deelvorm, 'samen');
+  assert.equal(e.geboektAccommodatieId, 'accDemo202600001');
   const posten = d.seed.Posten.filter((p) => p.editieId === DEMO_2026_ID);
   assert.deepEqual([...new Set(posten.map((p) => p.verdeling.wijze))].sort(), ['aandeel', 'bedrag', 'gelijk']);
   assert.equal(posten.filter((p) => p.soort === 'ontvangst').length, 1);
@@ -70,12 +71,14 @@ test('§11 stap overzicht: alle zes ingevuld, een duidelijke voorkeursdatum en e
   assert.ok(o.top[0].ja > o.top[1].ja);
 });
 
-test('§11 stap accommodatie: drie accommodaties met stemmen', () => {
+test('§11 ACC-11 ACC-14 stap accommodatie: drie accommodaties met een top 3 van vijf van de zes, bedden en eigen kamers', () => {
   const { scherm } = demo('accommodatie');
   const a = scherm('accommodaties');
-  assert.equal(a.deelvorm, 'stemmen');
+  assert.equal(a.deelvorm, 'samen');
   assert.equal(a.vastgelegdWeekend, '2027-05-21');
-  assert.deepEqual(a.accommodaties.map((x) => x.stemmen), [3, 2, 1]);
+  assert.deepEqual(a.accommodaties.map((x) => [x.punten, x.mensen]), [[13, 5], [9, 4], [5, 3]]);
+  assert.equal(a.gaven, 5);
+  assert.deepEqual(a.accommodaties.map((x) => [x.bedden, x.eigenKamers]), [[8, 4], [10, 1], [6, null]]);
 });
 
 test('§11 stap voorbereiding: claims met een dubbele claim, definitieve boodschappen, twee kookbeurten, kamers en twee ritten', () => {

@@ -45,6 +45,7 @@ export function nepSpreadsheet() {
       return rij[k - 1];
     };
     const breedte = () => Math.max(0, ...cellen.map((r) => r.length));
+    let maxKolommen = 26; // zoals een nieuw blad; getRange daarbuiten faalt, zoals in Sheets
     return {
       getName: () => naam,
       getDataRange: () => ({
@@ -58,7 +59,12 @@ export function nepSpreadsheet() {
           }));
         },
       }),
-      getRange: (r, k, nr, nk) => ({
+      getMaxColumns: () => maxKolommen,
+      insertColumnsAfter: (na, aantal) => { gebeurtenissen.push(`kolommen ${naam} ${aantal}`); maxKolommen += aantal; },
+      zetMaxKolommen: (aantal) => { maxKolommen = aantal; },
+      getRange: (r, k, nr, nk) => {
+        if (k + nk - 1 > maxKolommen) throw new Error('The coordinates of the range are outside the dimensions of the sheet.');
+        return {
         setNumberFormat(f) {
           gebeurtenissen.push(`formaat ${naam} ${r}`);
           for (let i = 0; i < nr; i++) for (let j = 0; j < nk; j++) cel(r + i, k + j).formaat = f;
@@ -73,7 +79,7 @@ export function nepSpreadsheet() {
           }
           return this;
         },
-      }),
+      }; },
       deleteRow: (r) => { cellen.splice(r - 1, 1); },
       deleteRows: (r, n) => { cellen.splice(r - 1, n); },
       cellen,

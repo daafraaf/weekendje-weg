@@ -67,7 +67,7 @@ export const editieAanmaken = {
       jaar: data.jaar, titel, stap: 'invullen',
       periodeVan: data.periodeVan, periodeTot: data.periodeTot, voorkeursmaanden: maanden, deadline: data.deadline,
       blokken: { ...(bron ? blokkenVan(bron) : BLOKKEN_STANDAARD), ...(data.blokken || {}) }, lijsten,
-      vastgelegdWeekend: '', deelvorm: 'info', geboektAccommodatieId: '', boodschappenDefinitief: false,
+      vastgelegdWeekend: '', deelvorm: 'samen', geboektAccommodatieId: '', onthuld: false, boodschappenDefinitief: false,
     });
     maakStartItems(store, editie.id, lijsten); // §7.7.2: startlijst keuken en spullen
     // Zonder link en pincode: die komen pas bij `linksMaken` (EDI-4).

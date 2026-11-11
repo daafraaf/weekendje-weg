@@ -58,7 +58,8 @@ export function eersteActie(g, vlaggen = ONDERDELEN) {
     case 'overzicht':
       return e.vastgelegdWeekend ? naarStap(STAPNAMEN.accommodatie) : { tekst: 'Weekend vastleggen', route: '#/accommodatie-beheer' };
     case 'accommodatie':
-      return e.deelvorm === 'geboekt' ? naarStap(STAPNAMEN.voorbereiding) : { tekst: 'Accommodaties beheren', route: '#/accommodatie-beheer' };
+      // ACC-10: geboekt is genoeg om door te gaan; onthullen hoeft niet, bij geen enkele stap.
+      return g.geboekt ? naarStap(STAPNAMEN.voorbereiding) : { tekst: 'Accommodaties beheren', route: '#/accommodatie-beheer' };
     case 'voorbereiding':
       return e.boodschappenDefinitief || !onderdeelAan('boodschappen', vlaggen) ? naarStap(STAPNAMEN.weekend) : { tekst: 'Boodschappen definitief maken', route: '#/boodschappen' };
     case 'weekend':

@@ -108,3 +108,30 @@ test('Store: een onbekende kolom is een programmeerfout', () => {
   store.nieuwVerzoek();
   assert.throws(() => store.voegToe('Leden', { email: 'x@y.nl' }), /onbekende kolom/);
 });
+
+test('AAN-84: een Sheet zonder de nieuwe kolommen blijft werken; de kop krijgt ze achteraan bij de eerste schrijfactie', () => {
+  const ss = nepSpreadsheet();
+  const blad = ss.insertSheet('Stemmen');
+  blad.zetMaxKolommen(4); // het blad is precies zo breed als de oude kop
+  blad.getRange(1, 1, 2, 4).setNumberFormat('@').setValues([['id', 'editieId', 'deelnemerId', 'accommodatieId'], ['stm0000000000001', 'e1', 'd1', 'acc0000000000001']]);
+  const { store } = maak(ss);
+  const voor = ss.gebeurtenissen.length;
+  store.nieuwVerzoek();
+  assert.deepEqual(store.lees('Stemmen'), [{ id: 'stm0000000000001', editieId: 'e1', deelnemerId: 'd1', accommodatieId: 'acc0000000000001', rang: null }]);
+  assert.equal(ss.gebeurtenissen.length, voor); // lezen schrijft niets
+  store.voegToe('Stemmen', { editieId: 'e1', deelnemerId: 'd2', accommodatieId: 'acc0000000000001', rang: 2 });
+  assert.ok(ss.gebeurtenissen.includes('kolommen Stemmen 1'));
+  assert.deepEqual(blad.cellen[0].map((c) => c.waarde), ['id', 'editieId', 'deelnemerId', 'accommodatieId', 'rang']);
+  store.nieuwVerzoek();
+  assert.deepEqual(store.lees('Stemmen').map((s) => [s.deelnemerId, s.rang]), [['d1', null], ['d2', 2]]);
+  // Ook bijwerken op een tab met een oude kop zet de kop eerst goed.
+  const ed = ss.insertSheet('Edities');
+  const oudeKop = ['id', 'jaar', 'titel', 'stap', 'stapData', 'periodeVan', 'periodeTot', 'voorkeursmaanden', 'deadline', 'blokken', 'lijsten', 'vastgelegdWeekend', 'deelvorm', 'geboektAccommodatieId', 'boodschappenDefinitief', 'versie', 'bijgewerkt'];
+  ed.getRange(1, 1, 2, oudeKop.length).setNumberFormat('@').setValues([oudeKop, oudeKop.map((k) => (k === 'id' ? 'edi0000000000001' : k === 'versie' ? '1' : k === 'jaar' ? '2027' : k === 'deelvorm' ? 'stemmen' : ''))]);
+  store.nieuwVerzoek();
+  assert.equal(store.vind('Edities', 'edi0000000000001').onthuld, false);
+  store.werkBij('Edities', 'edi0000000000001', { onthuld: true }, 1);
+  store.nieuwVerzoek();
+  assert.equal(store.vind('Edities', 'edi0000000000001').onthuld, true);
+  assert.equal(ed.cellen[0].length, oudeKop.length + 1);
+});
