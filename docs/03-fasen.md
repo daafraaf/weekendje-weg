@@ -62,6 +62,8 @@ David samen met Claude Code.
 | 31 | Navigatie en layout | NAV-10, NAV-12, NAV-14, NAV-15, UIT-2 | AAN-12 | Sonnet |
 | 32 | Weekend en stappen | ACC-1, ACC-7, EDI-7, GELD-9 | AAN-05, AAN-29, AAN-81, AAN-88 | Opus |
 | 33 | Teksten, onderdelen en details | EDI-10, EDI-11, GRP-5, ACC-10, MEE-10, GELD-12 | AAN-89, AAN-90 | Sonnet |
+| 34 | Swipen door de maanden | KAL-8 t/m KAL-12 | AAN-91, AAN-92 | Sonnet |
+| 35 | Boodschappen als wensenlijst | OND-1, MEE-11, MEE-12, MEE-13 | AAN-80, AAN-93 | Sonnet |
 
 ## Fase 0: Opzet
 
@@ -270,6 +272,28 @@ Toegevoegd op 11 november 2026 na de functionele test (`bevindingen-test-2026-11
 Beslissingen in `01-interview.md` onder "Feedbackronde 2", spec versie 0.11, aannames versie 0.28. Per fase een
 bestand in `fasen/`. Fase 32 hangt af van fase 31; de andere staan los van elkaar. BV-03 is opgelost bij de uitrol
 en heeft geen fase. Na fase 33 staat `API_VERSIE` op 2: voorkant en script gaan kort na elkaar live (§7.17).
+
+## Fase 34: Swipen door de maanden
+
+Toegevoegd op 13 november 2026 na het bijgewerkte ontwerp (designbrief 0.4 §5.1, spec 0.12, aannames 0.29).
+
+- **Eisen:** KAL-8, KAL-9, KAL-10, KAL-11, KAL-12
+- **Aannames:** AAN-91, AAN-92
+- **Raakt:** zie `fasen/fase-34.md`
+- **Klaar als:** `npm run check` groen. Op 390 pixels toont Invullen één maandblad tegelijk, een veeg of pijl gaat naar de volgende maand, de jaarstrook springt naar een maand en de kalender opent op de eerste maand met een leeg weekend. Op 1280 pixels is de kalender ongewijzigd.
+- **Leest:** spec §7.3, §8 KAL, §10 NFR-9; designbrief §5.1; artboard `docs/design/Formulier.dc.html`
+- **Hangt af van:** fase 33 gecommit
+
+## Fase 35: Boodschappen als wensenlijst
+
+Toegevoegd op 13 november 2026 op verzoek van David (spec 0.13, aannames 0.30). Staat los van fase 34.
+
+- **Eisen:** OND-1, MEE-11, MEE-12, MEE-13
+- **Aannames:** AAN-80, AAN-93
+- **Raakt:** zie `fasen/fase-35.md`
+- **Klaar als:** `npm run check` groen. Meenemen heeft de tabs Wie neemt wat mee en Boodschappen. Zonder vastgelegd weekend staat er "Komt zodra het weekend vastligt", met een weekend zet een deelnemer een boodschap met zijn naam op de lijst, en na definitief kan niemand meer toevoegen.
+- **Leest:** spec §7.6.8, §7.7, §7.8, §7.14, §8 OND, MEE, NAV-10, NAV-11; artboards Boodschappen, BoodschappenDicht, D-Boodschappen, T-BoodschappenWacht, Meenemen
+- **Hangt af van:** fase 33 gecommit
 
 ## Opdracht voor de hele run
 

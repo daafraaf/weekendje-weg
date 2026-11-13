@@ -1,5 +1,7 @@
 # Bouwspecificatie Weekendje weg
 
+Versie 0.13, 13 november 2026: Boodschappen weer aan als wensenlijst onder Meenemen, open vanaf een vastgelegd weekend tot definitief, op verzoek van David (§7.8.9 t/m §7.8.11, OND-1, MEE-11 t/m MEE-13, AAN-80, AAN-93).
+Versie 0.12, 13 november 2026: op mobiel swipe je door de maanden van de kalender, na het bijgewerkte ontwerp van 13 november (§7.3.1, §7.3.7, §9, KAL-8 t/m KAL-12, AAN-91, AAN-92).
 Versie 0.11, 11 november 2026: feedbackronde 2 na de test van 11 november, BV-01 t/m BV-36 (§6, §7.2.2, §7.2.7, §7.6.6, §7.6.8, §7.7.4, §7.12, §7.14, §7.17, TOE-13, GRP-5, EDI-7, EDI-11, STA-4, STA-9, ACC-7, ACC-9, ACC-10, MEE-10, GELD-9, GELD-12, SYNC-5, SYNC-8, NAV-2, NAV-10, NAV-12 t/m NAV-15, NFR-21, NFR-22).
 Versie 0.10, 11 november 2026: uitleg van de stappen, feedbackronde fase 28 (UIT-1 t/m UIT-4, NAV-7).
 Versie 0.9, 11 november 2026: accommodatie verrassing of samen kiezen, feedbackronde fase 27 (§5.1, §5.3, §7.6, §11, ACC-3 t/m ACC-5 vervangen door ACC-8 t/m ACC-14).
@@ -354,8 +356,9 @@ markeren of terugdraaien (AAN-29), zodat open betalingen na Afgerond nog af te v
    31 december van `jaar` (AAN-15). De organisator kan het venster aanpassen.
    Weergave: per maand een maandblad (ma tot en met zo) met elk weekend als één tikbare balk
    over vrijdag, zaterdag en zondag. Een weekend hoort bij de maand van de vrijdag. Desktop
-   toont de maanden in een raster, mobiel onder elkaar met bovenaan een jaarstrook die per
-   maand de status van elk weekend laat zien. Bovenaan staat hoeveel weekenden zijn ingevuld.
+   toont de maanden in een raster. Mobiel (onder 768 pixels) toont één maand tegelijk in een
+   strook waar je doorheen swipet (§7.3.7). Daarboven staat een jaarstrook die per maand de status
+   van elk weekend laat zien. Bovenaan staat hoeveel weekenden zijn ingevuld.
 2. Tikken op een weekend wisselt: leeg → ja → misschien → nee → leeg (AAN-17). Ook met het
    toetsenbord (spatie of enter).
 3. Een weekend in een voorkeursmaand (maand van de vrijdag) krijgt een eigen markering.
@@ -371,6 +374,28 @@ markeren of terugdraaien (AAN-29), zodat open betalingen na Afgerond nog af te v
    Kerstdag. Pasen volgens het algoritme van Meeus/Jones/Butcher.
 6. Schoolvakanties komen uit `data/vakanties.json` (AAN-13). Valt een deel van het venster
    buiten de bekende schooljaren, dan toont de kalender daar "vakanties nog niet bekend".
+7. Swipen op mobiel (onder 768 pixels, designbrief §5.1). De maandbladen staan naast elkaar in
+   een horizontale strook, één maand per schermbreedte, met `scroll-snap-type: x mandatory` en
+   `overscroll-behavior-x: contain`, zonder veegbibliotheek. Van rechts naar links swipen gaat
+   naar de volgende maand, andersom naar de vorige. Verticaal scrollen van de pagina blijft
+   werken en een veeg wisselt nooit een weekend. Het maandblad zelf werkt zoals in punt 1 tot en
+   met 4, inclusief Hele maand (KAL-7).
+   - De maandkop heeft links en rechts een pijl (44 × 44 pixels, `aria-label` "Vorige maand:
+     januari" en "Volgende maand: maart"). Op de eerste en de laatste maand valt de pijl aan die
+     kant weg.
+   - De jaarstrook is tikbaar: een tik op een maandkolom springt naar die maand. De maand in
+     beeld heeft in de strook een rand in accentblauw.
+   - De kalender opent op de eerste maand met een leeg weekend. Is alles ingevuld of is de
+     kalender alleen-lezen, dan op de eerste maand van de periode (AAN-91).
+   - De eerste keer op een apparaat schuift het blad na ongeveer 0,5 seconde 48 pixels naar links
+     en veert dan terug, samen ongeveer 0,8 seconde (AAN-92). Er staat geen vast randje van de
+     volgende maand. Met `prefers-reduced-motion` beweegt er niets en staat onder de maandkop
+     "Veeg naar links voor de volgende maand", tot de eerste wissel.
+   - Elk blad reserveert zes weekrijen, zodat de rest van het formulier niet verspringt.
+   - Gaat de focus met Tab naar een weekend in een andere maand, dan schuift die maand in beeld.
+     Bij elke wissel meldt een `aria-live`-regel de maand, bijvoorbeeld "Februari 2027, 4
+     weekenden, 2 leeg". De teller en de jaarstrook tellen over het hele jaar.
+   - Vanaf 768 pixels verandert er niets. De heatmap van Weekendje prikker valt hier buiten.
 
 ### 7.4 Formulier
 1. Blokken en volgorde: Kalender, Budget, Reistijd, Verblijf, Activiteiten, Programma en
@@ -488,6 +513,19 @@ markeren of terugdraaien (AAN-29), zodat open betalingen na Afgerond nog af te v
    afgevinkte items, als platte tekst.
 8. Bij elke boodschap toont de app de relevante tellingen uit eten en drinken, bijvoorbeeld
    "0,0 bier: 2 personen".
+9. Boodschappen is de tweede tab onder Meenemen: "Wie neemt wat mee" en "Boodschappen", net als de tabs
+   onder Afrekening (NAV-11). Het hoofdmenu blijft zeven items; Meenemen is actief op beide tabs.
+10. Op de tab Boodschappen zet iedere deelnemer zelf een boodschap op de lijst, met een naam en een
+    categorie ("Zet iets op de lijst", categorie voorgesteld volgens punt 3). Dat wordt een item van soort
+    `boodschap` met `aangemaaktDoor`. Bij elk item staat wie hem toevoegde ("jij" voor jezelf); bij een
+    keukenitem zonder claim staat "uit eigen keuken". Je eigen item haal je weg zolang de lijst open is
+    (punt 4).
+11. Een boodschap toevoegen kan pas als er een weekend is vastgelegd (`vastgelegdWeekend`, ACC-6) en tot de
+    organisator de lijst definitief maakt (punt 5). Zonder vastgelegd weekend toont de tab "Komt zodra het
+    weekend vastligt" en is de lijst niet zichtbaar. Maakt de organisator het weekend los (Ander weekend
+    kiezen, §7.6.8), dan blijven de items staan maar kan niemand een boodschap toevoegen tot er een nieuw
+    weekend vastligt. Het script weigert toevoegen in die gevallen met `gesloten`, ook via Wie neemt wat mee.
+    Spullen en items uit eigen keuken blijven altijd toe te voegen (AAN-93).
 
 ### 7.9 Categorieën van posten
 Verblijf, Eten en drinken, Boodschappen, Activiteit, Vervoer, Overig (AAN-16).
@@ -709,6 +747,11 @@ elkaar live.
 - **KAL-5** De feestdagen voor 2026 tot en met 2030 kloppen met een vaste testtabel.
 - **KAL-6** `npm run vakanties` schrijft `data/vakanties.json` uit de open data van de Rijksoverheid; buiten de bekende schooljaren toont de kalender "vakanties nog niet bekend".
 - **KAL-7** Een knop "Hele maand" zet alle lege weekenden van een maand in één keer op een gekozen waarde.
+- **KAL-8** Onder 768 pixels toont de kalender één maand per keer in een strook met scroll-snap. Swipen wisselt van maand, verticaal scrollen van de pagina blijft werken en een veeg wisselt geen weekend (§7.3.7). Vanaf 768 pixels is de kalender ongewijzigd.
+- **KAL-9** De maandkop heeft pijlen naar de vorige en de volgende maand, behalve op de eerste en de laatste maand. Een tik in de jaarstrook springt naar die maand en de maand in beeld is in de strook gemarkeerd.
+- **KAL-10** De kalender opent op de eerste maand met een leeg weekend, anders op de eerste maand van de periode (AAN-91).
+- **KAL-11** De eerste keer op een apparaat laat een korte schuifbeweging zien dat swipen kan, daarna niet meer. Met `prefers-reduced-motion` staat er een tekst in plaats van de beweging (AAN-92).
+- **KAL-12** Met Tab door de weekenden schuift de maand mee in beeld. Een `aria-live`-regel meldt bij elke wissel de maand, het aantal weekenden en het aantal lege weekenden.
 
 ### Formulier (FRM)
 - **FRM-1** Het formulier toont de blokken volgens §7.4.1 en §7.4.2 en de blokinstellingen van de editie.
@@ -724,7 +767,7 @@ elkaar live.
 - **FRM-11** Gedeeltelijk opslaan: alleen de kalender is verplicht, budgetten, reistijd en verblijf zijn optioneel met "(optioneel)" in de kop; een deelnemer met alleen beschikbaarheid telt als ingevuld.
 
 ### Onderdelen en deadline (OND, DDL)
-- **OND-1** Boodschappen, kookbeurten, programma, kamerindeling en carpool hebben elk één vlag in `src/shared/onderdelen.js`; alle vijf staan uit (AAN-80).
+- **OND-1** Boodschappen, kookbeurten, programma, kamerindeling en carpool hebben elk één vlag in `src/shared/onderdelen.js`; boodschappen staat aan, de andere vier staan uit (AAN-80).
 - **OND-2** Een onderdeel dat uitstaat is weg uit menu, start, eerstvolgende actie, status per onderdeel en uitleg; zijn route bestaat niet. Acties en tabs in de Sheet blijven ongemoeid.
 - **OND-3** De voorkeuren voor eten en doen blijven bij Invullen (vinkjes uit de editielijsten plus tags, alles optioneel) en komen terug bij de organisator.
 - **DDL-1** De deadline staat alleen bij Invullen en in Voortgang en is informatief: hij blokkeert opslaan niet.
@@ -763,6 +806,9 @@ elkaar live.
 - **MEE-8** "Kopieer als tekst" levert de tekst volgens §7.8.7.
 - **MEE-9** Bij boodschappen staan relevante tellingen uit eten en drinken volgens §7.8.8.
 - **MEE-10** De organisator kiest bij een item "Toewijzen aan ..." en een deelnemer; dat maakt een claim op naam van die deelnemer (§7.7.4). Een deelnemerssessie die dit probeert, krijgt `geen_toegang` (TOE-7). Het invoerveld onder Uit eigen keuken toont geen categorie zolang Boodschappen uit staat (OND-2, BV-30, BV-31).
+- **MEE-11** Boodschappen is een tab onder Meenemen naast Wie neemt wat mee; het hoofdmenu houdt zeven items en Meenemen is actief op beide tabs (§7.8.9).
+- **MEE-12** Een deelnemer zet op de tab Boodschappen een boodschap op de lijst met naam en categorie; bij elk item staat wie hem toevoegde, en je eigen item haal je weg zolang de lijst open is (§7.8.10).
+- **MEE-13** Een boodschap toevoegen kan alleen met een vastgelegd weekend en zolang de lijst niet definitief is. Zonder vastgelegd weekend toont de tab "Komt zodra het weekend vastligt"; het script weigert met `gesloten` (§7.8.11, AAN-93).
 
 ### Kookbeurten (KOK)
 - **KOK-1** Bij het vastleggen van het weekend verschijnen de standaardmaaltijden; de organisator past ze aan.
@@ -849,7 +895,9 @@ elkaar live.
 
 Zie `05-designbrief.md`. Het ontwerp staat in Claude Design en als bestanden in
 `docs/design/`: `tokens.css` (licht en donker), de iconen en per scherm een artboard
-(`*.dc.html`, lees de markup en de klassen; de README daar koppelt artboards aan eisen).
+(`*.dc.html`, lees de markup en de klassen; de README daar koppelt artboards aan eisen). Het
+ontwerp is op 13 november bijgewerkt naar de app van fase 33 en de swipe-kalender van §7.3.7;
+`Formulier.dc.html` laat het swipen werkend zien.
 Fase 2 neemt `tokens.css` over als basis. Eerst komen: tokens als CSS-variabelen (licht en donker),
 glaspaneel, stappenbalk, kaart, knop, invoerveld, schuif, vinkje, drieknop
 (ja/misschien/nee), toast, lege toestand.
