@@ -9,7 +9,7 @@ import { deelvormVan } from '../shared/accommodatie.js';
 
 // NFR-22, §7.17: elke wijziging van ACTIES verhoogt de versie hier en in src/web/api.js; de snapshot in
 // test/unit/foutafhandeling.test.mjs faalt anders.
-export const API_VERSIE = 2;
+export const API_VERSIE = 3;
 export const SLOT_WACHTTIJD_MS = 10000;
 const MAX_VERZOEK = 200000;
 
@@ -30,7 +30,7 @@ export const ACTIES = {
   bundel: S, // SYNC-2: kleine handelingen uit de wachtrij, elk met eigen rechten, validatie en Log
   weekendVastleggen: S, weekendLosmaken: S, accommodatieOpslaan: S, accommodatieVerwijderen: S, deelvormZetten: S,
   accommodatieBoeken: S, verrassingOnthullen: S, top3Opgeven: S,
-  itemOpslaan: S, itemVerwijderen: S, claimen: S, claimIntrekken: S, claimToewijzen: S, afvinken: S,
+  itemOpslaan: S, itemVerwijderen: S, claimen: S, claimIntrekken: S, claimToewijzen: S, afvinken: S, boodschapToevoegen: S,
   boodschappenDefinitief: S, maaltijdOpslaan: S, kokWorden: S, kokStoppen: S, programmaOpslaan: S,
   programmaVerwijderen: S, kamersOpslaan: S, kamerIndelen: S, ritOpslaan: S, meerijden: S, meerijdenStoppen: S,
   postOpslaan: S, postVerwijderen: S, betalingMarkeren: S, betalingTerugdraaien: S,

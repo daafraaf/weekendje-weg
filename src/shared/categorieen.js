@@ -18,7 +18,7 @@ const WOORDEN = {
   'Pasta, rijst en wereldkeuken': ['pasta', 'spaghetti', 'penne', 'rijst', 'noodles', 'couscous', 'tortellini', 'macaroni', 'nasi', 'bami', 'taco', 'curry', 'lasagne'],
   'Conserven en sauzen': ['saus', 'ketchup', 'mayonaise', 'mosterd', 'olijfolie', 'olie', 'azijn', 'bonen', 'blik', 'soep', 'pesto', 'passata', 'kruiden', 'zout', 'peper', 'bouillon', 'sambal', 'olijven'],
   'Koek, snoep en chips': ['chips', 'koek', 'koekjes', 'snoep', 'chocolade', 'stroopwafel', 'stroopwafels', 'drop', 'noten', 'nootjes', 'borrelnoot', 'popcorn', 'toef', 'taart', 'cake', 'dipsaus'],
-  'Frisdrank, bier en wijn': ['bier', 'wijn', 'cola', 'fris', 'frisdrank', 'sap', 'water', 'whisky', 'gin', 'jenever', 'prosecco', 'radler', 'ipa', 'limonade', 'tonic', 'sinas', 'ijsthee', 'drank'],
+  'Frisdrank, bier en wijn': ['bier', 'wijn', 'cola', 'fris', 'frisdrank', 'sap', 'water', 'whisky', 'gin', 'jenever', 'prosecco', 'radler', 'ipa', 'limonade', 'tonic', 'sinas', 'ijsthee', 'drank', 'pils', 'tripel', 'dubbel', 'speciaalbier', 'westmalle', 'karmeliet', 'chouffe', 'flesjes', 'flessen'],
   Diepvries: ['ijs', 'diepvries', 'pizza', 'friet', 'frites', 'bladerdeeg', 'kroket', 'bitterbal', 'bitterballen'],
   Huishouden: ['wc-papier', 'toiletpapier', 'keukenrol', 'keukenpapier', 'afwasmiddel', 'zeep', 'vuilniszak', 'vuilniszakken', 'spons', 'servet', 'servetten', 'aluminiumfolie', 'folie', 'kaars', 'kaarsen', 'aansteker', 'lucifers', 'houtskool', 'bbq-blokjes', 'batterij', 'batterijen', 'tissues'],
 };

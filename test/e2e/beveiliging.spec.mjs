@@ -21,7 +21,7 @@ async function api(stap = 'weekend') {
   const demo = maakVolledigeDemo({ stap });
   const nep = await startServer({ port: 0, seed: demo.seed });
   const vraag = async (verzoek) => {
-    const r = await fetch(`${nep.url}/macros/s/${demo.scriptId}/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ apiVersie: 2, ...verzoek }) });
+    const r = await fetch(`${nep.url}/macros/s/${demo.scriptId}/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ apiVersie: 3, ...verzoek }) });
     return r.json();
   };
   const deelnemer = async (naam, jaar = 2027) => (await vraag({ actie: 'inloggenDeelnemer', data: { token: demo.tokens[jaar][naam], pin: demo.pin } })).data.sessie;

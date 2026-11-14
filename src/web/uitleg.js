@@ -24,9 +24,9 @@ export const UITLEG = {
   },
   voorbereiding: {
     gebeurt: 'Wie neemt wat mee wordt verdeeld, zodat niemand met vijf grillpannen aankomt. Meenemen staat in elke stap open, dus een lijstje kan al vroeg beginnen.',
-    oplevert: 'Een lijst met wie wat regelt.',
-    deelnemer: 'Claim wat jij meeneemt. Bedacht je je? Trek je claim gewoon weer in.',
-    organisator: 'Houd in de gaten wat nog niemand heeft geclaimd en zet daar desnoods een naam achter.',
+    oplevert: 'Een lijst met wie wat regelt en een boodschappenlijst.',
+    deelnemer: 'Claim wat jij meeneemt. Bedacht je je? Trek je claim gewoon weer in. Onder Boodschappen zet je zelf op de lijst wat je graag wilt, zodra het weekend vastligt.',
+    organisator: 'Houd in de gaten wat nog niemand heeft geclaimd en zet daar desnoods een naam achter. Maak de boodschappenlijst definitief als je gaat kopen.',
   },
   weekend: {
     gebeurt: 'Het weekend zelf. Wat je voor de groep betaalt, zet je in de app.',

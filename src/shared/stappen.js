@@ -29,6 +29,8 @@ export function losmakenGevolgen({ aftellen = false, geboektNaam = '', weekendTe
   if (aftellen) uit.push('De aftelteller op het startscherm verdwijnt.');
   const datums = [onderdeelAan('kookbeurten', onderdelen) ? 'de maaltijden' : '', onderdeelAan('programma', onderdelen) ? 'het programma' : ''].filter(Boolean);
   if (datums.length) uit.push(`De datums bij ${datums.join(' en ')} verdwijnen tot je een nieuw weekend kiest.`);
+  // AAN-93, §7.8.11: de boodschappen blijven staan, maar toevoegen wacht op het nieuwe weekend.
+  if (onderdeelAan('boodschappen', onderdelen)) uit.push('De boodschappen blijven op de lijst staan, maar niemand kan iets toevoegen tot je een nieuw weekend kiest.');
   if (geboektNaam) uit.push(`${geboektNaam} blijft op geboekt staan, maar die boeking hoort bij ${weekendTekst}. Controleer of de boeking past bij het nieuwe weekend.`);
   return uit;
 }

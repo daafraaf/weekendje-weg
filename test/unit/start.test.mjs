@@ -84,7 +84,8 @@ test('STA-4 ACC-10: de eerstvolgende actie van de organisator volgt de stap', ()
   assert.equal(eersteActie(g('accommodatie', { geboekt: { geregeld: true, verrassing: true } })).tekst, 'Zet de stap op Meenemen');
   assert.equal(eersteActie(g('voorbereiding'), ALLES_AAN).tekst, 'Boodschappen definitief maken');
   assert.equal(eersteActie(g('weekend'), ALLES_AAN).tekst, 'Programma beheren');
-  assert.equal(eersteActie(g('voorbereiding')).tekst, 'Zet de stap op Weekend'); // OND-2: Boodschappen staat uit
+  assert.equal(eersteActie(g('voorbereiding')).tekst, 'Boodschappen definitief maken'); // AAN-80: Boodschappen staat aan
+  assert.equal(eersteActie(g('voorbereiding'), { ...ALLES_AAN, boodschappen: false }).tekst, 'Zet de stap op Weekend'); // OND-2
   assert.equal(eersteActie(g('weekend')).tekst, 'Zet de stap op Afrekening'); // OND-2: Programma staat uit
   assert.equal(eersteActie(g('afrekenen', { afrekening: { open: [{}] } })).tekst, 'Betalingen afvinken');
   assert.equal(eersteActie(g('afgerond')).tekst, 'Nieuwe editie');

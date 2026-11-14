@@ -510,6 +510,16 @@ textarea.field { min-height: 88px; padding: 12px 14px; resize: vertical; }
 .bd-voortgang { flex: 1 1 auto; }
 .bd-getal { font-weight: 700; }
 .bd-naam { flex: 1 1 auto; }
+/* MEE-11 t/m MEE-13: invoerblok, rij met wie hem toevoegde en weghalen, wachttoestand */
+.bd-invoer { display: flex; flex-direction: column; gap: 12px; }
+.bd-invoer .btn { align-self: flex-start; }
+.bd-rij { padding-right: 6px; }
+.bd-vink { flex: 1 1 auto; display: flex; align-items: center; gap: 12px; min-width: 0; cursor: pointer; }
+.bd-tekst { flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.bd-labels { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.bd-labels:empty { display: none; }
+.bd-wacht { display: flex; gap: 12px; align-items: flex-start; }
+.bd-wacht-ico { color: var(--accent); flex: 0 0 auto; padding-top: 2px; }
 .vink .klaar { text-decoration: line-through; color: var(--text-secondary); }
 .mee-velden { flex: 1 1 auto; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .mee-plus { background: var(--accent-soft); color: var(--accent); }

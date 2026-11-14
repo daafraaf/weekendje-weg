@@ -47,8 +47,21 @@ export function maakStand({ wachtrij, toepassen, hoort = () => true, bijWijzigin
 
 // Meenemen en Boodschappen: claimen, intrekken en afvinken op de items van scherm `meenemen` (MEE-2, MEE-7).
 // Zelfde uitkomst als de server: een tweede claim telt niet, intrekken zonder claim is geen fout.
-export const ITEM_ACTIES = ['claimen', 'claimIntrekken', 'afvinken'];
+// MEE-12: een nieuwe boodschap staat meteen op de lijst, met een voorlopig id (`nieuw:`) tot de Sheet hem heeft;
+// dezelfde naam van jezelf blijft één item, net als op de server.
+export const ITEM_ACTIES = ['claimen', 'claimIntrekken', 'afvinken', 'boodschapToevoegen'];
+export const NIEUW_ITEM = 'nieuw:';
+export const boodschapSleutel = (naam) => String(naam || '').trim().replace(/\s+/g, ' ').normalize('NFC').toLocaleLowerCase('nl');
 export function pasItemsToe(g, { actie, data }) {
+  if (actie === 'boodschapToevoegen') {
+    if (!g || !Array.isArray(g.items)) return g;
+    const sleutel = boodschapSleutel(data.naam);
+    const bestaand = g.items.find((i) => i.soort === 'boodschap' && i.eigen && !i.maaltijd && boodschapSleutel(i.naam) === sleutel);
+    if (bestaand) { if (data.categorie) bestaand.categorie = data.categorie; return g; }
+    g.items.push({ id: `${NIEUW_ITEM}${sleutel}`, soort: 'boodschap', naam: String(data.naam).trim().replace(/\s+/g, ' '), categorie: data.categorie || 'Overig',
+      versie: 0, afgevinkt: false, eigen: true, door: '', maaltijd: '', claims: [] });
+    return g;
+  }
   const item = g && Array.isArray(g.items) ? g.items.find((i) => i.id === data.itemId) : null;
   if (!item) return g;
   if (actie === 'claimen' && !item.claims.some((c) => c.ik)) item.claims.push({ naam: '', ik: true });

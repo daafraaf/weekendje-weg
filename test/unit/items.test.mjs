@@ -21,7 +21,7 @@ function sessies(store) {
 }
 
 function opzet({ stap = 'voorbereiding' } = {}) {
-  const demo = maakDemo({ antwoorden: true, stap, items: true });
+  const demo = maakDemo({ antwoorden: true, stap, items: true, weekend: '2027-05-21' }); // AAN-93: met een vastgelegd weekend
   const nep = maakNepApi({ seed: demo.seed });
   const vraag = (verzoek) => nep.api.verwerk(JSON.stringify({ apiVersie: API_VERSIE, editieId: DEMO_EDITIE_ID, ...verzoek }));
   const beheer = vraag({ actie: 'inloggenBeheer', data: { token: nep.beheerlink(demo.seed.Leden[0].id, WACHTWOORD), wachtwoord: WACHTWOORD } }).data.sessie;

@@ -14,7 +14,7 @@ test('UIT-2: elke stap heeft uitleg met gebeurt, oplevert en een tekst per rol',
 
 test('UIT-2: de teksten noemen geen uitgezette onderdelen en gebruiken geen gedachtestreepjes', () => {
   const alles = JSON.stringify(UITLEG).toLowerCase();
-  for (const woord of ['boodschap', 'kookbeurt', 'programma', 'kamerindeling', 'carpool', 'rijden', 'koken']) assert.ok(!alles.includes(woord), woord);
+  for (const woord of ['kookbeurt', 'programma', 'kamerindeling', 'carpool', 'rijden', 'koken']) assert.ok(!alles.includes(woord), woord);
   assert.ok(!/[–—]/.test(alles));
 });
 

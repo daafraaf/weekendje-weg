@@ -3,7 +3,7 @@ import { startNep } from './hulp.mjs';
 
 // Demo in de stap Voorbereiding met de startlijst als items; de deelnemerssessie is Anna.
 const test = basis.extend({
-  nep: [async ({ context }, use) => { const nep = await startNep(context, { antwoorden: true, stap: 'voorbereiding', items: true }); await use(nep); nep.server.close(); }, { auto: true }],
+  nep: [async ({ context }, use) => { const nep = await startNep(context, { antwoorden: true, stap: 'voorbereiding', items: true, weekend: '2027-05-21' }); await use(nep); nep.server.close(); }, { auto: true }],
 });
 test.use({ serviceWorkers: 'block' });
 

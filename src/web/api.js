@@ -4,7 +4,7 @@ import { VEROUDERD_TEKST, leesbareMelding } from './foutteksten.js';
 
 // NFR-22, §7.17: gelijk aan API_VERSIE in src/server/api.js; elke wijziging van ACTIES verhoogt hem aan beide
 // kanten (de snapshot in test/unit/foutafhandeling.test.mjs bewaakt dat).
-export const API_VERSIE = 2;
+export const API_VERSIE = 3;
 export { VEROUDERD_TEKST };
 export const OFFLINE_TEKST = 'Geen verbinding, je gegevens zijn veilig opgeslagen in de Sheet';
 

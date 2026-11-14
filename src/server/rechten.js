@@ -108,6 +108,8 @@ export const REGELS = {
   },
   itemVerwijderen: { deelnemer: (c) => (c.eigen ? als(!c.definitief) : NEE), organisator: () => JA },
   claimen: iedereen,
+  // MEE-12, AAN-93: iedereen zet een boodschap op de lijst; de actie zelf controleert weekend en definitief.
+  boodschapToevoegen: iedereen,
   claimIntrekken: eigenOfOrganisator,
   // MEE-10 (BV-30): een claim op naam van een deelnemer maken kan alleen de organisator.
   claimToewijzen: alleenOrganisator,

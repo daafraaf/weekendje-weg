@@ -9,4 +9,5 @@ export const BUNDEL_MAX = 25;
 
 // AAN-83: alleen deze acties zijn optimistisch en mogen in een bundel. Ze zijn idempotent en schrijven één rij of
 // één veld (de top 3: de eigen rijen in Stemmen); de laatste schrijfactie wint, zonder versiecheck.
-export const BUNDEL_ACTIES = ['claimen', 'claimIntrekken', 'afvinken', 'antwoordZetten', 'top3Opgeven'];
+// Fase 35 (MEE-12): een boodschap op de lijst zetten (`boodschapToevoegen`); dezelfde naam van dezelfde persoon is één item.
+export const BUNDEL_ACTIES = ['claimen', 'claimIntrekken', 'afvinken', 'antwoordZetten', 'top3Opgeven', 'boodschapToevoegen'];

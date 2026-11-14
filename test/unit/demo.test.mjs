@@ -10,7 +10,7 @@ const NU = new Date('2026-12-01T12:00:00Z');
 function demo(stap) {
   const d = maakVolledigeDemo({ stap });
   const nep = maakNepApi({ seed: d.seed, nu: () => NU });
-  const vraag = (v) => nep.api.verwerk(JSON.stringify({ apiVersie: 2, ...v }));
+  const vraag = (v) => nep.api.verwerk(JSON.stringify({ apiVersie: 3, ...v }));
   const sessie = (naam, jaar = 2027) => {
     const r = vraag({ actie: 'inloggenDeelnemer', data: { token: d.tokens[jaar][naam], pin: d.pin } });
     assert.equal(r.ok, true, JSON.stringify(r));

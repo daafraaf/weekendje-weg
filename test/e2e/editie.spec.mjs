@@ -30,7 +30,7 @@ const test = basis.extend({
 // Playwright kan verkeer van pagina's onder een service worker in WebKit niet onderscheppen.
 test.use({ serviceWorkers: 'block' });
 
-const vraag = (nep, verzoek) => nep.api.verwerk(JSON.stringify({ apiVersie: 2, ...verzoek }));
+const vraag = (nep, verzoek) => nep.api.verwerk(JSON.stringify({ apiVersie: 3, ...verzoek }));
 
 async function logInAlsOrganisator(page, nep) {
   nep.store.nieuwVerzoek();

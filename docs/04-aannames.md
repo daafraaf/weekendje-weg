@@ -1,6 +1,6 @@
 # Aannameregister Weekendje weg
 
-Versie 0.30, 13 november 2026: AAN-80 aangepast (boodschappen aan); AAN-93 toegevoegd, gepland voor fase 35.
+Versie 0.30, 13 november 2026: AAN-80 aangepast (boodschappen aan); AAN-93 toegevoegd, gebouwd in fase 35 (status open).
 Versie 0.29, 13 november 2026: AAN-91 en AAN-92 toegevoegd, gepland voor fase 34 (swipen door de maanden).
 Versie 0.28, 11 november 2026: feedbackronde 2 (BV-01 t/m BV-36): AAN-05, AAN-29 en AAN-81 aangepast; AAN-88 t/m AAN-90 toegevoegd; AAN-06 blijft ongewijzigd (BV-32 ligt bij David).
 Versie 0.27, 11 november 2026: fase 28: AAN-85 toegevoegd (route op Start, uitleg van de stappen).
@@ -137,7 +137,7 @@ die test aan en werk je hier de status bij.
 | AAN-90 | Zelf inactief en dubbele naam | Regel | `src/server/acties/leden.js` (`ledenBeheren`) | de organisator kan zijn eigen lid niet inactief maken (geen knop; de server geeft `ongeldig` met een leesbare tekst); een nieuw of gewijzigd lid met dezelfde voornaam (zonder hoofdletters en spaties) als een ander lid geeft in de voorkant een waarschuwing, geen weigering (BV-15) | laag | open |
 | AAN-91 | Startmaand van de kalender op mobiel | Regel | | de eerste maand met minstens één leeg weekend; is alles ingevuld of is de kalender alleen-lezen, dan de eerste maand van de periode | laag | gepland fase 34 |
 | AAN-92 | Hint dat swipen kan | Flow | | één keer per apparaat: na ongeveer 0,5 s schuift het maandblad 48 px naar links en veert terug, samen ongeveer 0,8 s; de vlag `ww-swipe-gezien` in localStorage gaat aan na de hint en na de eerste eigen veeg of pijltik; lezen en schrijven in try/catch, zonder opslag komt de hint bij elk bezoek; met `prefers-reduced-motion` geen beweging maar de tekst "Veeg naar links voor de volgende maand" tot de eerste wissel | laag | gepland fase 34 |
-| AAN-93 | Boodschappen en het vastgelegde weekend | Regel | | een `boodschap` toevoegen kan alleen met een vastgelegd weekend en zolang de lijst niet definitief is, anders `gesloten`; losmaken van het weekend laat de items staan en zet toevoegen stil tot er een nieuw weekend vastligt; spullen en keukenitems blijven altijd open; claimen en afvinken volgen §7.8.5 | laag | gepland fase 35 |
+| AAN-93 | Boodschappen en het vastgelegde weekend | Regel | `src/server/acties/items.js` (`boodschapDicht`) | een `boodschap` toevoegen kan alleen met een vastgelegd weekend en zolang de lijst niet definitief is, anders `gesloten`; losmaken van het weekend laat de items staan en zet toevoegen stil tot er een nieuw weekend vastligt; spullen en keukenitems blijven altijd open; claimen en afvinken volgen §7.8.5 | laag | open |
 
 ## Volgorde voor het gesprek
 

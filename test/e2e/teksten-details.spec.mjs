@@ -119,7 +119,7 @@ test('MEE-10 BV-30: de organisator wijst een item toe aan een deelnemer; ook op 
 
 test('MEE-10 OND-2 BV-31: onder Uit eigen keuken geen categorie zolang Boodschappen uit staat', async ({ page, context }) => {
   const open = (seed) => { for (const e of seed.Edities) e.boodschappenDefinitief = false; };
-  const { nep } = await startDemo(context, { stap: 'voorbereiding', als: 'Bas', onderdelen: 'standaard', aanpassen: open });
+  const { nep } = await startDemo(context, { stap: 'voorbereiding', als: 'Bas', onderdelen: [], aanpassen: open });
   try {
     await page.goto('/#/meenemen');
     await expect(main(page).getByRole('textbox', { name: 'Nieuw item uit je keuken' })).toBeVisible();

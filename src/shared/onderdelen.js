@@ -2,7 +2,7 @@
 // menu, startscherm en eersteActie. Uit betekent weg uit de interface (geen grijs item); acties en tabs blijven bestaan.
 // Een onderdeel aanzetten is deze vlag op true zetten.
 export const ONDERDELEN = {
-  boodschappen: false,
+  boodschappen: true,
   kookbeurten: false,
   programma: false,
   kamers: false,

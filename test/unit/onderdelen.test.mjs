@@ -11,15 +11,15 @@ import { nodeSha256 } from '../mock-backend/memorystore.mjs';
 const NAMEN = ['boodschappen', 'kookbeurten', 'programma', 'kamers', 'carpool'];
 const g = (stap) => ({ editie: { id: 'e1', stap, vastgelegdWeekend: '', deelvorm: 'info', boodschappenDefinitief: false }, voortgang: { aantal: 4, ingevuld: 2 }, programma: { punten: 0 }, afrekening: { open: [] } });
 
-test('OND-1 AAN-80: de vijf onderdelen staan op één plek en standaard uit', () => {
+test('OND-1 AAN-80: de vijf onderdelen staan op één plek; boodschappen aan, de andere vier uit', () => {
   assert.deepEqual(Object.keys(ONDERDELEN), NAMEN);
-  for (const n of NAMEN) assert.equal(onderdeelAan(n), false, n);
+  for (const n of NAMEN) assert.equal(onderdeelAan(n), n === 'boodschappen', n);
   assert.equal(onderdeelAan('onbekend'), false);
 });
 
 test('OND-1 OND-2: een vlag aanzetten brengt het onderdeel terug in eersteActie', () => {
-  assert.equal(eersteActie(g('voorbereiding')).route, '#/stappen');
-  assert.equal(eersteActie(g('voorbereiding'), { ...ONDERDELEN, boodschappen: true }).route, '#/boodschappen');
+  assert.equal(eersteActie(g('voorbereiding'), { ...ONDERDELEN, boodschappen: false }).route, '#/stappen');
+  assert.equal(eersteActie(g('voorbereiding')).route, '#/boodschappen');
   assert.equal(eersteActie(g('weekend')).route, '#/stappen');
   assert.equal(eersteActie(g('weekend'), { ...ONDERDELEN, programma: true }).route, '#/programma');
 });

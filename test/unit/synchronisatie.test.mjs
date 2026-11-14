@@ -79,7 +79,7 @@ test('SYNC-2 SYNC-7: een bundel voert elke actie uit met een eigen uitslag; een 
 
 test('SYNC-2 AAN-82 AAN-83: alleen de vaste lijst en hooguit 25 acties in één bundel', () => {
   const { bundel, keuken } = opzet();
-  assert.deepEqual(BUNDEL_ACTIES, ['claimen', 'claimIntrekken', 'afvinken', 'antwoordZetten', 'top3Opgeven']);
+  assert.deepEqual(BUNDEL_ACTIES, ['claimen', 'claimIntrekken', 'afvinken', 'antwoordZetten', 'top3Opgeven', 'boodschapToevoegen']);
   assert.equal(BUNDEL_MAX, 25);
   assert.equal(DEBOUNCE_MS, 1000);
   assert.deepEqual(WACHTTIJDEN_MS, [2000, 4000, 8000, 16000, 30000]);

@@ -147,7 +147,7 @@ test('GRP-3 [leeg]: een tweede opzet wordt geweigerd', async ({ page, nep }) => 
   await verbind(page, nep.setupcode());
   await expect(page.getByText('Deze groep is al opgezet')).toBeVisible();
   // En rechtstreeks tegen het script wordt ook een tweede groepOpzetten geweigerd.
-  const direct = nep.api.verwerk(JSON.stringify({ actie: 'groepOpzetten', apiVersie: 2, data: { setupcode: nep.setupcode(), groepsnaam: 'Kaping', leden: [{ voornaam: 'X', woonplaats: '' }, { voornaam: 'Y', woonplaats: '' }], eigenaar: 0, wachtwoord: WACHTWOORD } }));
+  const direct = nep.api.verwerk(JSON.stringify({ actie: 'groepOpzetten', apiVersie: 3, data: { setupcode: nep.setupcode(), groepsnaam: 'Kaping', leden: [{ voornaam: 'X', woonplaats: '' }, { voornaam: 'Y', woonplaats: '' }], eigenaar: 0, wachtwoord: WACHTWOORD } }));
   expect(direct).toMatchObject({ ok: false, fout: 'gesloten' });
 });
 

@@ -169,7 +169,7 @@ export function maakVolledigeDemo({ stap = 'invullen' } = {}) {
 // opties.posten: twee demoposten uit de fixture (Eva boodschappen, Bram kanoverhuur).
 // opties.afrekening: daarbovenop het huisje (Eva, gelijk over vier), één betaalde betaling (Bram aan Eva)
 // en Chris afgehaakt met zijn aandeel in het huisje (spec §11, stap afrekenen).
-export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen', posten = false, afrekening = false, items = false } = {}) {
+export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen', posten = false, afrekening = false, items = false, weekend = '' } = {}) {
   const ingevuld = new Map(antwoorden ? fixture.antwoorden.map((a) => [a.deelnemerId, a.ingevuldOp]) : []);
   const deelnemers = fixture.deelnemers.map((d) => {
     const pinSalt = maakSalt(nodeRandom);
@@ -187,7 +187,7 @@ export function maakDemo({ blokkades = 0, antwoorden = false, stap = 'invullen',
       id: DEMO_EDITIE_ID, jaar: 2027, titel: 'Weekendje weg 2027', stap, stapData: fixture.stapData, versie: 1, bijgewerkt: fixture.groep.aangemaakt,
       periodeVan: '2027-01-01', periodeTot: '2027-12-31', voorkeursmaanden: [4, 5, 9, 10], deadline: '2099-01-01T23:59:00+01:00',
       blokken: { etenDrinken: true, activiteiten: true, programma: true, samenwerken: false }, lijsten: {},
-      vastgelegdWeekend: '', deelvorm: 'samen', geboektAccommodatieId: '', onthuld: false,
+      vastgelegdWeekend: weekend, deelvorm: 'samen', geboektAccommodatieId: '', onthuld: false, // weekend: AAN-93
     }],
     Deelnemers: deelnemers,
   };

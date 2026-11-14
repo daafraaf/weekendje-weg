@@ -10,13 +10,13 @@ import { maakNepApi } from '../mock-backend/server.mjs';
 
 // NFR-22: de actielijst zoals ze hoort bij API_VERSIE. Wijzig je ACTIES, verhoog dan API_VERSIE aan beide
 // kanten en werk deze snapshot bij. Uitzondering: fase 33 voegde claimToewijzen toe binnen versie 2, omdat versie 2
-// nog niet was uitgerold en de fasen van feedbackronde 2 samen live gaan.
+// nog niet was uitgerold en de fasen van feedbackronde 2 samen live gaan. Fase 35 verhoogde naar 3 voor boodschapToevoegen.
 const SNAPSHOT = {
-  versie: 2,
+  versie: 3,
   acties: [
     'accommodatieBoeken', 'accommodatieOpslaan', 'accommodatieVerwijderen', 'afhakenMarkeren', 'afvinken',
     'antwoordZetten', 'antwoordenOpslaan', 'beheerlinkMaken', 'betalingMarkeren', 'betalingTerugdraaien',
-    'boodschappenDefinitief', 'bundel', 'claimIntrekken', 'claimToewijzen', 'claimen', 'deelnemersBeheren', 'deelvormZetten',
+    'boodschapToevoegen', 'boodschappenDefinitief', 'bundel', 'claimIntrekken', 'claimToewijzen', 'claimen', 'deelnemersBeheren', 'deelvormZetten',
     'editieAanmaken', 'editieBijwerken', 'groepOpzetten', 'inloggenBeheer', 'inloggenDeelnemer', 'itemOpslaan',
     'itemVerwijderen', 'kamerIndelen', 'kamersOpslaan', 'kokStoppen', 'kokWorden', 'ledenBeheren', 'linkVernieuwen',
     'linksMaken', 'maaltijdOpslaan', 'meerijden', 'meerijdenStoppen', 'pincodeVernieuwen', 'postOpslaan',
@@ -34,8 +34,8 @@ function vergelijk(acties, versie, snapshot) {
   return `API_VERSIE is ${versie}: werk de snapshot in deze test bij.`;
 }
 
-test('NFR-22 §7.17: API_VERSIE is 2 aan beide kanten en de actielijst past bij de snapshot', () => {
-  assert.equal(API_VERSIE, 2);
+test('NFR-22 §7.17: API_VERSIE is 3 aan beide kanten en de actielijst past bij de snapshot', () => {
+  assert.equal(API_VERSIE, 3);
   assert.equal(WEB_VERSIE, API_VERSIE);
   assert.equal(vergelijk(Object.keys(ACTIES), API_VERSIE, SNAPSHOT), '');
 });

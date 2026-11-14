@@ -1,6 +1,6 @@
 # MEMORY.md — Weekendje weg
 
-Laatst bijgewerkt: 2026-11-11 (feedbackronde 2 afgerond)
+Laatst bijgewerkt: 2026-11-14 (fase 35 boodschappen als wensenlijst)
 
 ## Status
 
@@ -24,6 +24,7 @@ zodra fase 0 `package.json` heeft neergezet.
 Nieuwste bovenaan. Houd hier de laatste drie fasen; oudere regels naar
 `docs/sessielog-archief.md`.
 
+- 2026-11-14 fase 35: boodschappen als wensenlijst: Boodschappen aan als tab onder Meenemen, "Zet iets op de lijst" via de wachtrij (`boodschapToevoegen`, API_VERSIE 3), wie het toevoegde bij elk item, eigen item weghalen, wachttoestand zonder vastgelegd weekend, script weigert toevoegen met gesloten zonder weekend of na definitief (OND-1, MEE-11, MEE-12, MEE-13, AAN-80, AAN-93); check groen; niet gepusht, uitrol vraagt voorkant en drie scripts samen; zie `docs/overdracht/fase-35.md`.
 - 2026-11-11 uitrol feedbackronde 2 (API_VERSIE 2): voorkant gepusht naar Pages; script met clasp push en deploy op de bestaande implementatie in de sjabloon, "Weekendje weg test" en "Leid0n Test"; door David uitgevoerd.
 - 2026-11-11 fase 33: teksten, onderdelen en details: deadline-teksten "Graag ingevuld vóór", berichten en losmaakbevestiging volgen ONDERDELEN, Accommodatie zonder opties, na onthullen alleen de geboekte, Toewijzen aan … (`claimToewijzen`), geen categorie zonder Boodschappen, voorstel Nieuwe editie (AAN-89), niet zelf inactief (AAN-90), Bedrag voorgevuld (EDI-10, EDI-11, GRP-5, ACC-10, MEE-10, GELD-12; BV-09, 10, 11, 15, 27, 28, 29, 30, 31, 34); check groen; zie `docs/overdracht/fase-33.md`.
 - 2026-11-11 fase 32: weekend en stappen: Leg vast en Ander weekend kiezen op Weekendje prikker (gedeeld met Accommodaties beheren), losmaken tot en met Meenemen, vanaf Weekend melding met link naar Stappen, bevestiging bij een stap vooruit (AAN-88), terug van Afgerond naar Afrekening, betalingen afvinken na Afgerond, bericht bij Afgerond zonder "afgerekend" als er nog open staat (ACC-1, ACC-7, EDI-7, GELD-9, AAN-88; BV-01, 25, 26); zie `docs/overdracht/fase-32.md`.

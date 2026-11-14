@@ -34,6 +34,21 @@ export function maakStartItems(store, editieId, lijsten) {
   for (const i of startItems(lijsten)) store.voegToe('Items', { editieId, ...i, maaltijdId: '', toegevoegdDoor: '', afgevinkt: false });
 }
 
+// AAN-93: een boodschap toevoegen kan alleen met een vastgelegd weekend en zolang de lijst niet definitief is. Losmaken
+// laat de items staan en zet toevoegen stil tot er een nieuw weekend ligt. Spullen en keukenitems blijven open.
+export function boodschapDicht(editie) {
+  if (!editie || !editie.vastgelegdWeekend) return 'Boodschappen toevoegen kan zodra het weekend vastligt.';
+  if (editie.boodschappenDefinitief) return 'De boodschappen zijn definitief. Toevoegen kan niet meer.';
+  return '';
+}
+function boodschapOpen(editie) {
+  const reden = boodschapDicht(editie);
+  if (reden) throw new ApiFout('gesloten', reden);
+}
+
+const schoon = (naam) => String(naam || '').trim().replace(/\s+/g, ' ');
+const naamSleutel = (naam) => schoon(naam).normalize('NFC').toLocaleLowerCase('nl');
+
 // AAN-26: een bestaand item wijzigen of verwijderen volgt "eigen item"; de rechtenregel beslist met deze context.
 function itemContext({ store, sessie, editieId, data }) {
   const id = data.id || data.itemId;
@@ -54,11 +69,13 @@ export const itemOpslaan = {
     maaltijdId: v.optioneel(v.id()),
   }),
   context: itemContext,
-  uitvoeren({ store, sessie, editieId, data }) {
-    const naam = data.naam.trim().replace(/\s+/g, ' ');
+  uitvoeren({ store, sessie, editie, editieId, data }) {
+    const naam = schoon(data.naam);
     if (!naam) throw new ApiFout('ongeldig', 'Geef het item een naam.');
     const categorie = data.categorie || stelCategorieVoor(naam);
     let rij;
+    // AAN-93: ook via Wie neemt wat mee geen nieuwe boodschap zonder vastgelegd weekend of na definitief.
+    if (data.soort === 'boodschap' && (!data.id || (store.vind('Items', data.id) || {}).soort !== 'boodschap')) boodschapOpen(editie);
     if (!data.id) {
       if (itemsVan(store, editieId).length >= ITEM_GRENZEN.aantalMax) throw new ApiFout('ongeldig', `Er passen hooguit ${ITEM_GRENZEN.aantalMax} items in een editie.`);
       const ik = mijnRij(store, sessie, editieId) || '';
@@ -76,6 +93,30 @@ export const itemOpslaan = {
       if (bestaand.maaltijdId && data.soort !== 'boodschap') throw new ApiFout('ongeldig', 'Een ingrediënt is een boodschap.');
       rij = store.werkBij('Items', data.id, { soort: data.soort, naam, categorie }, data.versie);
     }
+    return { id: rij.id, versie: rij.versie, categorie: rij.categorie };
+  },
+};
+
+// MEE-12, §7.8.10: een boodschap op de lijst zetten vanaf de tab Boodschappen. Een kleine handeling uit de wachtrij
+// (AAN-83): dezelfde naam van dezelfde persoon blijft één item, de laatste categorie wint.
+export const boodschapToevoegen = {
+  schema: v.object({ naam: v.tekst({ min: 1, max: ITEM_GRENZEN.naamMax }), categorie: v.optioneel(v.keuze(CATEGORIEEN)) }),
+  uitvoeren({ store, sessie, editie, editieId, data }) {
+    const naam = schoon(data.naam);
+    if (!naam) throw new ApiFout('ongeldig', 'Geef de boodschap een naam.');
+    boodschapOpen(editie);
+    const ik = mijnRij(store, sessie, editieId) || '';
+    if (ik && store.vind('Deelnemers', ik).afgehaakt) throw new ApiFout('gesloten', 'Je bent afgehaakt en kunt niets meer op de lijst zetten.');
+    const categorie = data.categorie || stelCategorieVoor(naam);
+    const sleutel = naamSleutel(naam);
+    const items = itemsVan(store, editieId);
+    const bestaand = items.find((i) => i.soort === 'boodschap' && !i.maaltijdId && i.toegevoegdDoor === ik && naamSleutel(i.naam) === sleutel);
+    if (bestaand) {
+      const rij = bestaand.categorie === categorie ? bestaand : store.werkBij('Items', bestaand.id, { categorie }, bestaand.versie);
+      return { id: rij.id, versie: rij.versie, categorie: rij.categorie };
+    }
+    if (items.length >= ITEM_GRENZEN.aantalMax) throw new ApiFout('ongeldig', `Er passen hooguit ${ITEM_GRENZEN.aantalMax} items in een editie.`);
+    const rij = store.voegToe('Items', { editieId, soort: 'boodschap', naam, categorie, maaltijdId: '', toegevoegdDoor: ik, afgevinkt: false });
     return { id: rij.id, versie: rij.versie, categorie: rij.categorie };
   },
 };
@@ -199,6 +240,9 @@ export function meenemenScherm(h) {
     organisator,
     alleenLezen: editie.stap === 'afgerond',
     definitief,
+    // MEE-13, AAN-93: of er een weekend vastligt en waarom toevoegen dicht is ('' als het open is).
+    vastgelegdWeekend: editie.vastgelegdWeekend || '',
+    boodschapDicht: boodschapDicht(editie),
     categorieen: CATEGORIEEN,
     wensen: etenDrinkenTelling(store, editie, alle),
     // MEE-10: de organisator kiest bij "Toewijzen aan ..." uit de deelnemers die niet afgehaakt zijn.
@@ -206,6 +250,8 @@ export function meenemenScherm(h) {
     items: itemsVan(store, editie.id).map((i) => ({
       id: i.id, soort: i.soort, naam: i.naam, categorie: i.categorie, versie: i.versie, afgevinkt: Boolean(i.afgevinkt),
       eigen: Boolean(ik) && i.toegevoegdDoor === ik,
+      // MEE-12: wie het item toevoegde ('' voor de startlijst of een organisator zonder deelnemersrij).
+      door: i.toegevoegdDoor ? naam(i.toegevoegdDoor) : '',
       maaltijd: (i.maaltijdId && maaltijden.get(i.maaltijdId)) || '',
       claims: claims.filter((c) => c.itemId === i.id).map((c) => ({
         naam: naam(c.deelnemerId), ik: c.deelnemerId === ik, ...(organisator ? { deelnemerId: c.deelnemerId } : {}),
@@ -214,4 +260,4 @@ export function meenemenScherm(h) {
   };
 }
 
-export const itemsHandlers = { itemOpslaan, itemVerwijderen, claimen, claimIntrekken, claimToewijzen, afvinken, boodschappenDefinitief };
+export const itemsHandlers = { itemOpslaan, itemVerwijderen, boodschapToevoegen, claimen, claimIntrekken, claimToewijzen, afvinken, boodschappenDefinitief };

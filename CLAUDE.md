@@ -121,6 +121,8 @@ Houd dit bestand onder de 200 regels; werkwijzen die zelden nodig zijn gaan naar
 
 - Menu en layout (NAV-12, NAV-14): menu-links hebben `aria-label` met de volle naam; op mobiel is alleen het label van het actieve item zichtbaar. Desktop: kopregel over beide kolommen met `.kop-titel`; een scherm met de editietitel als kop hoort in `TITEL_OP_SCHERM` (`app.js`). e2e-maten: `test/e2e/navigatie-layout.spec.mjs`.
 
+- Boodschappen (fase 35): aan; toevoegen alleen met vastgelegd weekend en niet na definitief (`boodschapDicht`, AAN-93). Tests die een boodschap toevoegen geven `weekend: '2027-05-21'` aan `maakDemo`/`startNep`. Een kleine handeling die een rij maakt zet een voorlopig item (`NIEUW_ITEM`) en laadt het scherm na `bevestigd` opnieuw.
+
 ## Valkuilen
 
 Leeg bij de start. Elke fout die twee keer gebeurt, komt hier.

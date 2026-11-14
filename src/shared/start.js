@@ -7,14 +7,14 @@ import { ONDERDELEN, onderdeelAan } from './onderdelen.js';
 // stappenbalk. `stap` koppelt een item aan zijn stap; `routes` zijn de schermen waarop het item actief is.
 // Afrekening opent Wie betaalt wat en heeft de eindafrekening als tweede tab (NAV-11). Een scherm dat nog niet aan
 // de beurt is, toont zelf "Komt in stap ..."; boodschappen, kookbeurten, programma, kamers en carpool staan niet in
-// het menu (OND-2: ze staan uit, zie onderdelen.js).
+// het menu (OND-2: ze staan uit, zie onderdelen.js). Boodschappen is een tab onder Meenemen (MEE-11).
 export const MENU = [
   { naam: 'start', label: 'Start' },
   { naam: 'formulier', label: STAPNAMEN.invullen, stap: 'invullen' },
   { naam: 'voortgang', label: 'Voortgang' },
   { naam: 'overzicht', label: STAPNAMEN.overzicht, stap: 'overzicht' },
   { naam: 'accommodaties', label: STAPNAMEN.accommodatie, stap: 'accommodatie' },
-  { naam: 'meenemen', label: STAPNAMEN.voorbereiding, stap: 'voorbereiding' },
+  { naam: 'meenemen', label: STAPNAMEN.voorbereiding, stap: 'voorbereiding', routes: ['meenemen', 'boodschappen'] }, // MEE-11
   { naam: 'afrekening', label: STAPNAMEN.afrekenen, stap: 'afrekenen', href: 'posten', routes: ['posten', 'afrekening'] },
 ];
 

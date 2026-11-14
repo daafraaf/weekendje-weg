@@ -7,7 +7,8 @@ import { STAPNAMEN } from '../../shared/stappen.js';
 import { stelCategorieVoor } from '../../shared/categorieen.js';
 import { onderdeelAan } from '../../shared/onderdelen.js';
 import { editieKeuze, foutMelding } from './voortgang.js';
-import { maakStand, pasItemsToe, ITEM_ACTIES } from '../stand.js';
+import { maakStand, pasItemsToe, ITEM_ACTIES, NIEUW_ITEM } from '../stand.js';
+import { maakMeeTabs } from '../components/tabs.js';
 
 const PLUS = ['M12 5v14M5 12h14'];
 const SLOT = ['M7 10.5h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'];
@@ -53,7 +54,11 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
   const stand = maakStand({
     wachtrij, toepassen: pasItemsToe, hoort: (a) => a.editieId === editieId && ITEM_ACTIES.includes(a.actie),
     levend: () => wortel.isConnected,
-    bijWijziging: (zicht) => { if (zicht) { g = zicht; teken(); } },
+    bijWijziging: (zicht, e) => {
+      // MEE-12: een bevestigde nieuwe boodschap krijgt zijn echte id en versie uit de Sheet.
+      if (e && e.soort === 'bevestigd' && (e.acties || []).some((a) => a.actie === 'boodschapToevoegen')) { laad(); return; }
+      if (zicht) { g = zicht; teken(); }
+    },
   });
   function klein(actie, data) {
     const wie = data.deelnemerId || 'ik';
@@ -73,7 +78,8 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
             onclick: () => klein('claimIntrekken', { itemId: i.id, deelnemerId: c.deelnemerId }) }, '×')
           : null))
       : [h('span', { class: 't-small t-sec' }, 'nog niemand')];
-    const mag = !dicht(i) && g.ik;
+    const voorlopig = i.id.startsWith(NIEUW_ITEM); // nog onderweg naar de Sheet
+    const mag = !dicht(i) && g.ik && !voorlopig;
     const knoppen = [];
     if (mag) {
       knoppen.push(mijn
@@ -83,7 +89,7 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
           onclick: () => klein('claimen', { itemId: i.id }) }, 'Ik neem mee'));
     }
     // MEE-10 (BV-30): de organisator zet een naam achter een item; een grote actie, die wacht op de Sheet.
-    if (g.organisator && g.deelnemers && !dicht(i)) {
+    if (g.organisator && g.deelnemers && !dicht(i) && !voorlopig) {
       const vrij = g.deelnemers.filter((d) => d.id !== g.ik && !i.claims.some((c) => c.deelnemerId === d.id));
       if (vrij.length) {
         const keuze = h('select', { class: 'field mee-toewijzen', 'aria-label': `${i.naam} toewijzen aan`, style: 'min-height:44px' },
@@ -96,7 +102,7 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
       }
     }
     // AAN-26: een eigen item tot definitief, de organisator elk item.
-    if ((i.eigen || g.organisator) && !g.definitief && !g.alleenLezen) {
+    if ((i.eigen || g.organisator) && !g.definitief && !g.alleenLezen && !voorlopig) {
       knoppen.push(bevestig === i.id
         ? h('button', { class: 'btn btn-plain btn-sm', type: 'button', 'data-schrijft': true, 'aria-label': `${i.naam} definitief verwijderen`,
           onclick: () => schrijf('itemVerwijderen', { id: i.id, versie: i.versie }, `${i.naam} is verwijderd.`, i.soort) }, 'Ja, verwijderen')
@@ -134,12 +140,15 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
   function sectie(s) {
     const items = g.items.filter((i) => i.soort === s.soort);
     const dichtSectie = g.definitief && s.soort !== 'spullen';
+    // MEE-13, AAN-93: zonder vastgelegd weekend geen nieuwe boodschap; de items die er staan blijven.
+    const wachtOpWeekend = s.soort === 'boodschap' && !g.definitief && Boolean(g.boodschapDicht);
     return h('section', { class: 'mee-sectie', 'aria-labelledby': `mee-${s.soort}` },
       h('h2', { class: 't-h3', id: `mee-${s.soort}` }, s.kop),
       dichtSectie ? h('p', { class: 'priv' }, icoon(SLOT, 16), h('span', {}, 'Boodschappen zijn definitief. Claimen kan niet meer.')) : null,
       h('div', { class: 'solid list', role: 'list', 'aria-label': s.kop },
         items.length ? items.map(rij) : h('p', { class: 't-small t-sec mee-leeg' }, 'Nog niets op deze lijst.'),
-        g.definitief || g.alleenLezen ? null : toevoeg(s)),
+        g.definitief || g.alleenLezen || wachtOpWeekend ? null : toevoeg(s)),
+      wachtOpWeekend && !g.alleenLezen ? h('p', { class: 'hint', 'data-wacht': 'boodschap' }, g.boodschapDicht) : null,
       toast && toast.soort === s.soort ? h('p', { class: 'form-toast t-small', role: 'status' }, toast.tekst) : null,
       s.hint ? h('p', { class: 'hint' }, s.hint) : null);
   }
@@ -154,6 +163,7 @@ export function maakMeenemen({ sessie, params = {}, wachtrij, bijVerlopen, fetch
     bericht = null;
     zet(
       kop(onderdeelAan('boodschappen') ? 'Zet erbij wat je meeneemt. Wat niemand claimt uit de keuken, gaat op de boodschappenlijst.' : 'Zet erbij wat je meeneemt.'),
+      onderdeelAan('boodschappen') ? maakMeeTabs('meenemen', params.editie ? editieId : '') : null,
       editieKeuze(g.edities, editieId, (id) => { editieId = id; laad(); }, 'mee-editie'),
       melding.el,
       g.alleenLezen ? h('p', { class: 'hint' }, 'De editie is afgerond. Je kunt de lijst nog lezen.') : null,

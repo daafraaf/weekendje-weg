@@ -3,7 +3,7 @@ import { startNep, koppelNep } from './hulp.mjs';
 
 // Demo in de stap Voorbereiding met de startlijst als items en de demoantwoorden; de deelnemerssessie is Anna.
 const test = basis.extend({
-  nep: [async ({ context }, use) => { const nep = await startNep(context, { antwoorden: true, stap: 'voorbereiding', items: true }); await use(nep); nep.server.close(); }, { auto: true }],
+  nep: [async ({ context }, use) => { const nep = await startNep(context, { antwoorden: true, stap: 'voorbereiding', items: true, weekend: '2027-05-21' }); await use(nep); nep.server.close(); }, { auto: true }],
 });
 test.use({ serviceWorkers: 'block' });
 
@@ -27,7 +27,7 @@ test('MEE-5 MEE-7 MEE-8 MEE-9: lijst op supermarktvolgorde, tellingen, afvinken 
   await page.goto('/#/boodschappen');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Boodschappen');
   // MEE-5: categorievolgorde van §7.8.2; Spullen staan er niet op.
-  await expect(page.getByRole('heading', { level: 2 })).toHaveText(['Groente en fruit', 'Ontbijt en beleg', 'Conserven en sauzen', 'Frisdrank, bier en wijn']);
+  await expect(page.locator('.mee-sectie h2')).toHaveText(['Groente en fruit', 'Ontbijt en beleg', 'Conserven en sauzen', 'Frisdrank, bier en wijn']);
   await expect(page.getByText('Speaker')).toHaveCount(0);
   // MEE-9: de telling uit eten en drinken staat bij het item.
   await expect(page.locator('[data-item]', { hasText: '0,0 bier' })).toContainText('0,0 bier: 1 persoon');
@@ -66,7 +66,7 @@ test('MEE-6: na definitief toont de lijst Definitief, toevoegen geeft gesloten e
   await expect(page.getByText('Definitief', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: /definitief/i })).toHaveCount(0); // Anna is geen organisator
   const toevoegen = await fetch(`${nep.url}/macros/s/x/exec`, { method: 'POST', headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ apiVersie: 2, editieId: 'demo-editie-2027', actie: 'itemOpslaan', sessie: 'lokaal', data: { soort: 'boodschap', naam: 'Chips' } }) }).then((r) => r.json());
+    body: JSON.stringify({ apiVersie: 3, editieId: 'demo-editie-2027', actie: 'itemOpslaan', sessie: 'lokaal', data: { soort: 'boodschap', naam: 'Chips' } }) }).then((r) => r.json());
   expect(toevoegen.ok).toBe(false);
   expect(toevoegen.fout).toBe('gesloten');
   await page.getByRole('checkbox', { name: 'Bananen' }).check();
